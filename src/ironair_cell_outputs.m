@@ -7,6 +7,9 @@ n_H2 = y(2*Nx+3);
 i_app = I_cell / max(p.A, eps);
 c_OH_m = mean(y(1:Nx));
 [~, eta_m] = ironair_metal_ode(u, i_app, c_OH_m, T, p.Metal);
+if ~isfinite(eta_m)
+    eta_m = 0;
+end
 if I_cell >= 0
     [~, eta_air] = ironair_orr_ode(y(Nx+1:2*Nx), i_app, T, p.ORR);
 else
