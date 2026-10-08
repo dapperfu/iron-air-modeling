@@ -82,7 +82,9 @@ FIGS. 5A-5B electrode switch, including electrical isolation of ORR during OER
 to protect the air electrode.
 <<<
 COMMENT: >>>
-Each listed scenario has a unique IA-SCN-TRN-* ID, Python scenario function, and notebook.
+Changed because ironair.scenarios is empty. Executable transition coverage is
+plant_sim/90_Commissioning.ipynb plus charge/discharge mode switches in
+91_ChargeDischarge.ipynb. Remaining TRN IDs are design allocations.
 <<<
 
 [REQUIREMENT]

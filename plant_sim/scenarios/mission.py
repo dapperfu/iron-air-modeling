@@ -2,6 +2,7 @@
 
 @relation(IA-NBK-007, scope=module)
 @relation(IA-NBK-008, scope=module)
+@relation(IA-NBK-009, scope=module)
 """
 
 from __future__ import annotations
@@ -14,6 +15,9 @@ from plant_sim.plant import MODE_CHARGE, MODE_COMMISSION, MODE_DISCHARGE, MODE_R
 
 def commissioning_inputs(p: PlantParams | None = None):
     """KOH fill, wetting, rest, then first charge from the grid.
+
+    @relation(IA-NBK-009, scope=function)
+    """
 
     Timeline (verification-scaled seconds; notebooks state the engineering analog):
       0-600 s     dry vessel, residual air O2, fans on
