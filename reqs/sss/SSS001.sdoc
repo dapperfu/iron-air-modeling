@@ -546,14 +546,19 @@ UID: IA-NBK-001
 STATUS: Active
 TITLE: Notebook development environment
 STATEMENT: >>>
-All notebooks SHALL be located in notebooks/.
+Component, substructure, plant, and scenario notebooks SHALL live under plant_sim/
+using the decade numbering in plant_sim/README.md (01-09 components through 90-99
+scenarios).
 
-All notebooks SHALL import numerical models from the installed ironair package.
+Chemistry demonstration notebooks MAY live under notebooks/chemistry when created.
 
+Notebooks SHALL import numerical models from plant_sim and ironair.chemistry.
 No notebook SHALL contain a separate replacement implementation of a battery physics model.
 <<<
 COMMENT: >>>
-Notebook AST/source scan finds no duplicate rhs or stoichiometric matrix definitions.
+Changed because the notebooks/ tree does not exist; plant_sim/*.ipynb are the
+implemented component-to-plant notebooks. Requiring notebooks/ would make the
+SHALL unverifiable against the plant_sim ODE stack.
 <<<
 
 [REQUIREMENT]
