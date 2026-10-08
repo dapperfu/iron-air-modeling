@@ -131,13 +131,16 @@ UID: IA-TD-007
 STATUS: Active
 TITLE: Dual-electrode switch test
 STATEMENT: >>>
-Place IronAirCell in charge mode and confirm the electrical path is iron-OER-source
-with ORR isolated from OER potential. Switch to discharge and confirm iron-ORR-load
-(EP4602674A1 [0049]; US12308414B2 FIGS. 5A-5B).
+Place DualElectrodeCell or PlantModel in charge mode and confirm the electrical
+path is iron-OER-source with ORR isolated from OER potential. Switch to discharge
+and confirm iron-ORR-load (EP4602674A1 [0049]; US12308414B2 FIGS. 5A-5B).
 <<<
 COMMENT: >>>
 Mode is discrete. ORR is not held at OER potential during charge when isolation
 is enabled.
+
+Changed because IronAirCell does not exist. DualElectrodeCell._couple and
+PlantModel.algebraic implement the dual-electrode switch.
 <<<
 RELATIONS:
 - TYPE: Parent
