@@ -604,9 +604,11 @@ KOH conductivity, electrolyte concentration, reaction heat, and mass and charge 
 Each notebook SHALL call the actual associated Python component.
 <<<
 COMMENT: >>>
-Required chemistry notebooks exist under notebooks/chemistry and import ironair.chemistry.
-Notebooks SHALL cite US12308414B2 and EP4602674A1 for reaction identities and
-shall not present software plots as hardware validation of those patents.
+Changed because notebooks/chemistry does not exist. Faraday chemistry is exercised
+inside plant_sim component notebooks (01_IronAnode through 04_OER) that import
+ironair.chemistry. Dedicated chemistry-only notebooks remain an open allocation
+under notebooks/chemistry if created later. Plots are software verification, not
+hardware validation of US12308414B2 or EP4602674A1.
 <<<
 
 [REQUIREMENT]
