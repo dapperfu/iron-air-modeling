@@ -601,7 +601,8 @@ UID: IA-MOD-001
 STATUS: Active
 TITLE: Module ODE
 STATEMENT: >>>
-Module ironair.components.module SHALL provide class BatteryModule.
+Module plant_sim.substructures.module SHALL provide class BatteryModule
+(notebook plant_sim/30_Module.ipynb).
 
 The model SHALL include coupled stacks, shared fluid equipment, air equipment, and thermal states.
 
@@ -610,6 +611,10 @@ sharing lid air distribution, venting, and DC connections (FIG. 9A).
 <<<
 COMMENT: >>>
 Module assembles at least one stack plus shared thermal or fluid nodes.
+
+Changed because ironair.components.module does not exist.
+plant_sim.substructures.module.BatteryModule wraps PlantModel with documented
+series/parallel housing counts from US FIG. 13.
 <<<
 RELATIONS:
 - TYPE: Parent
