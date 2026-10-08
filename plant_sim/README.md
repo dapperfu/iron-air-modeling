@@ -31,15 +31,20 @@ assembles the plant, runs scenarios 90-99, and writes PNG figures to
 `plant_sim/figures/` for review outside a notebook. That export lives in
 `plant_sim/plotting.py`, not in `ironair`.
 
-Notebooks in this directory import the same physics objects, build a pandas
-DataFrame, and call seaborn in the cell. The figure is notebook output. Open
-them from the repo root so `plant_sim` and `ironair` import cleanly, or run
-the first bootstrap cell.
+Notebooks in this directory are the source of truth. Edit them directly in
+Jupyter (or the IDE). There is no notebook generator. Each notebook imports
+the same `plant_sim` physics objects, runs one simulation setup cell, then
+gives **each figure its own section** with:
 
-Regenerate decade notebooks from this package after editing the generator:
+1. a markdown header,
+2. **What this plot illustrates** (engineering/patent meaning),
+3. **Governing equations** (Jupyter MathJax `$...$` / `$$...$$`),
+4. a focused code cell that draws only that figure with seaborn.
+
+Open notebooks from the repo root so `plant_sim` and `ironair` import cleanly,
+or run the first bootstrap cell. Format code cells with:
 
 ```bash
-python plant_sim/_build_notebooks.py
 make format
 ```
 
