@@ -407,7 +407,8 @@ UID: IA-AIR-002
 STATUS: Active
 TITLE: Fan ODE
 STATEMENT: >>>
-Module ironair.components.fan SHALL provide class Fan.
+Module plant_sim.components.air_system SHALL provide class Fan
+(same module as AirSystem; notebooks plant_sim/22_VesselLidAir.ipynb and plant_sim/32_AirHandling.ipynb).
 
 The model SHALL include rotor speed dynamics and fan power consumption.
 
@@ -416,6 +417,9 @@ plenums of US12308414B2 FIG. 9A.
 <<<
 COMMENT: >>>
 Rotor speed is a dynamic state. Electrical power is an algebraic output from speed and torque.
+
+Changed because ironair.components.fan does not exist. Fan lives in
+plant_sim.components.air_system beside AirSystem, matching the coupled lid-air plant.
 <<<
 RELATIONS:
 - TYPE: Parent

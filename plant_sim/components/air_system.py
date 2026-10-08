@@ -1,6 +1,7 @@
 """Air handling and fan ODEs (IA-AIR-001, IA-AIR-002).
 
 @relation(IA-AIR-001, scope=module)
+@relation(IA-AIR-002, scope=module)
 
 Natural breathing, forced supply, sparging into submerged ORR, cascading
 stacked-core flow, snorkel mixed-phase channels (US Claims 9, 14-15).
@@ -138,6 +139,10 @@ def fan_rhs(
     u: Mapping[str, float],
     p: PlantParams,
 ) -> NDArray[np.float64]:
+    """Fan rotor-speed RHS.
+
+    @relation(IA-AIR-002, scope=function)
+    """
     omega = y[0]
     I_fan = float(u.get("I_fan_A", 0.0))
     tau = p.k_fan_Nm_A * I_fan - p.b_fan_Nms * omega
@@ -147,6 +152,11 @@ def fan_rhs(
 
 
 class Fan(RHSComponent):
+    """IA-AIR-002 fan rotor dynamics.
+
+    @relation(IA-AIR-002, scope=class)
+    """
+
     def __init__(self, p: PlantParams | None = None) -> None:
         p = p or default_params()
         y0 = np.array([10.0], dtype=np.float64)
