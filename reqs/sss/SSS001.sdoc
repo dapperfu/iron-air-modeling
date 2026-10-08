@@ -622,7 +622,9 @@ time-domain plots, parameter sensitivity, conservation or physical validation re
 and discussion of observed behavior.
 <<<
 COMMENT: >>>
-tests/test_notebook_inventory.py maps each component class to a notebook path.
+Changed because tests/test_notebook_inventory.py does not exist.
+plant_sim/01_IronAnode.ipynb through plant_sim/09_Thermal.ipynb plus 10-40
+substructure notebooks are the component demonstration inventory.
 <<<
 
 [REQUIREMENT]
