@@ -430,14 +430,22 @@ UID: IA-FLD-001
 STATUS: Active
 TITLE: Electrolyte circulation ODE
 STATEMENT: >>>
-Module ironair.components.electrolyte_flow SHALL provide class ElectrolyteFlow.
+Module plant_sim.components.hydraulics SHALL provide class ElectrolyteFlow
+(notebook plant_sim/31_Hydraulics.ipynb).
 
 The component SHALL dynamically track flow, species transfer, pressure or hydraulic
 storage where physically justified, and temperature.
 <<<
 COMMENT: >>>
 Species transport delay appears when using the detailed hydraulic mode.
+
+Changed because ironair.components.electrolyte_flow does not exist.
+plant_sim.components.hydraulics.ElectrolyteFlow implements circulation mass-flow,
+header pressure, and loop temperature used by HydraulicsBOP.
 <<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-021
 
 [REQUIREMENT]
 UID: IA-FLD-002

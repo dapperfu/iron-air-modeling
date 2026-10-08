@@ -1,4 +1,7 @@
-"""Electrolyte hydraulics (IA-FLD-001 through IA-FLD-005)."""
+"""Electrolyte hydraulics (IA-FLD-001 through IA-FLD-005).
+
+@relation(IA-FLD-001, scope=module)
+"""
 
 from __future__ import annotations
 
@@ -35,6 +38,10 @@ PIPE_SPECS = (
 
 
 def flow_rhs(t: float, y: NDArray[np.float64], u: Mapping[str, float], p: PlantParams) -> NDArray[np.float64]:
+    """Circulation mass-flow and header-pressure RHS.
+
+    @relation(IA-FLD-001, scope=function)
+    """
     mdot, ph, T = y
     omega = float(u.get("omega_pump_rad_s", 80.0))
     pos = float(np.clip(u.get("valve_pos", 0.8), 0.0, 1.0))
@@ -50,6 +57,11 @@ def flow_rhs(t: float, y: NDArray[np.float64], u: Mapping[str, float], p: PlantP
 
 
 class ElectrolyteFlow(RHSComponent):
+    """IA-FLD-001 electrolyte circulation.
+
+    @relation(IA-FLD-001, scope=class)
+    """
+
     def __init__(self, p: PlantParams | None = None) -> None:
         p = p or default_params()
         y0 = np.array([0.05, p.P_atm_Pa + 2e4, p.T_ep_sim_K], dtype=np.float64)
