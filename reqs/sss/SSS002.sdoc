@@ -826,19 +826,22 @@ UID: IA-CTL-001
 STATUS: Active
 TITLE: Supervisory control dynamics
 STATEMENT: >>>
-Module ironair.controls.supervisory SHALL provide class SupervisoryController.
+Module plant_sim.plant SHALL provide class PlantModel with discrete operating modes
+MODE_CHARGE, MODE_DISCHARGE, MODE_REST, and MODE_COMMISSION
+(notebooks plant_sim/12_DualElectrodeCell.ipynb and plant_sim/40_PlantModel.ipynb).
 
-The controller SHALL include explicit continuous controller states where applicable,
-as well as discrete operating modes.
+Charge SHALL close iron-OER-source and discharge SHALL close iron-ORR-load with
+optional ORR isolation from OER potential (EP4602674A1 switch 116; US12308414B2
+switch 550 and Claim 16).
 
-It SHALL be implemented as a hybrid system with ODE dynamics and discrete transitions.
-
-Discrete modes SHALL include charge (iron-OER-source), discharge (iron-ORR-load),
-rest, protection, and optional airflow-flex isolation of ORR from OER
-(EP4602674A1 switch 116; US12308414B2 switch 550 and Claim 16).
+ironair.controls.supervisory.SupervisoryController is not implemented; mode
+switching currently lives in PlantModel.algebraic until a dedicated controller
+module exists.
 <<<
 COMMENT: >>>
-Mode transitions are event-driven. PI or equivalent continuous states exist for current/power regulation.
+Changed because ironair.controls.supervisory.SupervisoryController does not exist
+(src/ironair/controls is an empty package). PlantModel already implements the
+patented dual-electrode mode switch used by the plant stack.
 <<<
 RELATIONS:
 - TYPE: Parent

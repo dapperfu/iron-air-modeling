@@ -1,5 +1,7 @@
 """Full coupled iron-air plant: one solve_ivp over concatenated component states.
 
+@relation(IA-CTL-001, scope=module)
+
 Charge closes iron to OER to the power source; discharge closes iron to ORR to
 the load (EP4602674A1 [0049]). Dual-electrode isolation follows US Claim 16.
 """
@@ -80,7 +82,10 @@ def _blocks(p: PlantParams) -> dict[str, tuple[int, int]]:
 
 @dataclass
 class PlantModel:
-    """Assembled plant. Isolated component RHS functions are the same Python objects."""
+    """Assembled plant. Isolated component RHS functions are the same Python objects.
+
+    @relation(IA-CTL-001, scope=class)
+    """
 
     params: PlantParams = field(default_factory=default_params)
     orr_mode: str = "stacked_submerged"
@@ -199,6 +204,10 @@ class PlantModel:
         return y[a:b]
 
     def algebraic(self, t: float, y: NDArray[np.float64], u: Mapping[str, float]) -> dict[str, float]:
+        """Map discrete charge/discharge/rest/commission modes onto electrode currents.
+
+        @relation(IA-CTL-001, scope=function)
+        """
         p = self.params
         fe = self.slice(y, "fe")
         ely = self.slice(y, "ely")
