@@ -42,7 +42,7 @@ end
 parts = strsplit(gp, pathsep);
 parts = parts(~cellfun(@isempty, parts));
 exclude = {'.git', '.svn', '.venv', 'venv', '__pycache__', ...
-    'requirements_html', 'slprj', 'sccprj'};
+    'docs', 'requirements_html', 'slprj', 'sccprj'};
 keep = true(size(parts));
 for i = 1:numel(parts)
     segs = strsplit(parts{i}, filesep);

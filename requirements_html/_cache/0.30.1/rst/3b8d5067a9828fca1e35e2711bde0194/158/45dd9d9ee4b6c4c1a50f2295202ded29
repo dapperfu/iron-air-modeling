@@ -1,3 +1,0 @@
-<div class="document">
-<p>tests/test_Plant_RideThrough.m SHALL inject voltage/frequency excursions and assert monitor Pass/Fail matches IEEE 1547-style envelopes in IronAir.Standards.</p>
-</div>

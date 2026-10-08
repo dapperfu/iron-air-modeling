@@ -1,3 +1,0 @@
-<div class="document">
-<p>tests/test_Electrolyte_1D.m SHALL verify KOH moles conserved within 1e-6 relative under zero-flux boundaries and zero source.</p>
-</div>

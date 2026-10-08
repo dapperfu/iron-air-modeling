@@ -11,6 +11,8 @@ matlab -batch "cd('C:/projects/iron-air-modeling'); addpath_IronAir; lib_IronAir
 make strictdoc-generate
 ```
 
+StrictDoc HTML is generated into [`docs/`](docs/) for GitHub Pages (`Settings → Pages → Deploy from branch → /docs`).
+
 Optional local `startup.m` (not in this repo):
 
 ```matlab
@@ -27,7 +29,7 @@ run('C:/projects/iron-air-modeling/addpath_IronAir.m');
 | `models/` | Cell, stack, 24–100 h plant demos |
 | `tests/` | MATLAB unit tests (TD001–TD008) |
 | `requirements/` | StrictDoc MIL-STD-498 (SRS…TD) |
-| `requirements_html/` | Generated HTML |
+| `docs/` | StrictDoc HTML (GitHub Pages publish root) |
 | `data/mock/` | Synthetic cell V–I curves |
 | `plans/` | Design plan |
 

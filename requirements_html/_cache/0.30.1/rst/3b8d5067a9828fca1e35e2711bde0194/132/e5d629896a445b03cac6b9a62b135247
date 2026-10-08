@@ -1,3 +1,0 @@
-<div class="document">
-<p>Plant_BESS_Schedule SHALL accept PowerSchedule_W(t) and optional GridVoltage_pu(t), GridFrequency_Hz(t) for ride-through injection.</p>
-</div>

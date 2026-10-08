@@ -1,3 +1,0 @@
-<div class="document">
-<p>Cell voltage is V = E_eq(c,T) - eta_metal - eta_air - I*R_elec where eta_air selects ORR (discharge, I&gt;0 convention discharge positive) or OER (charge).</p>
-</div>

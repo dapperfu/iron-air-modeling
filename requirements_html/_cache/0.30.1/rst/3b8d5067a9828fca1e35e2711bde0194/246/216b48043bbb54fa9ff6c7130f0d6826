@@ -1,3 +1,0 @@
-<div class="document">
-<p>Fast electrical signals (V, I, ride-through) use continuous or small fixed step; thermal uses continuous with larger thermal mass; plant schedule uses slow exogenous From Workspace profiles. Rate Transition blocks separate domains in plant demo.</p>
-</div>

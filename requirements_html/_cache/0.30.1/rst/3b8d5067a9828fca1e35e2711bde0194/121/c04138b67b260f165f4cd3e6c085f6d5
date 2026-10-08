@@ -1,3 +1,0 @@
-<div class="document">
-<p>All model parameters SHALL be defined in lib_IronAir_init.m and stored in the Simulink Data Dictionary lib_IronAir.sldd.</p>
-</div>

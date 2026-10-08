@@ -18,7 +18,7 @@ venv:
 	$(PIP) install --upgrade pip strictdoc
 
 clean:
-	-rmdir /s /q requirements_html 2>nul || true
+	-rmdir /s /q docs 2>nul || true
 	-$(MATLAB) -batch "if exist('lib_IronAir','file'), close_system('lib_IronAir',0); end" || true
 
 build: init-sldd build-lib strictdoc-generate
@@ -39,7 +39,8 @@ strictdoc-init:
 	@echo "StrictDoc tree lives under requirements/ (already initialized)"
 
 strictdoc-generate:
-	$(STRICTDOC) export --formats html --output-dir requirements_html requirements
+	$(STRICTDOC) export --formats html --output-dir .strictdoc_build requirements
+	$(PYTHON) tools/publish_strictdoc_docs.py
 
 strictdoc-validate:
 	$(STRICTDOC) manage lint ./requirements
@@ -47,7 +48,7 @@ strictdoc-validate:
 strictdoc-export: strictdoc-generate
 
 strictdoc-serve:
-	$(STRICTDOC) server requirements --output-path requirements_html
+	$(STRICTDOC) server requirements --output-path .strictdoc_build
 
 strictdoc-tree:
 	$(STRICTDOC) manage print-rel-paths ./requirements

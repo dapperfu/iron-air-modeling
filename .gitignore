@@ -30,4 +30,5 @@ Desktop.ini
 .idea/
 *.swp
 
-# Keep requirements_html/ tracked (StrictDoc HTML committed per project rules)
+# StrictDoc staging build (published copy lives in docs/)
+.strictdoc_build/

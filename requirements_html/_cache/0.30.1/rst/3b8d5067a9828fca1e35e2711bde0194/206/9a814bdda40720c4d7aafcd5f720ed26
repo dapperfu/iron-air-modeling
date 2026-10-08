@@ -1,3 +1,0 @@
-<div class="document">
-<p>Testing SHALL include (1) atomic MATLAB unit tests per physics block, (2) cell integration / mock V-I regression, (3) stack/pack aggregation checks, (4) plant 24-100 h arbitrage with ride-through monitors.</p>
-</div>
