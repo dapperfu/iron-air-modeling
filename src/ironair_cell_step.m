@@ -12,6 +12,10 @@ i_app = I_cell / max(p.A, eps);
 c_OH_m = mean(c_OH);
 
 [du_dt, eta_m, ~] = ironair_metal_ode(u, i_app, c_OH_m, T, p.Metal);
+% NaN eta marks infeasible Fe current (not a physical overpotential)
+if ~isfinite(eta_m)
+    eta_m = 0;
+end
 dc_OH = ironair_electrolyte_ode(c_OH, i_app, p.Electrolyte);
 dc_OH = dc_OH(:);
 if I_cell >= 0
