@@ -4,6 +4,7 @@
 @relation(IA-FLD-002, scope=module)
 @relation(IA-FLD-003, scope=module)
 @relation(IA-FLD-004, scope=module)
+@relation(IA-FLD-005, scope=module)
 """
 
 from __future__ import annotations
@@ -215,11 +216,20 @@ class Valve(RHSComponent):
 
 
 class Pipe(RHSComponent):
+    """IA-FLD-005 piping transport delay.
+
+    @relation(IA-FLD-005, scope=class)
+    """
+
     def __init__(self, p: PlantParams | None = None) -> None:
         p = p or default_params()
         y0 = np.array([p.c_KOH_mol_m3, p.T_ep_sim_K], dtype=np.float64)
 
         def rhs(t, y, inputs, context):  # type: ignore[no-untyped-def]
+            """Pipe advection-delay RHS.
+
+            @relation(IA-FLD-005, scope=function)
+            """
             c, T = y
             c_in = float(inputs.get("c_in_mol_m3", p.c_KOH_mol_m3))
             T_in = float(inputs.get("T_in_K", p.T_ep_sim_K))

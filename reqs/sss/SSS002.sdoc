@@ -519,14 +519,22 @@ UID: IA-FLD-005
 STATUS: Active
 TITLE: Piping ODE
 STATEMENT: >>>
-Module ironair.components.piping SHALL provide class Pipe.
+Module plant_sim.components.hydraulics SHALL provide class Pipe
+(notebook plant_sim/31_Hydraulics.ipynb).
 
 The component SHALL model transient fluid transport and temperature or species
 residence-time dynamics when using the detailed hydraulic mode.
 <<<
 COMMENT: >>>
 Detailed mode has at least one transport delay state. Lumped mode is flagged reduced_order.
+
+Changed because ironair.components.piping does not exist.
+plant_sim.components.hydraulics.Pipe implements a transport-delay concentration/temperature
+state used by HydraulicsBOP.
 <<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-021
 
 [REQUIREMENT]
 UID: IA-HEX-001
