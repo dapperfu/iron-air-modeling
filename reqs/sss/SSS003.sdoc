@@ -120,7 +120,8 @@ Environmental cases SHALL include US12308414B2 25 C / 1 atm reference, EP4602674
 reduced pO2.
 <<<
 COMMENT: >>>
-Each listed scenario has a unique IA-SCN-ENV-* ID, Python scenario function, and notebook.
+Changed because ironair.scenarios is empty. Executable environmental coverage is
+plant_sim/93_ThermalExcursion.ipynb. Remaining ENV IDs are design allocations.
 <<<
 
 [REQUIREMENT]

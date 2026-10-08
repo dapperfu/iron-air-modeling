@@ -88,6 +88,10 @@ def grid_services_inputs(p: PlantParams | None = None):
 
 
 def thermal_excursion_inputs(p: PlantParams | None = None):
+    """Ambient temperature and coolant-flow excursion.
+
+    @relation(IA-NBK-011, scope=function)
+    """
     p = p or default_params()
 
     def u(t: float) -> dict[str, float]:
