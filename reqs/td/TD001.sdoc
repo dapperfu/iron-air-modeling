@@ -1,9 +1,20 @@
 [DOCUMENT]
 TITLE: Test Description - IRONAIR Phase Gates
 UID: DOC-TD001
-VERSION: 1.0.0
+VERSION: 1.1.0
 OPTIONS:
   MARKUP: Text
+
+[[SECTION]]
+UID: SEC-TD-FOUND
+TITLE: Foundation and chemistry tests
+
+[TEXT]
+STATEMENT: >>>
+These test descriptions specify how phase-gate and patent-mapped requirements are
+executed. Procedures operate on the ironair package. They do not energize physical
+cells from US12308414B2 or EP4602674A1.
+<<<
 
 [REQUIREMENT]
 UID: IA-TD-001
@@ -26,6 +37,9 @@ TITLE: Constants immutability test
 STATEMENT: >>>
 Read F_C_MOL, R_J_MOL_K, T_REF_K, P_REF_PA, M_FE_KG_MOL, M_O2_KG_MOL, M_H2O_KG_MOL,
 and M_KOH_KG_MOL. Attempting assignment shall fail.
+
+Confirm T_REF_K corresponds to 25 C and P_REF_PA to 1 atm per US12308414B2
+standard ambient temperature and pressure.
 <<<
 COMMENT: >>>
 Values match documented CODATA/IUPAC constants. Frozen assignment raises.
@@ -39,7 +53,9 @@ UID: IA-TD-003
 STATUS: Active
 TITLE: Elemental conservation test
 STATEMENT: >>>
-For each column of S, compute the elemental residual E @ S[:, j].
+For each column of S, compute the elemental residual E @ S[:, j] for Fe, O, H, K,
+and C, including Fe/Fe(OH)2, Fe(OH)2/Fe3O4, ORR, OER, and HER columns from
+IA-SYS-020.
 <<<
 COMMENT: >>>
 Absolute residual < 1e-12 for Fe, O, H, K, and C.
@@ -53,7 +69,8 @@ UID: IA-TD-004
 STATUS: Active
 TITLE: Butler-Volmer equilibrium test
 STATEMENT: >>>
-Evaluate electrode current at zero overpotential with finite activities.
+Evaluate electrode current at zero overpotential with finite activities for iron,
+ORR, OER, and HER couples.
 <<<
 COMMENT: >>>
 Net Faradaic current is ~0. Symmetric coefficients produce an odd i(eta) function.
@@ -62,12 +79,20 @@ RELATIONS:
 - TYPE: Parent
   VALUE: IA-CHM-007
 
+[[/SECTION]]
+
+[[SECTION]]
+UID: SEC-TD-ARCH
+TITLE: Component, traceability, and patent-architecture tests
+
 [REQUIREMENT]
 UID: IA-TD-005
 STATUS: Active
 TITLE: RHS determinism test
 STATEMENT: >>>
-Evaluate rhs twice with identical arguments.
+Evaluate rhs twice with identical arguments for every DynamicComponent, including
+IronElectrode in DRI-bed and channeled modes, OxygenReduction in stacked submerged
+mode, and OxygenEvolution in interdigitated mode.
 <<<
 COMMENT: >>>
 Arrays compare equal. Component parameter values are unchanged.
@@ -82,6 +107,10 @@ STATUS: Active
 TITLE: Traceability test
 STATEMENT: >>>
 Parse reqs/**/*.sdoc UIDs and src/**/*.py @relation markers.
+
+Patent-mapped UIDs IA-SYS-006 through IA-SYS-026, IA-CHM-011, IA-SDD-006 through
+IA-SDD-010, IA-IRS-006 through IA-IRS-010, IA-TP-004 through IA-TP-006,
+IA-TD-007 through IA-TD-010, and IA-SCN-PAT-* SHALL exist in StrictDoc.
 <<<
 COMMENT: >>>
 Every @relation UID exists. Every implementation requirement listed in the
@@ -90,3 +119,75 @@ traceability map has a function marker.
 RELATIONS:
 - TYPE: Parent
   VALUE: IA-REQ-004
+
+[REQUIREMENT]
+UID: IA-TD-007
+STATUS: Active
+TITLE: Dual-electrode switch test
+STATEMENT: >>>
+Place IronAirCell in charge mode and confirm the electrical path is iron-OER-source
+with ORR isolated from OER potential. Switch to discharge and confirm iron-ORR-load
+(EP4602674A1 [0049]; US12308414B2 FIGS. 5A-5B).
+<<<
+COMMENT: >>>
+Mode is discrete. ORR is not held at OER potential during charge when isolation
+is enabled.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-008
+
+[REQUIREMENT]
+UID: IA-TD-008
+STATUS: Active
+TITLE: Stacked ORR equal pressure-drop test
+STATEMENT: >>>
+Build a vertical stack of discrete submerged ORR sections with depth-varying
+geometry. Compute algebraic pressure drop in the depth direction
+(US12308414B2 Claim 1).
+<<<
+COMMENT: >>>
+Pressure drops compare equal within solver tolerance. Geometry may still vary
+with depth.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-009
+
+[REQUIREMENT]
+UID: IA-TD-009
+STATUS: Active
+TITLE: Interdigitated coulombic-efficiency trend test
+STATEMENT: >>>
+Run matched planar, channeled, and interdigitated layouts at 6 M KOH, 303 K,
+ChanFrac 0.4, w_rib 5 mm, and 4 g Fe/cm2 (EP4602674A1 FIGS. 19-27 conditions).
+Compare instantaneous coulombic charge efficiency and discharge voltage plateau
+length.
+<<<
+COMMENT: >>>
+Interdigitated efficiency is greater than or equal to planar efficiency at
+end-of-charge. Test records architecture flags and does not claim hardware
+validation.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-CHM-011
+
+[REQUIREMENT]
+UID: IA-TD-010
+STATUS: Active
+TITLE: Electrolyte and loading domain test
+STATEMENT: >>>
+Construct ParameterSets for 6 M KOH, 5.5 M KOH + 0.5 M LiOH, 6 M NaOH, 5 M NaOH +
+1 M KOH, and 7 M hydroxide, and for iron loading 1 and 7 g Fe/cm2 with electrolyte
+volume fraction 0.5 and 0.9 (US12308414B2 electrolyte examples; EP4602674A1
+Claims 16-17). Reject a loading of 0 g Fe/cm2 or a volume fraction of 1.1.
+<<<
+COMMENT: >>>
+In-range sets construct. Out-of-range sets raise a domain error.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-021
+
+[[/SECTION]]
