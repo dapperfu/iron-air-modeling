@@ -54,6 +54,9 @@ Authoritative requirements are StrictDoc files under `reqs/` (MIL-STD-498
 document types, permanent `IA-*` UIDs). Markdown in this README is explanatory
 only.
 
+Generated HTML is emitted to `docs/` so GitHub Pages can host it from the `/docs`
+folder. `docs/.nojekyll` is included so StrictDoc `_static` assets are served.
+
 ```bash
 make strictdoc-validate
 make strictdoc-generate
