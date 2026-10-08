@@ -344,7 +344,8 @@ UID: IA-THM-001
 STATUS: Active
 TITLE: Thermal ODE
 STATEMENT: >>>
-Module ironair.components.thermal SHALL provide class ThermalNetwork.
+Module plant_sim.components.thermal SHALL provide class ThermalNetwork
+(notebook plant_sim/09_Thermal.ipynb).
 
 States SHALL include thermal energy or temperature at relevant physical nodes.
 
@@ -360,6 +361,10 @@ US12308414B2 double-wall cavity 161 and multi-function lid thermal management.
 <<<
 COMMENT: >>>
 Adiabatic isolated node with positive heat source increases temperature.
+
+Changed because ironair.components.thermal does not exist.
+plant_sim.components.thermal.ThermalNetwork implements electrode/electrolyte/vessel/lid/cavity
+nodes from US FIGS. 1E-1F and 9A.
 <<<
 RELATIONS:
 - TYPE: Parent

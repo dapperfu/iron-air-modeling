@@ -1,5 +1,7 @@
 """Thermal network and heat exchanger (IA-THM-001, IA-HEX-001).
 
+@relation(IA-THM-001, scope=module)
+
 Nodes: electrode cluster, electrolyte, vessel wall, lid, coolant cavity
 (US FIGS. 1E-1F, 9A). Heat exchanger for cavity coolant / lid loops.
 """
@@ -46,6 +48,10 @@ def thermal_rhs(
     u: Mapping[str, float],
     p: PlantParams,
 ) -> NDArray[np.float64]:
+    """Five-node vessel thermal network RHS.
+
+    @relation(IA-THM-001, scope=function)
+    """
     Te, Tel, Tv, Tl, Tc = y
     q_rxn = float(u.get("q_reaction_W", 0.0))
     q_joule = float(u.get("q_joule_W", 0.0))
@@ -92,6 +98,11 @@ def thermal_outputs(
 
 
 class ThermalNetwork(RHSComponent):
+    """IA-THM-001 thermal network.
+
+    @relation(IA-THM-001, scope=class)
+    """
+
     def __init__(self, p: PlantParams | None = None, y0: NDArray[np.float64] | None = None) -> None:
         p = p or default_params()
         y0 = default_y0(p) if y0 is None else y0
