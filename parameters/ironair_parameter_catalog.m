@@ -120,6 +120,7 @@ p = put(p, "V_m_FeOH2_m3_mol", 2.60e-5, "m3/mol", "ASSUMED", [1e-5, 1e-4]);
 p = put(p, "V_m_Fe3O4_m3_mol", 4.45e-5, "m3/mol", "ASSUMED", [2e-5, 1e-4]);
 p = put(p, "e_mag_std_V", -0.76, "V", "ASSUMED", [-1.2, -0.2]);
 p = put(p, "j_0_mag_A_m2", 0.02, "A/m2", "CALIBRATION_REQUIRED", [0, 1e3]);
+p = put(p, "V_inert_m3", 1e-4, "m3", "ASSUMED", [0, 10]);
 p = put(p, "enable_magnetite", true, "1", "ASSUMED", [0, 1]);
 p = put(p, "enable_higher_oxide", false, "1", "ASSUMED", [0, 1]);
 end
@@ -249,6 +250,8 @@ p = put(p, "h_conv_W_m2K", 10, "W/(m2 K)", "ASSUMED", [0, 1e5]);
 p = put(p, "epsilon_radiation", 0.8, "1", "ASSUMED", [0, 1]);
 p = put(p, "A_surface_m2", 1, "m2", "ASSUMED", [1e-4, 1e6]);
 p = put(p, "de_cell_eq_dT_V_K", -4e-4, "V/K", "CALIBRATION_REQUIRED", [-0.01, 0.01]);
+p = put(p, "L_thermal_m", 0.05, "m", "ASSUMED", [1e-4, 10]);
+p = put(p, "C_thermal_node_J_K", 2e4, "J/K", "ASSUMED", [1, 1e12]);
 p = put(p, "k_Fe_W_mK", 80, "W/(m K)", "ASSUMED", [1, 200]);
 p = put(p, "k_electrolyte_W_mK", 0.5, "W/(m K)", "ASSUMED", [0.05, 5]);
 p = put(p, "k_polymer_W_mK", 0.2, "W/(m K)", "ASSUMED", [0.01, 2]);
@@ -450,6 +453,12 @@ p = put(p, "K_voltage_droop_var_V", 100, "var/V", "ASSUMED", [0, 1e9]);
 p = put(p, "ramp_up_limit_W_s", 1e5, "W/s", "ASSUMED", [0, 1e12]);
 p = put(p, "ramp_down_limit_W_s", 1e5, "W/s", "ASSUMED", [0, 1e12]);
 p = put(p, "standards_profile_version", 1, "1", "ASSUMED", [1, 1e6]);
+p = put(p, "V_low_pu", 0.88, "1", "ASSUMED", [0, 1]);
+p = put(p, "V_high_pu", 1.10, "1", "ASSUMED", [1, 2]);
+p = put(p, "V_deadband_V", 200, "V", "ASSUMED", [0, 1e5]);
+p = put(p, "f_trip_deviation_Hz", 1.5, "Hz", "ASSUMED", [0, 10]);
+p = put(p, "t_voltage_trip_s", 2, "s", "ASSUMED", [0, 1e4]);
+p = put(p, "t_frequency_trip_s", 0.16, "s", "ASSUMED", [0, 1e4]);
 end
 
 function p = group_aging_degradation()
