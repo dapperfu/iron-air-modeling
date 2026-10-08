@@ -1,0 +1,7 @@
+[project]
+title = "IRONAIR-MATLAB Complete System Model"
+html_assets_strategy = "copy"
+
+[features]
+# StrictDoc sources in requirements/ are authoritative. Exported HTML is a
+# disposable review artifact and is not committed.
