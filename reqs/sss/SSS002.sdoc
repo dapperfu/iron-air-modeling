@@ -745,7 +745,8 @@ UID: IA-GRD-001
 STATUS: Active
 TITLE: Grid interface ODE
 STATEMENT: >>>
-Module ironair.components.grid SHALL provide class GridInterface.
+Module plant_sim.components.electrical SHALL provide class GridInterface
+(notebooks plant_sim/33_ElectricalBalance.ipynb and plant_sim/92_GridServices.ipynb).
 
 The grid SHALL support dynamic voltage and frequency disturbances, network interface
 equations, and configurable external-grid dynamic models.
@@ -760,6 +761,10 @@ representable as GridInterface scenarios.
 COMMENT: >>>
 When voltage/frequency are prescribed, they appear in inputs. Optional swing-equation
 mode is explicitly identified.
+
+Changed because ironair.components.grid does not exist.
+plant_sim.components.electrical.GridInterface treats v/f as inputs and filters
+exchange power for LODES dispatch scenarios.
 <<<
 RELATIONS:
 - TYPE: Parent

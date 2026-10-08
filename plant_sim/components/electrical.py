@@ -4,6 +4,7 @@
 @relation(IA-CNV-001, scope=module)
 @relation(IA-INV-001, scope=module)
 @relation(IA-TRF-001, scope=module)
+@relation(IA-GRD-001, scope=module)
 """
 
 from __future__ import annotations
@@ -196,7 +197,10 @@ class Transformer(RHSComponent):
 
 
 class GridInterface(RHSComponent):
-    """Prescribed grid voltage/frequency are inputs, not invented states (IA-GRD-001)."""
+    """Prescribed grid voltage/frequency are inputs, not invented states (IA-GRD-001).
+
+    @relation(IA-GRD-001, scope=class)
+    """
 
     def __init__(self, p: PlantParams | None = None) -> None:
         p = p or default_params()
@@ -204,6 +208,10 @@ class GridInterface(RHSComponent):
         specs = (StateSpec("P_exch_W", "W", "filtered grid exchange power"),)
 
         def rhs(t, y, inputs, context):  # type: ignore[no-untyped-def]
+            """Filtered grid exchange-power RHS.
+
+            @relation(IA-GRD-001, scope=function)
+            """
             Pref = float(inputs.get("P_grid_W", 0.0))
             return np.array([(Pref - y[0]) / 0.25], dtype=np.float64)
 
