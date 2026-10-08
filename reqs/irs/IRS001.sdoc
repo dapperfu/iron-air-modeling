@@ -1,0 +1,93 @@
+[DOCUMENT]
+TITLE: Interface Requirements Specification - IRONAIR Public APIs
+UID: DOC-IRS001
+VERSION: 1.0.0
+OPTIONS:
+  MARKUP: Text
+
+[REQUIREMENT]
+UID: IA-IRS-001
+STATUS: Active
+TITLE: Public package imports
+STATEMENT: >>>
+The following imports SHALL succeed after editable install:
+
+  import ironair
+  from ironair import constants
+  from ironair import chemistry
+  from ironair import components
+  from ironair import simulation
+  from ironair import scenarios
+  from ironair import plotting
+<<<
+COMMENT: >>>
+tests/test_package_imports.py passes in the project virtual environment.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-001
+
+[REQUIREMENT]
+UID: IA-IRS-002
+STATUS: Active
+TITLE: RHS signature
+STATEMENT: >>>
+Every dynamic component SHALL expose:
+
+  def rhs(self, t, y, inputs, context) -> numpy.ndarray
+
+t is time in seconds, y is a 1-D float64 state vector, inputs is a mapping of named
+physical inputs, and context carries shared couplings without hidden mutation of
+component parameters.
+<<<
+COMMENT: >>>
+Signature inspection and a deterministic double-evaluation test pass for each component.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-ODE-001
+
+[REQUIREMENT]
+UID: IA-IRS-003
+STATUS: Active
+TITLE: CoupledSystem simulate interface
+STATEMENT: >>>
+ironair.simulation.CoupledSystem.simulate SHALL accept t_span, optional t_eval,
+optional inputs callable, solver method, and tolerances, and SHALL return a
+SimulationResult.
+<<<
+COMMENT: >>>
+Default method is BDF or Radau. Result includes t, y, state_names, and diagnostics.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-ODE-003
+
+[REQUIREMENT]
+UID: IA-IRS-004
+STATUS: Active
+TITLE: Plotting input types
+STATEMENT: >>>
+ironair.plotting functions SHALL accept SimulationResult or pandas.DataFrame.
+<<<
+COMMENT: >>>
+Both input types produce a matplotlib Figure.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-003
+
+[REQUIREMENT]
+UID: IA-IRS-005
+STATUS: Active
+TITLE: Estimator measurement-only interface
+STATEMENT: >>>
+BatteryStateEstimator SHALL accept measurements and prior estimates only. It SHALL
+NOT receive the plant hidden state vector during observer execution.
+<<<
+COMMENT: >>>
+Type hints and tests pass a MeasurementVector, not the plant y, into the estimator.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-EST-001
