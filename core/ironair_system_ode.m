@@ -58,9 +58,8 @@ j_lim_O2 = 4 .* p.constants.F_C_mol .* D_O2_limit .* c_O2_liquid ./ ...
     p.cell_geometry.delta_diffusion_m;
 flood = min(max(x_cell(map.cell.air(1)), 0), 1);
 I_oxygen_limit = 0.8 .* j_lim_O2 .* p.air_electrode.A_geometric_air_m2 .* (1 - flood);
-if I_cell > I_oxygen_limit
-    I_cell = max(I_oxygen_limit, 0);
-end
+I_electrode_limit = max(I_oxygen_limit, 0);
+I_cell = min(max(I_cell, -I_electrode_limit), I_electrode_limit);
 
 fault_name = string(scenario.fault_name);
 Q_leak = 0;

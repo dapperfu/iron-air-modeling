@@ -53,17 +53,14 @@ if p.fidelity_level <= 1 && horizon_s <= 600
     profile.rel_tol = max(profile.rel_tol, 1e-3);
 end
 scale = max(abs(x0), 1e-2);
-nonneg = [map.cell.metal, map.cell.her, map.cell.electrolyte, ...
-    map.cell.gdl, map.air_system(1:2), map.flow(1)];
-nonneg = unique(nonneg(:));
-j_pattern = local_jpattern(map, p.fidelity_level);
-options = ironair_solver_options(profile, scale, [], j_pattern, nonneg);
-rhs = @(t, x) ironair_system_ode(t, x, p, name, history);
+options = ironair_solver_options(profile, scale);
+rhs = @(t, x) local_safe_dx(t, x, p, name, history);
 try
     [t, x] = ode15s(rhs, t_span, x0, options);
 catch exception
     results = struct("t_s", 0, "x", x0.', "map", map, "p", p, ...
         "name", name, "solver_failed", true, "outputs", {{}}, ...
+        "diagnostic", string(exception.message), ...
         "diagnostics", struct("solver_failed", true, "message", exception.message), ...
         "exception", exception);
     return
@@ -82,6 +79,18 @@ results = struct("t_s", t, "x", x, "t_sample_s", t(idx), "outputs", {outputs}, .
     "V_cell_V", V, "map", map, "p", p, "name", name, "history", history, ...
     "solver_failed", false, "element_ok", diagnostics.element_ok, ...
     "current_ok", diagnostics.current_ok, "diagnostics", diagnostics);
+end
+
+function dx = local_safe_dx(t, x, p, name, history)
+try
+    dx = ironair_system_ode(t, x, p, name, history);
+catch exception
+    if startsWith(string(exception.identifier), "ironair:")
+        dx = nan(size(x));
+        return
+    end
+    rethrow(exception)
+end
 end
 
 function j_pattern = local_jpattern(map, fidelity_level)
