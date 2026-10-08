@@ -1,9 +1,21 @@
 [DOCUMENT]
 TITLE: Test Plan - IRONAIR
 UID: DOC-TP001
-VERSION: 1.0.0
+VERSION: 1.1.0
 OPTIONS:
   MARKUP: Text
+
+[[SECTION]]
+UID: SEC-TP-GATES
+TITLE: Phase-gate and quality strategy
+
+[TEXT]
+STATEMENT: >>>
+This test plan verifies the ironair software against the SDRS, including
+patent-mapped plant requirements from US12308414B2 and EP4602674A1. Automated
+tests are verification, not experimental validation of Form Energy hardware or
+of the patents themselves (IA-TST-006).
+<<<
 
 [REQUIREMENT]
 UID: IA-TP-001
@@ -13,9 +25,12 @@ STATEMENT: >>>
 Each development phase SHALL have a passing pytest suite before the phase is complete.
 
 Phase 1: package import, constants, parameters, ODE protocol, StrictDoc UIDs.
-Phase 2: stoichiometric conservation, Butler-Volmer, Nernst, thermodynamics.
+Phase 2: stoichiometric conservation, Butler-Volmer, Nernst, thermodynamics,
+including EP4602674A1 Equations 1-2 capacities and US12308414B2 four-electron ORR.
 Phase 3: chemistry notebooks execute.
-Phase 4+: component, coupled, scenario, and conservation tests as implemented.
+Phase 4+: component, coupled, scenario, and conservation tests as implemented,
+including dual-electrode switching, stacked-ORR equal-dP algebra, and
+interdigitated versus planar coulombic-efficiency trends.
 <<<
 COMMENT: >>>
 make test-phase-1 through make test-phase-2 fail closed when the corresponding tests fail.
@@ -30,7 +45,12 @@ STATUS: Active
 TITLE: Verification versus validation
 STATEMENT: >>>
 Automated tests verify software against the SDRS. They SHALL NOT be labeled as
-experimental hardware validation.
+experimental hardware validation of US12308414B2 or EP4602674A1.
+
+Qualitative agreement with EP4602674A1 FIGS. 19-27 trends (interdigitated higher
+coulombic efficiency and extended discharge plateau versus planar) SHALL be
+reported as model-to-disclosure comparison, not as a claim that unpublished
+experimental points were reproduced.
 <<<
 COMMENT: >>>
 README and ironair.validation state this distinction.
@@ -46,6 +66,9 @@ TITLE: CI quality gates
 STATEMENT: >>>
 CI SHALL run ruff, mypy, pytest with coverage, StrictDoc validation, and
 requirements traceability.
+
+StrictDoc export of reqs/ SHALL succeed after patent-section updates. Every
+IA-SYS-006 through IA-SYS-026 and IA-SCN-PAT-* UID SHALL parse.
 <<<
 COMMENT: >>>
 .github/workflows/ci.yml implements these steps.
@@ -53,3 +76,58 @@ COMMENT: >>>
 RELATIONS:
 - TYPE: Parent
   VALUE: IA-TST-010
+
+[[/SECTION]]
+
+[[SECTION]]
+UID: SEC-TP-PAT
+TITLE: Patent-mapped verification objectives
+
+[REQUIREMENT]
+UID: IA-TP-004
+STATUS: Active
+TITLE: Chemistry verification objectives
+STATEMENT: >>>
+Tests SHALL confirm Fe/Fe(OH)2 two-electron Faraday mapping, 960 mAh/g first-step
+and 320 mAh/g second-step theoretical capacities as parameter metadata
+(EP4602674A1 [0043]), four-electron ORR/OER, two-electron HER, and elemental
+residuals below 1e-12.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-020
+
+[REQUIREMENT]
+UID: IA-TP-005
+STATUS: Active
+TITLE: Architecture verification objectives
+STATEMENT: >>>
+Tests SHALL instantiate stacked submerged ORR with equal section pressure drop
+(US12308414B2 Claim 1), DRI pellet-bed anode (Claim 18), and channeled
+interdigitated OER (EP4602674A1 Claim 1) without rhs side effects.
+
+Dual-electrode isolation SHALL keep ORR off the OER potential during charge.
+Channel geometry parameters SHALL reject values outside 3-50 mm length and
+1-40 mm width unless a documented override is set.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-009
+
+[REQUIREMENT]
+UID: IA-TP-006
+STATUS: Active
+TITLE: Scenario verification objectives
+STATEMENT: >>>
+The scenario suite SHALL include IA-SCN-PAT-* cases for stacked ORR, DRI bed,
+interdigitated versus planar comparison, asymmetric 100/300 h duration, floating
+ORR, spiral, pleated, and adjustable pO2.
+
+Each scenario SHALL remain a software verification case: conservation, mode
+switching, and trend direction versus the disclosures, not a hardware ATP.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-016
+
+[[/SECTION]]
