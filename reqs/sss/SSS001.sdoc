@@ -632,10 +632,17 @@ UID: IA-NBK-006
 STATUS: Active
 TITLE: Full-system scenario demonstrations
 STATEMENT: >>>
-The notebook suite SHALL cover all required operating scenarios described in Section 9.
+The notebook suite SHALL cover the implemented plant_sim scenario notebooks
+90_Commissioning through 99_FullPlantMission, driven by plant_sim.scenarios.mission.
+
+Remaining IA-SCN-* identifiers in DOC-SSS003 SHALL stay design allocations until a
+dedicated notebook or mission input function exists. The suite SHALL NOT claim that
+every SSS003 UID already has an ironair.scenarios function.
 <<<
 COMMENT: >>>
-Every IA-NBK-007 through IA-NBK-016 scenario ID has a notebook and a Python scenario function.
+Changed because ironair.scenarios is empty and Section 9 is not a StrictDoc section.
+plant_sim/90-99 notebooks plus plant_sim.scenarios.mission are the executable
+coverage; SSS003 still specifies additional design-level cases.
 <<<
 
 [REQUIREMENT]
