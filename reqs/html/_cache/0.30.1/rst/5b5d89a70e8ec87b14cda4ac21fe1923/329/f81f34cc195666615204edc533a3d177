@@ -1,0 +1,7 @@
+<div class="document">
+<p>Implement ironair.simulation.CoupledSystem.</p>
+<p>The solver SHALL assemble component states into one global state vector, maintain a
+state-index map, resolve shared inputs and algebraic couplings, evaluate the coupled
+RHS, pass the assembled system to SciPy, detect numerical failures, and return state
+trajectories and diagnostics.</p>
+</div>

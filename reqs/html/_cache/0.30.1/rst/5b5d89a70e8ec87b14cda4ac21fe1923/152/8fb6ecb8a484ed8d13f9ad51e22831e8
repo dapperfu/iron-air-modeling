@@ -1,0 +1,4 @@
+<div class="document">
+<p>BatteryStateEstimator SHALL accept measurements and prior estimates only. It SHALL
+NOT receive the plant hidden state vector during observer execution.</p>
+</div>

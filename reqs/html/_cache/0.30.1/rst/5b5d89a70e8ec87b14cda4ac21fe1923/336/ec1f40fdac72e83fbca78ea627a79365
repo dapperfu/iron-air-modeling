@@ -1,0 +1,7 @@
+<div class="document">
+<p>The software SHALL support lumped ODE models, spatially discretized ODE models,
+coupled differential-algebraic models, reduced-order dynamic models, and fully
+integrated system simulations.</p>
+<p>Spatially distributed PDE formulations SHALL be discretized using finite-volume or
+finite-difference methods to produce systems of ODEs or DAEs.</p>
+</div>

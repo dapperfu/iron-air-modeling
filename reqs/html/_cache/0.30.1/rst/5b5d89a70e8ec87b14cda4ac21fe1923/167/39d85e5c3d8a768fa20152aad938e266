@@ -1,0 +1,4 @@
+<div class="document">
+<p>Module ironair.components.dc_converter SHALL provide class DCDCConverter.</p>
+<p>The model SHALL include averaged inductor current, capacitor voltage, and converter losses.</p>
+</div>

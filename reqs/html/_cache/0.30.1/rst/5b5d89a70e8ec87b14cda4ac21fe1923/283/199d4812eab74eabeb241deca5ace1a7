@@ -1,0 +1,8 @@
+<div class="document">
+<p>Every dynamic component SHALL expose:</p>
+<blockquote>
+def rhs(self, t, y, inputs, context) -&gt; numpy.ndarray</blockquote>
+<p>t is time in seconds, y is a 1-D float64 state vector, inputs is a mapping of named
+physical inputs, and context carries shared couplings without hidden mutation of
+component parameters.</p>
+</div>

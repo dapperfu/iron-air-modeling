@@ -1,0 +1,5 @@
+<div class="document">
+<p>Module ironair.components.valve SHALL provide class Valve.</p>
+<p>The component SHALL model actuator response, valve position, and flow-dependent
+hydraulic characteristics.</p>
+</div>

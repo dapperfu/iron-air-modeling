@@ -1,0 +1,4 @@
+<div class="document">
+<p>simulate() returns a SimulationResult with t, y, names, and solver diagnostics.
+Failure of solve_ivp is reported rather than silently truncated.</p>
+</div>

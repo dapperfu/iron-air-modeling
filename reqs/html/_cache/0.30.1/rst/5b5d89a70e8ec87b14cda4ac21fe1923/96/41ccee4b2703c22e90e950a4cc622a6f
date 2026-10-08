@@ -1,0 +1,3 @@
+<div class="document">
+<p>Every exported physical calculation and dynamic component SHALL have automated pytest coverage.</p>
+</div>

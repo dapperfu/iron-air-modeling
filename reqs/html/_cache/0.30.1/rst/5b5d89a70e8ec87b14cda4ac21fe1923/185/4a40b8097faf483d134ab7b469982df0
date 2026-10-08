@@ -1,0 +1,5 @@
+<div class="document">
+<p>Module ironair.components.stack SHALL provide class BatteryStack.</p>
+<p>The component SHALL aggregate cell states while preserving cell-level variations and
+electrical current conservation.</p>
+</div>

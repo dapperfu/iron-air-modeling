@@ -1,0 +1,5 @@
+<div class="document">
+<p>Module ironair.controls.estimation SHALL provide class BatteryStateEstimator.</p>
+<p>The model SHALL estimate SOC, SOH, active iron inventory, and available charge/discharge power.</p>
+<p>It SHALL not access the simulated plant's true hidden states during observer execution.</p>
+</div>

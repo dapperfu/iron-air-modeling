@@ -1,0 +1,5 @@
+<div class="document">
+<p>Module ironair.components.gas_diffusion SHALL provide class GasDiffusionLayer.</p>
+<p>The component SHALL calculate transient oxygen concentration profiles, effective
+diffusion, pore saturation, flooding, and gas/liquid transport.</p>
+</div>

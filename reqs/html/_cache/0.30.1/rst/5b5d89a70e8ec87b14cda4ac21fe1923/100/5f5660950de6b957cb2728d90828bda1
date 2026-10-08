@@ -1,0 +1,4 @@
+<div class="document">
+<p>CI SHALL run ruff, mypy, pytest with coverage, StrictDoc validation, and
+requirements traceability.</p>
+</div>

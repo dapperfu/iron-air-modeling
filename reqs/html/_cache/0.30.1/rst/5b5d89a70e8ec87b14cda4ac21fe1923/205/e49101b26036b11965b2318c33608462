@@ -1,0 +1,5 @@
+<div class="document">
+<p>Package sources SHALL live under src/ironair as specified by IA-SYS-001.</p>
+<p>This SDRS src/ layout is the project-specific design and SHALL be used even though
+a generic Cursor rule discourages src/ layouts.</p>
+</div>

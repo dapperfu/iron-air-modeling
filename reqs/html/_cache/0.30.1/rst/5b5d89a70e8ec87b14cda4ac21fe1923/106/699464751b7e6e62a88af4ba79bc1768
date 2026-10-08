@@ -1,0 +1,4 @@
+<div class="document">
+<p>Parameter source_class and validation.ValidationRecord never treat unit-test pass as
+hardware validation.</p>
+</div>

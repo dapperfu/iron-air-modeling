@@ -1,0 +1,3 @@
+<div class="document">
+<p>For each column of S, compute the elemental residual E &#64; S[:, j].</p>
+</div>

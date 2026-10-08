@@ -1,0 +1,4 @@
+<div class="document">
+<p>Implement reusable plotting functions under ironair.plotting.</p>
+<p>Plotting functions SHALL accept structured simulation results or pandas DataFrames.</p>
+</div>

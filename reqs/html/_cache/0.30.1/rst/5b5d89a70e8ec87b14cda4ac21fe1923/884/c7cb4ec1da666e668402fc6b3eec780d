@@ -1,0 +1,13 @@
+<div class="document">
+<p>The software SHALL model the complete iron-air battery as a coupled multiphysics system.</p>
+<p>The model SHALL include metallic iron electrode, iron hydroxide and oxide phases,
+oxygen reduction electrode, oxygen evolution electrode, hydrogen evolution, alkaline
+electrolyte, electrolyte transport, separator, gas diffusion layer, current collectors,
+cell assembly, thermal system, air intake, fan/blower, gas manifolds, ventilation,
+electrolyte reservoir, circulation pump, piping, valves, heat exchanger, battery stack,
+battery module, battery enclosure, DC electrical distribution, DC/DC conversion, grid
+inverter, transformer, grid interface, measurement sensors, battery management,
+supervisory control, fault management, state estimation, and degradation and aging.</p>
+<p>These components SHALL interact through shared physical quantities and conserved
+material, charge, and energy flows.</p>
+</div>

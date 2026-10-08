@@ -1,0 +1,4 @@
+<div class="document">
+<p>Repeated rhs evaluations with identical arguments return identical arrays. Component
+parameter objects are unchanged after rhs.</p>
+</div>

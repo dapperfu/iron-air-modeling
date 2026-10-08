@@ -1,0 +1,3 @@
+<div class="document">
+<p>pyproject.toml configures setuptools package discovery with where = [&quot;src&quot;].</p>
+</div>

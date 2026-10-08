@@ -1,0 +1,6 @@
+<div class="document">
+<p>Module ironair.components.current_collector SHALL provide class CurrentCollector.</p>
+<p>The model SHALL include thermal dynamics and configurable long-term contact or
+resistance degradation.</p>
+<p>Ohmic voltage loss SHALL be calculated algebraically.</p>
+</div>

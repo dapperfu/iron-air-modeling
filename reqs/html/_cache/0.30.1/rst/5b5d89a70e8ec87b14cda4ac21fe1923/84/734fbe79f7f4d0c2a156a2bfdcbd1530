@@ -1,0 +1,3 @@
+<div class="document">
+<p>Default method is BDF or Radau. Result includes t, y, state_names, and diagnostics.</p>
+</div>

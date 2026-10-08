@@ -1,0 +1,21 @@
+<div class="document">
+<p>Every physical component SHALL expose a dynamic ODE model.</p>
+<p>Each component SHALL explicitly define: state vector, state units, initial conditions,
+input variables, output variables, governing differential equations, algebraic constitutive
+relations, physical parameters, boundary conditions, conservation residuals, numerical
+constraints, and associated StrictDoc requirement IDs.</p>
+<p>Every component SHALL provide a rhs() method returning state derivatives.</p>
+<p>The generic mathematical representation SHALL be:</p>
+<blockquote>
+dx/dt = f(t, x, inputs, parameters)</blockquote>
+<p>Where required:</p>
+<blockquote>
+0 = g(t, x, algebraic_variables, inputs, parameters)</blockquote>
+<p>Algebraic variables SHALL be solved consistently during RHS evaluation or through a
+supported DAE backend.</p>
+<p>An artificial time constant SHALL NOT be introduced solely to make an instantaneous
+physical relation appear dynamic.</p>
+<p>Passive structures, such as current collectors, SHALL possess actual dynamic states
+where justified, such as temperature. Their instantaneous electrical resistance SHALL
+remain an algebraic relation.</p>
+</div>

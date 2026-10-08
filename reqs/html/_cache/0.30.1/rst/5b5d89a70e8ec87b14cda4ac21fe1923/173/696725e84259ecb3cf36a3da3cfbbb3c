@@ -1,0 +1,4 @@
+<div class="document">
+<p>Module ironair.components.heat_exchanger SHALL provide class HeatExchanger.</p>
+<p>The component SHALL represent thermal storage and dynamic heat transfer between fluid circuits.</p>
+</div>
