@@ -33,7 +33,12 @@ jobs:
           venv_iron-air-modeling/bin/coverage report --fail-under=80
           venv_iron-air-modeling/bin/coverage xml
       - name: StrictDoc
-        run: venv_iron-air-modeling/bin/strictdoc inspect-requirements reqs
+        run: |
+          venv_iron-air-modeling/bin/strictdoc export reqs --formats html --output-dir .strictdoc_build --project-title iron-air-modeling
+          rm -rf docs
+          mkdir -p docs
+          cp -a .strictdoc_build/html/. docs/
+          touch docs/.nojekyll
 
   security:
     runs-on: ubuntu-latest
