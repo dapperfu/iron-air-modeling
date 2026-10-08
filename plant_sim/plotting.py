@@ -1,7 +1,9 @@
 """PNG export for plant_sim/verify_components.py.
 
-Notebooks do not import this module. A notebook builds a pandas DataFrame
-and calls seaborn in the cell so the figure is notebook output.
+Notebooks do not import this module. Edit notebooks directly: each figure
+has its own markdown section (header, what it illustrates, governing
+equations) and a focused seaborn cell. This module only writes PNGs for
+the headless verifier.
 
 Axis labels here use Unicode SI (mA h g⁻¹, Pa, K). Notebook Markdown uses
 Jupyter MathJax `$...$` with `\\mathrm{}` SI (siunitx is not available).
