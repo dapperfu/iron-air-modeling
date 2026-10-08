@@ -30,8 +30,7 @@ from ironair.properties import gas_phase_diffusivity_m2_s  # noqa: E402
 
 def gdl_specs(n: int) -> tuple[StateSpec, ...]:
     nodes = tuple(
-        StateSpec(f"c_O2_n{i}_mol_m3", "mol/m3", f"O2 concentration node {i}", nonnegative=True)
-        for i in range(n)
+        StateSpec(f"c_O2_n{i}_mol_m3", "mol/m3", f"O2 concentration node {i}", nonnegative=True) for i in range(n)
     )
     extra = (
         StateSpec("saturation", "1", "liquid pore saturation", nonnegative=True),
