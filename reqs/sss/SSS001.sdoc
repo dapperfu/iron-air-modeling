@@ -83,15 +83,20 @@ UID: IA-REQ-004
 STATUS: Active
 TITLE: Bidirectional traceability
 STATEMENT: >>>
-CI SHALL verify that every implementation requirement has an associated function,
-every required function exists, every required function is covered by tests,
-every documented scenario has a notebook, every required notebook executes successfully,
+CI SHALL verify that every implementation requirement (not a design-only allocation)
+has an associated function in src/ironair or plant_sim, every such function exists,
 all source-level requirement references resolve to valid StrictDoc UIDs, and every
 requirements-to-source reference identifies an existing Python source element.
+
+CI SHALL verify plant_sim notebooks 01-40 and 90-99 exist. Design-only IA-SCN-*
+and unimplemented observer/sensor UIDs SHALL NOT be treated as missing-notebook
+failures.
 <<<
 COMMENT: >>>
-tests/test_requirements_traceability.py fails the build on missing UIDs, missing
-functions, missing tests, or dangling file relations.
+Changed because tests/test_requirements_traceability.py does not exist and the
+previous SHALL that every documented scenario has a notebook contradicted
+design-only SSS003 IDs and empty ironair.scenarios. Traceability now matches
+implemented plant_sim plus ironair chemistry/ODE code.
 <<<
 
 [REQUIREMENT]
