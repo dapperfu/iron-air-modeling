@@ -173,7 +173,7 @@ UID: IA-SDD-007
 STATUS: Active
 TITLE: Iron electrode geometric modes
 STATEMENT: >>>
-IronElectrode SHALL implement at least these named geometric modes:
+IronAnode SHALL implement at least these named geometric modes:
 
 - packed DRI pellet bed (US12308414B2 Claim 18);
 - planar porous electrode (EP4602674A1 FIG. 1 control);
@@ -184,6 +184,10 @@ IronElectrode SHALL implement at least these named geometric modes:
 
 Mode-specific parameters SHALL include loading 1-7 g Fe/cm2, electrolyte volume
 fraction 0.5-0.9, channel length/width/spacing, ChanFrac, and spine/rib porosity.
+<<<
+COMMENT: >>>
+Changed because IronElectrode does not exist. plant_sim.components.iron_anode.IronAnode
+is the iron electrode ODE with DRI/channeled parameters.
 <<<
 RELATIONS:
 - TYPE: Parent
