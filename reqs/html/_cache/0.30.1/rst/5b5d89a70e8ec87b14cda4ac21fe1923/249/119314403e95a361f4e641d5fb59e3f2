@@ -1,5 +1,0 @@
-<div class="document">
-<p>Module ironair.components.oxygen_reduction SHALL provide class OxygenReduction.</p>
-<p>States SHALL include interfacial charge storage and oxygen availability where applicable.</p>
-<p>The component SHALL calculate nonlinear ORR kinetics and oxygen consumption.</p>
-</div>

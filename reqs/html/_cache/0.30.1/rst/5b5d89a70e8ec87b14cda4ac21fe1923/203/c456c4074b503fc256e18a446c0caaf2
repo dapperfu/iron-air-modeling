@@ -1,5 +1,0 @@
-<div class="document">
-<p>Module ironair.components.piping SHALL provide class Pipe.</p>
-<p>The component SHALL model transient fluid transport and temperature or species
-residence-time dynamics when using the detailed hydraulic mode.</p>
-</div>

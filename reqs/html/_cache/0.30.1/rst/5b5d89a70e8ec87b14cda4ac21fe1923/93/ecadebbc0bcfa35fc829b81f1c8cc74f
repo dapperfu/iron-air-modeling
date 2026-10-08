@@ -1,3 +1,0 @@
-<div class="document">
-<p>from ironair import plotting succeeds and plot_states accepts SimulationResult or DataFrame.</p>
-</div>

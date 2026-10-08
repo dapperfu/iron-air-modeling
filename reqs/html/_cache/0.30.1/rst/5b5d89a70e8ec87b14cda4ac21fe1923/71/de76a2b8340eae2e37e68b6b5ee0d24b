@@ -1,3 +1,0 @@
-<div class="document">
-<p>No fake lag state for resistance. V_ohm = I * R(T, degradation_state).</p>
-</div>

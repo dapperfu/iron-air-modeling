@@ -1,6 +1,0 @@
-<div class="document">
-<p>Module ironair.controls.supervisory SHALL provide class SupervisoryController.</p>
-<p>The controller SHALL include explicit continuous controller states where applicable,
-as well as discrete operating modes.</p>
-<p>It SHALL be implemented as a hybrid system with ODE dynamics and discrete transitions.</p>
-</div>

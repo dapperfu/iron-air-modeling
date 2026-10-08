@@ -1,5 +1,0 @@
-<div class="document">
-<p>ironair.simulation.CoupledSystem.simulate SHALL accept t_span, optional t_eval,
-optional inputs callable, solver method, and tolerances, and SHALL return a
-SimulationResult.</p>
-</div>

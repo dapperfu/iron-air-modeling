@@ -1,4 +1,0 @@
-<div class="document">
-<p>Every DynamicComponent publishes StateSpec metadata and a deterministic rhs(t, y, inputs, context).
-Algebraic electrical resistance is not converted into a fake lag state.</p>
-</div>

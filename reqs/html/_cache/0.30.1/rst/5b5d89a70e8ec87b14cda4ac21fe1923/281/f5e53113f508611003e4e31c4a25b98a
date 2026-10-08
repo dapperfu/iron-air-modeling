@@ -1,6 +1,0 @@
-<div class="document">
-<p>CI SHALL fail when a required UID is missing, a requirement has no implementation function,
-a required function is missing, a required equation is not tested, a notebook references
-an unavailable API, a mandatory notebook fails execution, or conservation acceptance
-criteria fail.</p>
-</div>

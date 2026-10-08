@@ -1,5 +1,0 @@
-<div class="document">
-<p>Module ironair.components.air_system SHALL provide class AirSystem.</p>
-<p>The component SHALL include gas inventories, manifold pressure dynamics, oxygen
-concentration, humidity, and airflow coupling.</p>
-</div>

@@ -1,5 +1,0 @@
-<div class="document">
-<p>Module ironair.components.transformer SHALL provide class Transformer.</p>
-<p>The component SHALL include electromagnetic dynamic states where detailed transient
-modeling is enabled, along with winding and core thermal dynamics.</p>
-</div>

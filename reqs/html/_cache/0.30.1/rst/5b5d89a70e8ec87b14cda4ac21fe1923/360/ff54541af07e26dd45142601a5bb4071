@@ -1,7 +1,0 @@
-<div class="document">
-<p>Each development phase SHALL have a passing pytest suite before the phase is complete.</p>
-<p>Phase 1: package import, constants, parameters, ODE protocol, StrictDoc UIDs.
-Phase 2: stoichiometric conservation, Butler-Volmer, Nernst, thermodynamics.
-Phase 3: chemistry notebooks execute.
-Phase 4+: component, coupled, scenario, and conservation tests as implemented.</p>
-</div>

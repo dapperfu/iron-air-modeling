@@ -1,4 +1,0 @@
-<div class="document">
-<p>Package ironair installs in a virtual environment. The listed imports succeed after
-pip install -e &quot;.[dev,notebooks]&quot; or the equivalent uv installation.</p>
-</div>

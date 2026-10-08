@@ -1,4 +1,0 @@
-<div class="document">
-<p>Source tree contains no .m or .slx physics. Chemistry and component modules implement
-the SDRS reaction set and ODE protocol directly.</p>
-</div>

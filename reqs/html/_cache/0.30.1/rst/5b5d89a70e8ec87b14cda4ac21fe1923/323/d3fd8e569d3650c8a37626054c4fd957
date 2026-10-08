@@ -1,6 +1,0 @@
-<div class="document">
-<p>Individual component simulations and the integrated battery SHALL use the same implementation.</p>
-<p>The system SHALL NOT contain separate, simplified physics solely for Jupyter examples.</p>
-<p>Reduced-order versions MAY be implemented, but SHALL be explicitly identified and tested
-against the corresponding higher-fidelity models.</p>
-</div>

@@ -1,4 +1,0 @@
-<div class="document">
-<p>Module ironair.components.sensors SHALL provide class DynamicSensor.</p>
-<p>The model SHALL include finite response time, sensor drift, bias, and noise.</p>
-</div>

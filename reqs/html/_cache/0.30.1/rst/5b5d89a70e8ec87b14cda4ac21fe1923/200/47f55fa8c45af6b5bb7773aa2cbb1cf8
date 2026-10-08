@@ -1,5 +1,0 @@
-<div class="document">
-<p>Module ironair.components.enclosure SHALL provide class BatteryEnclosure.</p>
-<p>The model SHALL include enclosure temperature, ventilation, auxiliary electrical loads,
-and enclosure-level gas inventories.</p>
-</div>

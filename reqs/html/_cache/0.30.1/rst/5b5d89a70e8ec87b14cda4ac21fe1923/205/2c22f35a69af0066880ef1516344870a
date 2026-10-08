@@ -1,4 +1,0 @@
-<div class="document">
-<p>A single installable package is the integration boundary for notebooks, tests, and coupled simulation.
-The SDRS src/ layout takes precedence over the generic no-src-directory Cursor rule for this project.</p>
-</div>

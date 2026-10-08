@@ -1,3 +1,0 @@
-<div class="document">
-<p>make test-phase-1 through make test-phase-2 fail closed when the corresponding tests fail.</p>
-</div>

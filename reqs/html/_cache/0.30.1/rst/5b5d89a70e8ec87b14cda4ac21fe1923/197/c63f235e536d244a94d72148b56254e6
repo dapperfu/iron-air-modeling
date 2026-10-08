@@ -1,5 +1,0 @@
-<div class="document">
-<p>All requirements SHALL be maintained in StrictDoc .sdoc files.</p>
-<p>Markdown SHALL be used for supplementary explanatory design documents but SHALL NOT
-replace the authoritative requirements database.</p>
-</div>

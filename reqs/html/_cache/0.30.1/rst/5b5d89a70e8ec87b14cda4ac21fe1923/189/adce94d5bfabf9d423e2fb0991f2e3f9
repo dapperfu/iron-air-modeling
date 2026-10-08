@@ -1,5 +1,0 @@
-<div class="document">
-<p>Module ironair.components.inverter SHALL provide class GridInverter.</p>
-<p>The model SHALL include averaged electrical control dynamics, DC link interaction,
-and active/reactive power response.</p>
-</div>

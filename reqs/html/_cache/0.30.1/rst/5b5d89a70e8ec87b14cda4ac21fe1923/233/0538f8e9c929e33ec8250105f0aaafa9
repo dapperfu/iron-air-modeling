@@ -1,5 +1,0 @@
-<div class="document">
-<p>Every dynamic component SHALL implement rhs(self, t, y, inputs, context).</p>
-<p>The RHS SHALL be deterministic for a fixed state, time, input, and parameter configuration.</p>
-<p>It SHALL NOT modify component state through hidden side effects.</p>
-</div>

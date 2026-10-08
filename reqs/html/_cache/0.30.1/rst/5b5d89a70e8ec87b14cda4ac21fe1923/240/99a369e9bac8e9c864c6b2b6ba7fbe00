@@ -1,5 +1,0 @@
-<div class="document">
-<p>Module ironair.components.thermal SHALL provide class ThermalNetwork.</p>
-<p>States SHALL include thermal energy or temperature at relevant physical nodes.</p>
-<p>The model SHALL calculate conduction, convection, radiation, reaction heat, and cooling.</p>
-</div>

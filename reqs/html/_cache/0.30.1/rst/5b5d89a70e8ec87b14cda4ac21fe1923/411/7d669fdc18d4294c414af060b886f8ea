@@ -1,8 +1,0 @@
-<div class="document">
-<p>Module ironair.components.cell SHALL provide class IronAirCell.</p>
-<p>The cell SHALL couple iron electrode, air electrode, hydrogen evolution, electrolyte,
-separator, gas diffusion, current collectors, and thermal dynamics.</p>
-<p>The cell SHALL calculate instantaneous terminal voltage, current, power, SOC, and
-available capacity.</p>
-<p>The component SHALL solve coupled nonlinear electrochemical and electrical constraints.</p>
-</div>

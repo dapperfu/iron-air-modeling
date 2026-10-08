@@ -1,7 +1,0 @@
-<div class="document">
-<p>Module ironair.components.iron_electrode SHALL provide class IronElectrode.</p>
-<p>The component SHALL dynamically model metallic iron, Fe(OH)2, Fe3O4, active surface
-area, passivation thickness, porosity, electrode temperature, and irreversible
-active-material loss.</p>
-<p>The RHS SHALL calculate iron phase derivatives from the shared reaction network.</p>
-</div>

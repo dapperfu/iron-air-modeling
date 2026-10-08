@@ -1,6 +1,0 @@
-<div class="document">
-<p>Module ironair.components.separator SHALL provide class Separator.</p>
-<p>The model SHALL represent transient species transport, electrolyte saturation where
-applicable, degradation, and separator temperature.</p>
-<p>Ionic resistance SHALL be calculated from the instantaneous physical state.</p>
-</div>

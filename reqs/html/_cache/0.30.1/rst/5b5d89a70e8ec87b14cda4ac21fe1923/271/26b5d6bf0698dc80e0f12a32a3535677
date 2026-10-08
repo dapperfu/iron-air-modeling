@@ -1,6 +1,0 @@
-<div class="document">
-<p>All physical components SHALL implement ironair.ode.protocol.DynamicComponentProtocol
-and MAY inherit ironair.ode.component.DynamicComponent for shared validation.</p>
-<p>rhs(t, y, inputs, context) SHALL be a pure function of its arguments for a fixed
-parameter configuration.</p>
-</div>

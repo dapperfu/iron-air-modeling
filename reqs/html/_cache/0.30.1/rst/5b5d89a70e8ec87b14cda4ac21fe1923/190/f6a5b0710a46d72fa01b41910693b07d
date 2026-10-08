@@ -1,5 +1,0 @@
-<div class="document">
-<p>Module ironair.components.degradation SHALL provide class Degradation.</p>
-<p>The model SHALL represent irreversible material changes, catalyst decay, resistance
-growth, and active capacity loss.</p>
-</div>

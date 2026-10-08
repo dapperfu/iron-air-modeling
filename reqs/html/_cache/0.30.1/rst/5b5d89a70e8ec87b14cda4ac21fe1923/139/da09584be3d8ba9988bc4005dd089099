@@ -1,4 +1,0 @@
-<div class="document">
-<p>CoupledSystem accepts lumped and spatially discretized components. Spatial components
-document their discretization method and node count.</p>
-</div>

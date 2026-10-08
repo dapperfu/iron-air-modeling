@@ -1,5 +1,0 @@
-<div class="document">
-<p>Module ironair.components.hydrogen SHALL provide class HydrogenEvolution.</p>
-<p>States SHALL include hydrogen inventory and applicable interfacial or gas-transfer dynamics.</p>
-<p>The component SHALL couple hydrogen generation to charging current and electrode potential.</p>
-</div>

@@ -1,4 +1,0 @@
-<div class="document">
-<p>Every listed component has a DynamicComponent implementation that can be assembled into
-ironair.simulation.CoupledSystem and exchanges named physical flows.</p>
-</div>

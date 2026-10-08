@@ -1,7 +1,0 @@
-<div class="document">
-<p>Module ironair.components.grid SHALL provide class GridInterface.</p>
-<p>The grid SHALL support dynamic voltage and frequency disturbances, network interface
-equations, and configurable external-grid dynamic models.</p>
-<p>A prescribed grid voltage or frequency SHALL be treated as an external input, not an
-invented dynamic state.</p>
-</div>

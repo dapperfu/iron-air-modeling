@@ -1,4 +1,0 @@
-<div class="document">
-<p>Module ironair.components.dc_bus SHALL provide class DCBus.</p>
-<p>The component SHALL model DC link capacitor voltage and stored energy.</p>
-</div>

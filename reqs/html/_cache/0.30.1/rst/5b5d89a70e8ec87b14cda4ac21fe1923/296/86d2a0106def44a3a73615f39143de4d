@@ -1,6 +1,0 @@
-<div class="document">
-<p>Module ironair.components.electrolyte SHALL provide class Electrolyte.</p>
-<p>States SHALL include water inventory, dissolved species, electrolyte temperature,
-carbonation, and spatial concentration distributions where enabled.</p>
-<p>The model SHALL include concentration-dependent KOH physical properties.</p>
-</div>

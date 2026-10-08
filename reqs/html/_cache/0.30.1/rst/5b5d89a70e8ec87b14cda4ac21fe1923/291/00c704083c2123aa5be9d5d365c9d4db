@@ -1,7 +1,0 @@
-<div class="document">
-<p>Instantaneous constitutive laws (Ohmic drop, hydraulic orifice flow at a fixed
-position, Nernst potential) SHALL be algebraic.</p>
-<p>Dynamic states SHALL represent stored mass, charge, thermal energy, momentum, or
-explicit controller memory.</p>
-<p>Artificial lag SHALL NOT be added to algebraic laws.</p>
-</div>

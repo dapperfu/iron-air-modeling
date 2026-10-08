@@ -1,5 +1,0 @@
-<div class="document">
-<p>Module ironair.components.oxygen_evolution SHALL provide class OxygenEvolution.</p>
-<p>The component SHALL calculate oxygen evolution, catalyst activity, and applicable
-dynamic electrode states.</p>
-</div>

@@ -1,4 +1,0 @@
-<div class="document">
-<p>Estimator rhs and update methods accept only measurements and previous estimates,
-never plant.y hidden components.</p>
-</div>
