@@ -1,0 +1,567 @@
+[DOCUMENT]
+TITLE: IRONAIR-MATLAB System Requirements
+UID: DOC-IRONAIR-SRS
+VERSION: 1.0.0
+
+[REQUIREMENT]
+UID: SRS001
+TITLE: Software architecture
+STATEMENT: >>>
+The software SHALL implement a standalone, modular, pure-MATLAB, multi-physics
+iron-air battery model from reactions through grid interconnection. Components
+SHALL exchange explicit structures and SHALL expose configuration, states,
+outputs, diagnostics, auxiliary loads, and physical fault behavior.
+<<<
+
+[REQUIREMENT]
+UID: SRS001.1
+TITLE: Hierarchical battery representation
+STATEMENT: >>>
+The model SHALL represent reaction, electrode, cell, stack, module, enclosure,
+power block, complete battery energy storage system, and grid levels. Every
+level SHALL define configuration, interfaces, electrical aggregation,
+auxiliaries, and applicable faults.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS001
+
+[REQUIREMENT]
+UID: SRS001.2
+TITLE: Modular interfaces
+STATEMENT: >>>
+Every dynamic component SHALL implement
+``[dx, outputs, diagnostics] = component_name(t, x, inputs, p)``. Algebraic
+components SHALL publish a documented explicit signature. Configuration SHALL
+use scalar structures and named state-index maps. Global variables, hidden
+persistent physics state, and base-workspace dependencies SHALL NOT be used.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS001
+
+[REQUIREMENT]
+UID: SRS001.3
+TITLE: Simulation fidelity
+STATEMENT: >>>
+The model SHALL provide independently executable Level 1 lumped, Level 2
+distributed, and Level 3 detailed one-dimensional finite-volume fidelity.
+Higher levels SHALL include progressively distributed electrochemical,
+transport, thermal, balance-of-plant, morphology, multiphase, and degradation
+states. Higher fidelity SHALL recover lower-fidelity behavior under equivalent
+simplifying assumptions.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS001
+
+[REQUIREMENT]
+UID: SRS002
+TITLE: Physical constants and parameter database
+STATEMENT: >>>
+All physical constants, model coefficients, geometry, material properties,
+equipment data, controls, aging, grid, sensor, and fault parameters SHALL be
+defined explicitly with SI units, provenance classification, applicability,
+and valid range. Invalid values SHALL be rejected.
+<<<
+
+[REQUIREMENT]
+UID: SRS002.1
+TITLE: Central physical constants
+STATEMENT: >>>
+``ironair_physical_constants`` SHALL provide F, R, Avogadro, Boltzmann,
+elementary charge, reference temperature and pressure, gravity, molar masses,
+and electron stoichiometries at the specified values. Faraday capacities SHALL
+be derived from these values rather than duplicated.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS002
+
+[REQUIREMENT]
+UID: SRS002.2
+TITLE: Reference operating parameters
+STATEMENT: >>>
+``ironair_default_parameters`` SHALL include the specified initial temperature,
+ambient pressure and humidity, dry-air oxygen and carbon-dioxide fractions,
+6 mol/L KOH design concentration, initial SOC and SOH, illustrative nominal and
+equilibrium voltages, 100-hour target, and 1 MW illustrative power rating.
+Nominal voltage SHALL NOT replace instantaneous electrochemical voltage or
+kinetic parameters.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS002
+
+[REQUIREMENT]
+UID: SRS002.3
+TITLE: Complete parameter coverage
+STATEMENT: >>>
+Separate parameter groups SHALL cover electrodes, phases, catalysts, HER,
+electrolyte, separator, GDL, collectors, geometry, thermal and gas properties,
+liquid transport, fluid equipment, hierarchy, power electronics, protection,
+sensors, controls, grid, degradation, and faults. Literature data SHALL carry a
+reference identifier; examples SHALL be ASSUMED; unresolved empirical values
+SHALL be CALIBRATION_REQUIRED. Governing equations SHALL contain no unexplained
+numerical constants.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS002
+
+[REQUIREMENT]
+UID: SRS002.4
+TITLE: Material property functions
+STATEMENT: >>>
+Temperature- or composition-sensitive conductivity, density, viscosity, heat
+capacity, water activity, oxygen solubility and diffusivity, gas diffusivity,
+iron resistivity, thermal conductivity, and reaction-rate constants SHALL be
+functions with documented validity domains and explicit extrapolation policy.
+Unsupported correlations SHALL NOT be represented as validated data.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS002
+
+[REQUIREMENT]
+UID: SRS003
+TITLE: Iron electrode electrochemistry
+STATEMENT: >>>
+``ironair_metal_ode`` SHALL model reversible iron conversion, hydroxide and
+optional oxide phases, precipitation/dissolution, passivation, active area,
+utilization, porosity, conductivity, charge transfer, dissolution, HER,
+corrosion, irreversible loss, and temperature-dependent kinetics while
+conserving iron atoms.
+<<<
+
+[REQUIREMENT]
+UID: SRS003.1
+TITLE: Primary iron reaction
+STATEMENT: >>>
+The baseline reaction SHALL be ``Fe + 2OH- <-> Fe(OH)2 + 2e-`` with
+thermodynamically consistent equilibrium potential. Oxidation and reduction
+SHALL retain their distinct signed overpotentials and optional magnetite or
+higher oxidation pathways SHALL be separately parameterized.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS003
+
+[REQUIREMENT]
+UID: SRS003.2
+TITLE: Iron kinetics
+STATEMENT: >>>
+Detailed iron kinetics SHALL use stable, bounded complete Butler-Volmer
+evaluation with exchange current, separate transfer coefficients, temperature,
+activities, area, concentration polarization, and charge-transfer
+overpotential. A single Tafel approximation SHALL NOT replace detailed mode.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS003
+
+[REQUIREMENT]
+UID: SRS003.3
+TITLE: Iron inventory and morphology
+STATEMENT: >>>
+The model SHALL track metallic iron, ferrous hydroxide, magnetite, active area,
+electrode porosity, passivation thickness, and iron SOH. All phase pathways
+SHALL assemble into an iron-conserving inventory with physically valid volume
+and area relationships.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS003
+
+[REQUIREMENT]
+UID: SRS003.4
+TITLE: Hydrogen evolution
+STATEMENT: >>>
+HER SHALL follow ``2H2O + 2e- -> H2 + 2OH-`` and depend on electrode potential,
+kinetics, temperature, and water availability. Hydrogen SHALL couple to charge
+current, gas inventory, ventilation, accumulation, and Coulombic efficiency.
+Only reduced fidelity MAY use a documented constant-fraction approximation.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS003
+
+[REQUIREMENT]
+UID: SRS004
+TITLE: Air electrode
+STATEMENT: >>>
+``ironair_air_electrode_ode`` SHALL model ORR, OER, oxygen pressure,
+gas/dissolved transport, catalyst condition, flooding/drying, hydrophobicity,
+degradation, activation and transport polarization, electrolyte concentration,
+and thermal feedback.
+<<<
+
+[REQUIREMENT]
+UID: SRS004.1
+TITLE: Oxygen reduction
+STATEMENT: >>>
+ORR SHALL implement ``O2 + 2H2O + 4e- -> 4OH-``. Oxygen consumption SHALL
+follow Faraday's law and local oxygen activity, temperature, and electrode
+condition.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS004
+
+[REQUIREMENT]
+UID: SRS004.2
+TITLE: Oxygen evolution
+STATEMENT: >>>
+OER SHALL implement ``4OH- -> O2 + 2H2O + 4e-``. Charging oxygen generation
+and OER overpotential SHALL be tracked independently from ORR.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS004
+
+[REQUIREMENT]
+UID: SRS004.3
+TITLE: Air electrode configurations
+STATEMENT: >>>
+The model SHALL support bifunctional and separate ORR/OER electrodes, optional
+isolation switching, electrode-specific catalysts and degradation, inactive
+exposure, and parasitic shuttle reactions.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS004
+
+[REQUIREMENT]
+UID: SRS004.4
+TITLE: Oxygen limitation
+STATEMENT: >>>
+The model SHALL calculate oxygen transport limiting current. Current demand
+above available electrochemical current SHALL be limited or reported
+infeasible; unlimited oxygen consumption SHALL NOT be permitted.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS004
+
+[REQUIREMENT]
+UID: SRS005
+TITLE: Electrolyte chemistry
+STATEMENT: >>>
+``ironair_electrolyte_ode`` SHALL support flooded aqueous KOH and track water,
+KOH, constrained ionic species, dissolved oxygen and iron, carbonate, volume,
+density, viscosity, conductivity, temperature, concentration, and optional gas
+void fraction.
+<<<
+
+[REQUIREMENT]
+UID: SRS005.1
+TITLE: Electrolyte transport
+STATEMENT: >>>
+Species transport SHALL include diffusion, migration, convection, electrode
+flux, precipitation, and dissolution. Spatial modes SHALL use an explicitly
+discretized Nernst-Planck or documented concentrated-solution formulation and
+shall enforce electroneutrality rather than unconstrained K+ and OH-
+inventories.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS005
+
+[REQUIREMENT]
+UID: SRS005.2
+TITLE: Carbonation
+STATEMENT: >>>
+Atmospheric CO2 uptake and alkaline carbonation SHALL calculate carbonate
+accumulation, alkalinity redistribution, conductivity impact, degradation, and
+optional precipitation through an explicit equilibrium or reaction network.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS005
+
+[REQUIREMENT]
+UID: SRS005.3
+TITLE: Electrolyte concentration effects
+STATEMENT: >>>
+KOH concentration SHALL affect conductivity, oxygen solubility, kinetics,
+overpotential, viscosity, pumping, water activity, and operating limits.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS005
+
+[REQUIREMENT]
+UID: SRS005.4
+TITLE: Water balance
+STATEMENT: >>>
+The model SHALL conserve water across reaction, evaporation, humidification,
+transport, makeup, leak, and temperature-dependent vapor flows. Only explicit
+boundary flows may open the balance.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS005
+
+[REQUIREMENT]
+UID: SRS006
+TITLE: Separator and gas diffusion layer
+STATEMENT: >>>
+The separator SHALL calculate ionic resistance, concentration gradients,
+effective porosity/tortuosity, saturation, crossover, thermal transport,
+degradation, and leakage. The GDL SHALL calculate oxygen diffusivity, pressure
+drop, saturation/flooding, permeability, interfacial transfer, and oxygen
+accessibility, separating transport from activation polarization.
+<<<
+
+[REQUIREMENT]
+UID: SRS007
+TITLE: Cell electrical model
+STATEMENT: >>>
+``ironair_cell_model`` SHALL integrate electrochemical components and calculate
+equilibrium and open-circuit voltage, signed activation/ohmic/concentration
+losses, current, power, heat terms, efficiencies, SOC, SOH, and usable
+capacity.
+<<<
+
+[REQUIREMENT]
+UID: SRS007.1
+TITLE: Cell voltage formulation
+STATEMENT: >>>
+With discharge-positive current, cell voltage SHALL equal equilibrium voltage
+minus consistently signed kinetic, concentration, and ohmic losses. Charging
+loss polarity and continuous formulations SHALL be physically correct.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS007
+
+[REQUIREMENT]
+UID: SRS007.2
+TITLE: State of charge
+STATEMENT: >>>
+SOC SHALL derive from reversible chemical inventory and account for competing
+products, HER diversion, degradation, and self-discharge. Terminal voltage
+SHALL NOT be the sole SOC measure.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS007
+
+[REQUIREMENT]
+UID: SRS007.3
+TITLE: Charge conservation
+STATEMENT: >>>
+Terminal current SHALL equal the signed sum of Faradaic partial currents and
+enabled capacitive current. Rates SHALL follow Faraday's law and no component
+may independently create or destroy charge.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS007
+
+[REQUIREMENT]
+UID: SRS007.4
+TITLE: Double-layer capacitance
+STATEMENT: >>>
+Configurable electrode double-layer capacitance SHALL represent current steps,
+voltage transients, switching, rest relaxation, and fast perturbations.
+Detailed electrochemical voltage SHALL NOT jump instantaneously when
+capacitance is nonzero.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS007
+
+[REQUIREMENT]
+UID: SRS008
+TITLE: Thermal model
+STATEMENT: >>>
+``ironair_thermal_ode`` SHALL conserve energy across iron, air electrode,
+electrolyte, cell, module, ambient, coolant, and heat exchanger nodes. It SHALL
+include Joule, activation, reversible, and parasitic heat; conduction,
+convection, material radiation, equipment heat, environment, heat exchange,
+cooling controls, explicit properties, and local-temperature kinetic feedback.
+<<<
+
+[REQUIREMENT]
+UID: SRS009
+TITLE: Air management system
+STATEMENT: >>>
+``ironair_air_system_ode`` SHALL model intake, filter, blower, manifold, ducts,
+GDL path, humidity, oxygen consumption and generation, exhaust, ventilation,
+hydrogen dilution, and optional CO2 scrubbing with fan curves, dynamics,
+electrical power, pressure losses, gas properties, loading, and oxygen balance.
+Airflow limits SHALL produce starvation and OER SHALL be a separate source.
+<<<
+
+[REQUIREMENT]
+UID: SRS010
+TITLE: Electrolyte recirculation
+STATEMENT: >>>
+``ironair_electrolyte_flow_ode`` SHALL model reservoir, pump/motor, piping,
+valves, restrictions, pressure loss, heat exchange, makeup, leaks, and
+measurement. Pump power SHALL follow flow, pressure, and efficiency; flow
+regime and properties SHALL affect pressure loss; finite-volume transport SHALL
+conserve every electrolyte species.
+<<<
+
+[REQUIREMENT]
+UID: SRS011
+TITLE: Stack module and enclosure
+STATEMENT: >>>
+Stack, module, and enclosure models SHALL represent series/parallel topology,
+voltage variation, shared paths, busbars, mismatch, current distribution,
+thermal coupling, cell faults, shared fluids and air, controls, protection,
+sensors, environmental loads, auxiliaries, ventilation, isolation, and
+shutdown. Representative grouping SHALL preserve charge, energy, resistance,
+and power.
+<<<
+
+[REQUIREMENT]
+UID: SRS012
+TITLE: Power electronics
+STATEMENT: >>>
+Pure-MATLAB DC-bus, bidirectional converter, inverter, transformer, and
+protection models SHALL represent capacitance, limits, average dynamics,
+efficiency, thermal losses, P/Q, impedance, grid quantities, power factor, and
+protection. Converter dynamics SHALL be separated from slow chemistry and
+energy accounting SHALL distinguish electrochemical DC, bus, AC, auxiliaries,
+grid import, and grid export.
+<<<
+
+[REQUIREMENT]
+UID: SRS013
+TITLE: Grid interconnection
+STATEMENT: >>>
+The grid model and ``ironair_der_ride_through`` SHALL support normal operation,
+voltage/frequency disturbances, P/Q commands, volt-var, frequency-watt, ramp
+limits, disconnect/reconnect, and faults. Versioned non-certifying standards
+configuration SHALL define mandatory, permissive, and trip regions with
+time-qualified trip and reconnection behavior rather than static windows.
+<<<
+
+[REQUIREMENT]
+UID: SRS014
+TITLE: Supervisory controls
+STATEMENT: >>>
+The pure-MATLAB controller SHALL implement OFF, INITIALIZING, SELF_TEST, IDLE,
+PRECHARGE, CHARGING, DISCHARGING, both directional transitions, REST,
+THERMAL_DERATING, CURRENT_LIMITING, OXYGEN_LIMITING, ELECTROLYTE_FAULT,
+GRID_FAULT, EMERGENCY_SHUTDOWN, MAINTENANCE, and RESTART. Explicit guards,
+actions, reset behavior, physical measurements, priorities, hysteresis,
+qualification timers, anti-chatter, and latches SHALL govern transitions.
+<<<
+
+[REQUIREMENT]
+UID: SRS015
+TITLE: State estimation
+STATEMENT: >>>
+The estimator SHALL publish true and estimated SOC/SOH, available power and
+energy, hydrogen generation, and active iron. It SHALL provide Faradaic
+inventory and measured current/voltage/temperature model-based methods with
+noise and uncertainty. Observer mode SHALL NOT access true internal states.
+<<<
+
+[REQUIREMENT]
+UID: SRS016
+TITLE: Degradation and aging
+STATEMENT: >>>
+``ironair_degradation_ode`` SHALL configurably represent passivation,
+irreversible iron loss, morphology/area change, catalyst loss, flooding,
+carbonation, corrosion, HER loss, separator degradation, resistance growth,
+capacity fade, and calendar/cycle aging as functions of physical conditions.
+Reversible changes SHALL be distinct from irreversible degradation and
+empirical coefficients SHALL be calibration-dependent.
+<<<
+
+[REQUIREMENT]
+UID: SRS017
+TITLE: Fault model
+STATEMENT: >>>
+Deterministic fault injection SHALL physically modify behavior for passivation,
+oxygen starvation, fan/pump/cooling failures, leaks, abnormal concentration,
+water loss, contamination, carbonate, hydrogen, cell short/open/resistance,
+sensor failures/bias/drift, converter and DC-bus faults, grid voltage/frequency
+faults, communication loss, and controller failure. Onset, detection,
+mitigation, and recovery SHALL be recorded.
+<<<
+
+[REQUIREMENT]
+UID: SRS018
+TITLE: Numerical integration
+STATEMENT: >>>
+``ironair_system_ode`` SHALL assemble the coupled system for deterministic
+base-MATLAB ode15s, appropriate ode45, or correctly formulated ode15i/mass
+matrix integration. Custom Newton/fzero algebraic closure, tolerances,
+state-specific absolute tolerances, sparsity, maximum step, diagnostics,
+events, zero crossings, conservation residuals, failure recovery, and
+constraint detection SHALL be provided. Significant negative inventories SHALL
+fail rather than be silently clamped and hybrid transitions SHALL be segmented.
+<<<
+
+[REQUIREMENT]
+UID: SRS019
+TITLE: Thermodynamic consistency
+STATEMENT: >>>
+Chemical energy, Gibbs free energy, enthalpy, electrical work, reversible and
+irreversible heat, stored thermal energy, and environmental transfer SHALL be
+distinct. Nernst potentials SHALL use documented activities and temperature.
+Thermal and electrochemical calculations SHALL share reaction rates and
+inventories and SHALL NOT equate enthalpy, Gibbs energy, and electrical energy.
+<<<
+
+[REQUIREMENT]
+UID: SRS020
+TITLE: Results and data recording
+STATEMENT: >>>
+Every simulation SHALL return configuration, parameter identifier, time,
+states, component outputs, electrical/thermal/electrolyte/air performance,
+controller and fault history, solver diagnostics, conservation residuals,
+warnings, and completion status. Results SHALL save to MAT files, use base
+graphics, support headless execution, and be reproducible with specified seeds.
+<<<
+
+[REQUIREMENT]
+UID: SRS021
+TITLE: Model assumptions and traceability
+STATEMENT: >>>
+Major equations SHALL document source, assumptions, validity, inputs, outputs,
+states, numerical method, limitations, references, and tests. Every requirement
+SHALL trace to implementation, test, verification method, and completion
+status. A function's existence alone SHALL NOT establish completion.
+<<<
+
+[REQUIREMENT]
+UID: SRS022
+TITLE: System-wide configuration
+STATEMENT: >>>
+Central profiles SHALL include baseline_research, single_cell, small_stack,
+prototype_module, grid_scale_1MW, high_temperature, low_temperature, high_KOH,
+low_KOH, degraded_cell, separate_ORR_OER, bifunctional_electrode,
+forced_electrolyte_circulation, and passive_electrolyte. Each SHALL inherit the
+baseline and apply documented overrides without source editing.
+<<<
+
+[REQUIREMENT]
+UID: SRS023
+TITLE: Physical and numerical validation
+STATEMENT: >>>
+Acceptance tests SHALL define thresholds and verify Fe, O, H, K, C, charge,
+electron, electroneutrality, water, thermal energy, and electrical energy
+balances; current/power polarity; stoichiometry; zero current, oxygen
+starvation, zero flow, parameter response, tolerance refinement, and fidelity
+reduction. Absolute and normalized residuals SHALL be reported and failed
+conservation SHALL fail validation.
+<<<
+
+[REQUIREMENT]
+UID: SRS024
+TITLE: Documentation
+STATEMENT: >>>
+The repository SHALL provide README, architecture, physics, electrochemistry,
+thermodynamics, controls, numerics, parameters, scenarios, validation,
+assumptions, requirements traceability, and equation traceability documents.
+README SHALL show default, scenario, and complete test commands. Every public
+MATLAB function SHALL document inputs, outputs, SI units, assumptions, and
+requirement IDs.
+<<<
