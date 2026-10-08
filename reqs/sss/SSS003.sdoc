@@ -38,8 +38,10 @@ US12308414B2 rechargeable metal-air operation; EP4602674A1 charge through OER an
 HER competition on thick iron electrodes.
 <<<
 COMMENT: >>>
-Each listed scenario has a unique IA-SCN-CHG-* ID, Python scenario function, notebook,
-and seaborn plots.
+Changed because ironair.scenarios is empty and not every IA-SCN-CHG-* ID has a
+notebook. Executable charge coverage is plant_sim/91_ChargeDischarge.ipynb and
+plant_sim.scenarios.mission.charge_discharge_inputs. Remaining CHG IDs are design
+allocations until dedicated notebooks exist.
 <<<
 
 [REQUIREMENT]
