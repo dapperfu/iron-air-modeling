@@ -9,14 +9,14 @@
 
 ## TODOs
 - [x] Save this accepted plan under `plans/`, then track and commit it according to repository rules.
-- [ ] Create and validate authoritative StrictDoc requirements, trace relations, project scaffolding, state-map utilities, and resolution profiles.
-- [ ] Implement constants, metadata-rich parameters, property correlations, configuration inheritance, and the canonical reaction/conservation network.
-- [ ] Implement and verify Level 1-3 electrochemical cell components and all FE through CELL equations.
-- [ ] Implement and verify thermal, air, hydrogen, electrolyte circulation, and heat-exchanger subsystems.
-- [ ] Implement and verify stack-to-BESS aggregation, DC bus, converters, inverter, transformer, and protection.
-- [ ] Implement and verify grid behavior, ride-through, supervisory control, estimation, degradation, sensors, and physical fault injection.
-- [ ] Assemble the coupled solver and verify all fidelity modes and principal operating/fault scenarios.
-- [ ] Complete results tooling, documentation, traceability, all-equation tests, conservation/fidelity/tolerance checks, and prohibited-dependency audit.
+- [x] Create and validate authoritative StrictDoc requirements, trace relations, project scaffolding, state-map utilities, and resolution profiles.
+- [x] Implement constants, metadata-rich parameters, property correlations, configuration inheritance, and the canonical reaction/conservation network.
+- [x] Implement and verify Level 1-3 electrochemical cell components and all FE through CELL equations.
+- [x] Implement and verify thermal, air, hydrogen, electrolyte circulation, and heat-exchanger subsystems.
+- [x] Implement and verify stack-to-BESS aggregation, DC bus, converters, inverter, transformer, and protection.
+- [x] Implement and verify grid behavior, ride-through, supervisory control, estimation, degradation, sensors, and physical fault injection.
+- [x] Assemble the coupled solver and verify all fidelity modes and principal operating/fault scenarios.
+- [x] Complete results tooling, documentation, traceability, all-equation tests, conservation/fidelity/tolerance checks, and prohibited-dependency audit.
 
 ## Phased implementation
 
