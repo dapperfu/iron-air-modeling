@@ -140,7 +140,12 @@ class GridInverter(RHSComponent):
 
         def out(t, y, inputs, context):  # type: ignore[no-untyped-def]
             P, Q = y
-            return {"P_ac_W": float(P), "Q_var": float(Q), "P_dc_W": float(P) / p.inverter_eta if P >= 0 else float(P) * p.inverter_eta, "t_s": t}
+            return {
+                "P_ac_W": float(P),
+                "Q_var": float(Q),
+                "P_dc_W": float(P) / p.inverter_eta if P >= 0 else float(P) * p.inverter_eta,
+                "t_s": t,
+            }
 
         super().__init__(
             name="inverter",
