@@ -375,7 +375,8 @@ UID: IA-AIR-001
 STATUS: Active
 TITLE: Air handling ODE
 STATEMENT: >>>
-Module ironair.components.air_system SHALL provide class AirSystem.
+Module plant_sim.components.air_system SHALL provide class AirSystem
+(notebooks plant_sim/22_VesselLidAir.ipynb and plant_sim/32_AirHandling.ipynb).
 
 The component SHALL include gas inventories, manifold pressure dynamics, oxygen
 concentration, humidity, and airflow coupling.
@@ -392,6 +393,10 @@ depth-stacked ORR sections is Claim 1.
 <<<
 COMMENT: >>>
 Manifold pressure rises when inlet mass flow exceeds outlet plus consumption.
+
+Changed because ironair.components.air_system does not exist.
+plant_sim.components.air_system.AirSystem implements manifold pressure, O2/N2/H2O/CO2
+inventories used by VesselLidAir and the full plant.
 <<<
 RELATIONS:
 - TYPE: Parent

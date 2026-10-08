@@ -1,5 +1,7 @@
 """Air handling and fan ODEs (IA-AIR-001, IA-AIR-002).
 
+@relation(IA-AIR-001, scope=module)
+
 Natural breathing, forced supply, sparging into submerged ORR, cascading
 stacked-core flow, snorkel mixed-phase channels (US Claims 9, 14-15).
 """
@@ -54,6 +56,10 @@ def air_rhs(
     u: Mapping[str, float],
     p: PlantParams,
 ) -> NDArray[np.float64]:
+    """Manifold pressure and gas-inventory RHS.
+
+    @relation(IA-AIR-001, scope=function)
+    """
     p_man, n_O2, n_N2, n_w, n_CO2 = y
     T = float(u.get("T_K", p.T_ep_sim_K))
     mdot_in = float(u.get("mdot_air_kg_s", 0.0))
@@ -98,6 +104,11 @@ def air_outputs(
 
 
 class AirSystem(RHSComponent):
+    """IA-AIR-001 air handling manifold.
+
+    @relation(IA-AIR-001, scope=class)
+    """
+
     def __init__(self, p: PlantParams | None = None, y0: NDArray[np.float64] | None = None) -> None:
         p = p or default_params()
         y0 = air_y0(p) if y0 is None else y0
