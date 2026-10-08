@@ -19,7 +19,7 @@ Positive iron and magnetite rates are anodic (oxidation).
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import IntEnum
 
 import numpy as np
@@ -131,9 +131,9 @@ class ReactionNetwork:
     @relation(IA-CHM-010, scope=class)
     """
 
-    S: NDArray[np.float64] = STOICHIOMETRY
-    B: NDArray[np.float64] = BOUNDARY_MAP
-    electrons: NDArray[np.float64] = ELECTRONS_PRODUCED
+    S: NDArray[np.float64] = field(default_factory=lambda: STOICHIOMETRY.copy())
+    B: NDArray[np.float64] = field(default_factory=lambda: BOUNDARY_MAP.copy())
+    electrons: NDArray[np.float64] = field(default_factory=lambda: ELECTRONS_PRODUCED.copy())
 
     def inventory_derivative(
         self,
