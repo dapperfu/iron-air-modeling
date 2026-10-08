@@ -497,14 +497,22 @@ UID: IA-FLD-004
 STATUS: Active
 TITLE: Valve ODE
 STATEMENT: >>>
-Module ironair.components.valve SHALL provide class Valve.
+Module plant_sim.components.hydraulics SHALL provide class Valve
+(notebook plant_sim/31_Hydraulics.ipynb).
 
 The component SHALL model actuator response, valve position, and flow-dependent
 hydraulic characteristics.
 <<<
 COMMENT: >>>
 Position is a dynamic actuator state. Flow is algebraic in position and pressure drop.
+
+Changed because ironair.components.valve does not exist.
+plant_sim.components.hydraulics.Valve implements first-order actuator position with
+algebraic orifice flow.
 <<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-021
 
 [REQUIREMENT]
 UID: IA-FLD-005

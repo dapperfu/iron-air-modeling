@@ -3,6 +3,7 @@
 @relation(IA-FLD-001, scope=module)
 @relation(IA-FLD-002, scope=module)
 @relation(IA-FLD-003, scope=module)
+@relation(IA-FLD-004, scope=module)
 """
 
 from __future__ import annotations
@@ -175,11 +176,20 @@ class Reservoir(RHSComponent):
 
 
 class Valve(RHSComponent):
+    """IA-FLD-004 electrolyte valve.
+
+    @relation(IA-FLD-004, scope=class)
+    """
+
     def __init__(self, p: PlantParams | None = None) -> None:
         p = p or default_params()
         y0 = np.array([0.0], dtype=np.float64)
 
         def rhs(t, y, inputs, context):  # type: ignore[no-untyped-def]
+            """Valve actuator-position RHS.
+
+            @relation(IA-FLD-004, scope=function)
+            """
             pos = y[0]
             cmd = float(np.clip(inputs.get("valve_cmd", 0.0), 0.0, 1.0))
             return np.array([(cmd - pos) / p.valve_tau_s], dtype=np.float64)
