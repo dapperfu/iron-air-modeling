@@ -137,11 +137,11 @@ TITLE: Mapping patented architectures onto components
 
 [TEXT]
 STATEMENT: >>>
-US12308414B2 Claim 1 stacked submerged ORR is IronAirCell plus GasDiffusionLayer
+US12308414B2 Claim 1 stacked submerged ORR is DualElectrodeCell plus GasDiffusionLayer
 plus AirSystem with a vertical stack of ORR sections. EP4602674A1 Claim 1
-channeled iron plus interdigitated OER is IronElectrode plus OxygenEvolution with
-channel geometry parameters. Dual-electrode switching is SupervisoryController
-mode plus algebraic electrical connection, not a second chemistry module.
+channeled iron plus interdigitated OER is IronAnode plus OxygenEvolution with
+channel geometry parameters. Dual-electrode switching is PlantModel mode plus
+algebraic electrical connection, not a second chemistry module.
 <<<
 
 [REQUIREMENT]
@@ -149,8 +149,8 @@ UID: IA-SDD-006
 STATUS: Active
 TITLE: Dual-electrode electrical design
 STATEMENT: >>>
-IronAirCell SHALL expose separate ORR and OER electrical ports. SupervisoryController
-SHALL connect iron-OER-source in charge and iron-ORR-load in discharge
+DualElectrodeCell SHALL expose separate ORR and OER electrical ports. PlantModel
+modes SHALL connect iron-OER-source in charge and iron-ORR-load in discharge
 (EP4602674A1 [0049]; US12308414B2 FIGS. 5A-5B).
 
 When isolated, ORR potential SHALL NOT be forced to the OER operating potential.
@@ -159,6 +159,10 @@ Bifunctional single-air-electrode mode SHALL be an explicit reduced-order flag.
 RATIONALE: >>>
 Protects carbon/PTFE ORR layers from OER potentials (US12308414B2). Matches
 EP4602674A1 switch 116.
+<<<
+COMMENT: >>>
+Changed because IronAirCell and SupervisoryController classes do not exist.
+DualElectrodeCell and PlantModel.algebraic implement the dual-electrode switch.
 <<<
 RELATIONS:
 - TYPE: Parent
