@@ -1710,6 +1710,9 @@ and about 300 h discharge with a 5 cm by 5 cm anode cross-section
 COMMENT: >>>
 Charge duration and discharge duration are independently tunable. SOC and Faraday
 accounting remain consistent over both windows.
+
+Changed because this case is implemented in plant_sim/91_ChargeDischarge.ipynb
+via independent t_chg_s / t_dch_s, not ironair.scenarios.
 <<<
 RELATIONS:
 - TYPE: Parent

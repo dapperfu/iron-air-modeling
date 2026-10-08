@@ -46,6 +46,7 @@ def charge_discharge_inputs(t_chg_s: float, t_dch_s: float, p: PlantParams | Non
 
     @relation(IA-NBK-007, scope=function)
     @relation(IA-NBK-008, scope=function)
+    @relation(IA-SCN-PAT-ASYM, scope=function)
     """
     p = p or default_params()
     I = p.I_discharge_100h_A
