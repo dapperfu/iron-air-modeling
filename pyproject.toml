@@ -77,8 +77,18 @@ exclude_lines = [
 [tool.ruff]
 line-length = 120
 target-version = "py310"
-src = ["src", "tests"]
+src = ["src", "plant_sim"]
 extend-include = ["*.ipynb"]
+exclude = [
+    ".git",
+    ".venv",
+    "venv_iron-air-modeling",
+    "output",
+    "docs",
+    ".strictdoc_build",
+    "htmlcov",
+    "plant_sim/.ipynb_checkpoints",
+]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "SIM", "N"]

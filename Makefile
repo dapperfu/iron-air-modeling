@@ -12,12 +12,14 @@ STRICTDOC_STAGING := .strictdoc_build
 STRICTDOC_PAGES := docs
 PAGES_PORT := 8000
 
-.PHONY: help venv install test test-phase-1 test-phase-2 test-coverage lint typecheck \
+FORMAT_PATHS := src plant_sim
+
+.PHONY: help venv install test test-phase-1 test-phase-2 test-coverage lint format typecheck \
 	strictdoc-validate strictdoc-generate strictdoc-export strictdoc-serve strictdoc-tree \
 	strictdoc-help strictdoc-init pre-commit-install pre-commit security serve
 
 help:
-	@echo "IRONAIR targets: venv install test lint typecheck strictdoc-generate serve"
+	@echo "IRONAIR targets: venv install test lint format typecheck strictdoc-generate serve"
 
 venv:
 	python3 -m venv $(VENV)
@@ -44,6 +46,9 @@ test-coverage:
 lint:
 	$(RUFF) check src tests
 	$(RUFF) format --check src tests
+
+format:
+	$(RUFF) format $(FORMAT_PATHS)
 
 typecheck:
 	$(MYPY) src/ironair
