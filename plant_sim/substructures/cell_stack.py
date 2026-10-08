@@ -1,4 +1,7 @@
-"""20 Cell stack: series cells + stacked submerged ORR equal-ΔP geometry (US Claim 1)."""
+"""20 Cell stack: series cells + stacked submerged ORR equal-ΔP geometry (US Claim 1).
+
+@relation(IA-STK-001, scope=module)
+"""
 
 from __future__ import annotations
 
@@ -14,6 +17,11 @@ from plant_sim.substructures.dual_electrode_cell import DualElectrodeCell
 
 
 class CellStack:
+    """IA-STK-001 series stack plus equal-dP ORR geometry.
+
+    @relation(IA-STK-001, scope=class)
+    """
+
     def __init__(self, p: PlantParams | None = None, n_cells: int = 6) -> None:
         self.params = p or default_params()
         self.n_cells = n_cells
@@ -24,7 +32,10 @@ class CellStack:
         return stacked_orr_flows(self.params, Q_total, compensate, self.params.T_ep_sim_K)
 
     def rhs(self, t: float, y: NDArray[np.float64], u: Mapping[str, float] | None = None) -> NDArray[np.float64]:
-        """n_cells copies of the dual-electrode cell with shared current (series)."""
+        """n_cells copies of the dual-electrode cell with shared current (series).
+
+        @relation(IA-STK-001, scope=function)
+        """
         n = self.cell.n_states
         dy = np.zeros_like(y)
         u = u or {}

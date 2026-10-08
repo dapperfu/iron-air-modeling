@@ -570,7 +570,8 @@ UID: IA-STK-001
 STATUS: Active
 TITLE: Stack ODE
 STATEMENT: >>>
-Module ironair.components.stack SHALL provide class BatteryStack.
+Module plant_sim.substructures.cell_stack SHALL provide class CellStack
+(notebooks plant_sim/20_CellStack.ipynb and plant_sim/96_EqualPressureDropORR.ipynb).
 
 The component SHALL aggregate cell states while preserving cell-level variations and
 electrical current conservation.
@@ -586,6 +587,10 @@ US12308414B2 Claims 3 and 5, FIGS. 13 and 27-34; EP4602674A1 Claims 18-19.
 <<<
 COMMENT: >>>
 Series stack current is identical through cells. Terminal voltage is the sum of cell voltages.
+
+Changed because ironair.components.stack.BatteryStack does not exist.
+plant_sim.substructures.cell_stack.CellStack series-aggregates DualElectrodeCell and
+exposes US Claim 1 equal-dP stacked ORR geometry.
 <<<
 RELATIONS:
 - TYPE: Parent
