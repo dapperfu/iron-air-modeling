@@ -98,7 +98,9 @@ def electrolyte_rhs(
     dn_OH += n_OH_fill
     dn_H2O += n_H2O_fill
     dV = fill_m3_s
-    ds = 0.15 * fill_m3_s / max(p.A_geom_m2 * p.L_anode_m * p.vf_electrolyte_charged, 1e-8) + 0.02 * (1.0 - s_wet) * (1.0 if V > 1e-4 else 0.0)
+    ds = 0.15 * fill_m3_s / max(p.A_geom_m2 * p.L_anode_m * p.vf_electrolyte_charged, 1e-8) + 0.02 * (1.0 - s_wet) * (
+        1.0 if V > 1e-4 else 0.0
+    )
     if s_wet >= 1.0 and ds > 0.0:
         ds = 0.0
 
@@ -146,7 +148,9 @@ class Electrolyte(RHSComponent):
     @relation(IA-ELY-001, scope=class)
     """
 
-    def __init__(self, p: PlantParams | None = None, y0: NDArray[np.float64] | None = None, filled: bool = True) -> None:
+    def __init__(
+        self, p: PlantParams | None = None, y0: NDArray[np.float64] | None = None, filled: bool = True
+    ) -> None:
         p = p or default_params()
         y0 = default_y0(p, filled=filled) if y0 is None else y0
 
