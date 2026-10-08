@@ -1769,6 +1769,9 @@ Operate pleated iron and pleated OER with channels between pleats
 COMMENT: >>>
 Channels exist between pleats. OER occupies channels perpendicular to the ORR
 plane. Dual-face OER is a selectable option.
+
+Changed because this layout is ChanneledElectrode(layout="pleated") in plant_sim,
+not an ironair.scenarios function.
 <<<
 RELATIONS:
 - TYPE: Parent

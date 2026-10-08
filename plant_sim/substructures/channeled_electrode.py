@@ -2,6 +2,7 @@
 
 @relation(IA-SCN-PAT-INTERDIG, scope=module)
 @relation(IA-SCN-PAT-SPIRAL, scope=module)
+@relation(IA-SCN-PAT-PLEAT, scope=module)
 """
 
 from __future__ import annotations
@@ -40,6 +41,7 @@ class ChanneledElectrode:
 
     @relation(IA-SCN-PAT-INTERDIG, scope=class)
     @relation(IA-SCN-PAT-SPIRAL, scope=class)
+    @relation(IA-SCN-PAT-PLEAT, scope=class)
     """
 
     params: PlantParams | None = None
