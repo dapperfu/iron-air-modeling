@@ -237,12 +237,16 @@ UID: IA-SDD-010
 STATUS: Active
 TITLE: Spatial discretization of thick electrodes
 STATEMENT: >>>
-When high-fidelity mode is selected, IronElectrode SHALL discretize through-plane
+When high-fidelity mode is selected, IronAnode SHALL discretize through-plane
 or in-plane ionic path length so that front-versus-back HER competition of
 EP4602674A1 [0046]-[0047] is representable.
 
 Interdigitated OER SHALL shorten the modeled ionic path to the entire iron area
 relative to planar OER at the same loading (FIGS. 19-24).
+<<<
+COMMENT: >>>
+Changed because IronElectrode does not exist. IronAnode plus her_current_split_A
+represent path-length HER competition in plant_sim.
 <<<
 RELATIONS:
 - TYPE: Parent
