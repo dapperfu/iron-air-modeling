@@ -174,7 +174,8 @@ Grid scenarios SHALL cover LODES services from milliseconds to seasonal windows
 as framed in US12308414B2 Background and FIGS. 94-102.
 <<<
 COMMENT: >>>
-Each listed scenario has a unique IA-SCN-GRD-* ID, Python scenario function, and notebook.
+Changed because ironair.scenarios is empty. Executable grid coverage is
+plant_sim/92_GridServices.ipynb. Remaining GRD IDs are design allocations.
 <<<
 
 [REQUIREMENT]

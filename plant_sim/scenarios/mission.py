@@ -65,6 +65,10 @@ def charge_discharge_inputs(t_chg_s: float, t_dch_s: float, p: PlantParams | Non
 
 
 def grid_services_inputs(p: PlantParams | None = None):
+    """Curtailment charge, rest, and load-following discharge.
+
+    @relation(IA-NBK-014, scope=function)
+    """
     p = p or default_params()
 
     def u(t: float) -> dict[str, float]:
