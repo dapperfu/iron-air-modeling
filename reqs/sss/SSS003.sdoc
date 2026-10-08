@@ -1668,6 +1668,9 @@ Discharge and charge a packed bed of direct reduced iron pellets
 COMMENT: >>>
 Iron inventory oxidizes to Fe(OH)2 / Fe3O4 on discharge. Pellet-bed porosity
 absorbs discharge volume increase (EP4602674A1 [0043]).
+
+Changed because this case is implemented in plant_sim/22_VesselLidAir.ipynb
+(dri=True packed-bed porosity), not ironair.scenarios.
 <<<
 RELATIONS:
 - TYPE: Parent

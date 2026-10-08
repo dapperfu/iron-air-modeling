@@ -37,6 +37,7 @@ class VesselLidAir(CoupledSubstructure):
     """IA-ENC-001 vessel, lid, and secondary-containment air path.
 
     @relation(IA-ENC-001, scope=class)
+    @relation(IA-SCN-PAT-DRI, scope=class)
     """
 
     def __init__(self, p: PlantParams | None = None, dri: bool = True) -> None:
