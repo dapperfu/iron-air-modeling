@@ -49,7 +49,9 @@ class ChanneledElectrode:
 
     def __post_init__(self) -> None:
         self.params = self.params or default_params()
-        assert_channel_window(self.params.channel_length_m, self.params.channel_width_m, self.params.channel_spacing_m, self.params)
+        assert_channel_window(
+            self.params.channel_length_m, self.params.channel_width_m, self.params.channel_spacing_m, self.params
+        )
         if not (self.params.loading_min_g_cm2 <= self.params.loading_g_cm2 <= self.params.loading_max_g_cm2):
             raise ValueError("Fe loading outside 1-7 g/cm2")
         if not (self.params.vf_min <= self.params.vf_electrolyte_charged <= self.params.vf_max):
