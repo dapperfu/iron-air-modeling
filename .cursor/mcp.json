@@ -1,0 +1,7 @@
+{
+  "mcpServers": {
+    "strictdoc-mcp-truenas": {
+      "url": "http://10.0.0.2:20423/mcp"
+    }
+  }
+}
