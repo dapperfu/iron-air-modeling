@@ -1,9 +1,23 @@
 [DOCUMENT]
 TITLE: Software Design Document - IRONAIR Package Architecture
 UID: DOC-SDD001
-VERSION: 1.0.0
+VERSION: 1.1.0
 OPTIONS:
   MARKUP: Text
+
+[[SECTION]]
+UID: SEC-SDD-SRC
+TITLE: Source layout and clean baseline
+
+[TEXT]
+STATEMENT: >>>
+This Software Design Document (SDD) describes how ironair maps the patented
+iron-air plant onto Python packages, DynamicComponent classes, and algebraic
+versus dynamic state partitions. Physical geometry and chemistry come from
+US12308414B2 (device architectures for metal-air batteries) and EP4602674A1
+(electrode configurations for iron-air electrochemical systems). This SDD does
+not implement a second reaction network besides ironair.chemistry.
+<<<
 
 [REQUIREMENT]
 UID: IA-SDD-001
@@ -14,6 +28,9 @@ Package sources SHALL live under src/ironair as specified by IA-SYS-001.
 
 This SDRS src/ layout is the project-specific design and SHALL be used even though
 a generic Cursor rule discourages src/ layouts.
+
+Patent-derived parameters, architecture enumerations, and claim citations SHALL
+live in typed parameter objects under the same package, not in notebooks.
 <<<
 COMMENT: >>>
 pyproject.toml configures setuptools package discovery with where = ["src"].
@@ -21,6 +38,32 @@ pyproject.toml configures setuptools package discovery with where = ["src"].
 RELATIONS:
 - TYPE: Parent
   VALUE: IA-SYS-001
+
+[REQUIREMENT]
+UID: IA-SDD-005
+STATUS: Active
+TITLE: Clean Python baseline
+STATEMENT: >>>
+This Python package is a new baseline. It SHALL NOT import, translate, or recover
+governing equations from prior MATLAB or Simulink implementations.
+
+Patent text SHALL be paraphrased into parameter metadata and requirement
+statements. Governing equations SHALL be implemented from the shared chemistry
+and component protocols, not by copying copyrighted patent prose into source.
+<<<
+COMMENT: >>>
+Source tree contains no .m or .slx physics. Chemistry and component modules implement
+the SDRS reaction set and ODE protocol directly.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-001
+
+[[/SECTION]]
+
+[[SECTION]]
+UID: SEC-SDD-PROTO
+TITLE: Component protocol and chemistry ownership
 
 [REQUIREMENT]
 UID: IA-SDD-002
@@ -32,6 +75,9 @@ and MAY inherit ironair.ode.component.DynamicComponent for shared validation.
 
 rhs(t, y, inputs, context) SHALL be a pure function of its arguments for a fixed
 parameter configuration.
+
+Architecture flags (floating ORR, stacked submerged ORR, interdigitated OER,
+DRI bed, spiral, pleated) SHALL be parameters, not hidden rhs mutation.
 <<<
 COMMENT: >>>
 Protocol checks and unit tests cover every registered component class.
@@ -47,6 +93,11 @@ TITLE: Shared chemistry ownership
 STATEMENT: >>>
 Electrode components SHALL obtain stoichiometric rates from ironair.chemistry rather
 than embedding a second reaction network.
+
+Iron conversion Fe / Fe(OH)2 / Fe3O4, ORR, OER, and HER SHALL use the capacities
+and half-reactions of IA-SYS-020 (EP4602674A1 [0042]-[0044]; US12308414B2 ORR
+four-electron reaction). Faraday mapping SHALL convert electrode current to molar
+rate.
 <<<
 COMMENT: >>>
 Iron, ORR, OER, and HER rate mapping uses ReactionNetwork.S and Faraday conversion.
@@ -61,32 +112,127 @@ STATUS: Active
 TITLE: Algebraic versus dynamic states
 STATEMENT: >>>
 Instantaneous constitutive laws (Ohmic drop, hydraulic orifice flow at a fixed
-position, Nernst potential) SHALL be algebraic.
+position, Nernst potential, stacked-ORR equal pressure drop of US12308414B2
+Claim 1, Faraday current-to-rate maps) SHALL be algebraic.
 
 Dynamic states SHALL represent stored mass, charge, thermal energy, momentum, or
-explicit controller memory.
+explicit controller memory, including iron phase inventories, electrolyte
+species, gas pockets, HER/OER bubble holdup, and controller modes.
 
 Artificial lag SHALL NOT be added to algebraic laws.
 <<<
 COMMENT: >>>
 CurrentCollector resistance is algebraic. CurrentCollector temperature is dynamic.
+Equalized ORR stack pressure drop is algebraic in geometry and flow.
 <<<
 RELATIONS:
 - TYPE: Parent
   VALUE: IA-SYS-003
 
-[REQUIREMENT]
-UID: IA-SDD-005
-STATUS: Active
-TITLE: Clean Python baseline
+[[/SECTION]]
+
+[[SECTION]]
+UID: SEC-SDD-MAP
+TITLE: Mapping patented architectures onto components
+
+[TEXT]
 STATEMENT: >>>
-This Python package is a new baseline. It SHALL NOT import, translate, or recover
-governing equations from prior MATLAB or Simulink implementations.
+US12308414B2 Claim 1 stacked submerged ORR is IronAirCell plus GasDiffusionLayer
+plus AirSystem with a vertical stack of ORR sections. EP4602674A1 Claim 1
+channeled iron plus interdigitated OER is IronElectrode plus OxygenEvolution with
+channel geometry parameters. Dual-electrode switching is SupervisoryController
+mode plus algebraic electrical connection, not a second chemistry module.
 <<<
-COMMENT: >>>
-Source tree contains no .m or .slx physics. Chemistry and component modules implement
-the SDRS reaction set and ODE protocol directly.
+
+[REQUIREMENT]
+UID: IA-SDD-006
+STATUS: Active
+TITLE: Dual-electrode electrical design
+STATEMENT: >>>
+IronAirCell SHALL expose separate ORR and OER electrical ports. SupervisoryController
+SHALL connect iron-OER-source in charge and iron-ORR-load in discharge
+(EP4602674A1 [0049]; US12308414B2 FIGS. 5A-5B).
+
+When isolated, ORR potential SHALL NOT be forced to the OER operating potential.
+Bifunctional single-air-electrode mode SHALL be an explicit reduced-order flag.
+<<<
+RATIONALE: >>>
+Protects carbon/PTFE ORR layers from OER potentials (US12308414B2). Matches
+EP4602674A1 switch 116.
 <<<
 RELATIONS:
 - TYPE: Parent
-  VALUE: IA-SYS-001
+  VALUE: IA-SYS-008
+
+[REQUIREMENT]
+UID: IA-SDD-007
+STATUS: Active
+TITLE: Iron electrode geometric modes
+STATEMENT: >>>
+IronElectrode SHALL implement at least these named geometric modes:
+
+- packed DRI pellet bed (US12308414B2 Claim 18);
+- planar porous electrode (EP4602674A1 FIG. 1 control);
+- channeled rib-and-spine electrode (Claim 1, FIG. 2);
+- discrete anode array (Claim 20);
+- spiral with current collector (Claim 70);
+- pleated electrode (Claim 77).
+
+Mode-specific parameters SHALL include loading 1-7 g Fe/cm2, electrolyte volume
+fraction 0.5-0.9, channel length/width/spacing, ChanFrac, and spine/rib porosity.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-015
+
+[REQUIREMENT]
+UID: IA-SDD-008
+STATUS: Active
+TITLE: ORR geometric modes
+STATEMENT: >>>
+OxygenReduction and GasDiffusionLayer SHALL implement floating, vertical
+natural-air-breathing, inverse box/tube, stacked submerged equal-dP, wavy/rippled,
+helical, and coaxial-core modes listed in IA-SYS-012.
+
+AirSystem SHALL supply cascading bubbles, regulated chamber pressure, or ambient
+headspace as required by the selected mode. Claim 1 equal pressure drop SHALL be
+an algebraic hydraulic constraint across stacked sections.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-009
+
+[REQUIREMENT]
+UID: IA-SDD-009
+STATUS: Active
+TITLE: Vessel and lid design mapping
+STATEMENT: >>>
+BatteryEnclosure SHALL represent inner wall, outer wall, cavity, optional bag-in-box,
+stacking contacts, and can-negative conduction (US12308414B2 Claims 3 and 5;
+FIGS. 1E-1F, 11).
+
+Lid functions (air distribution, vent, thermal, current collection, sensing, DC
+links) SHALL map to AirSystem, ThermalNetwork, CurrentCollector, DynamicSensor,
+and DCBus ports rather than a monolithic undocumented object.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-011
+
+[REQUIREMENT]
+UID: IA-SDD-010
+STATUS: Active
+TITLE: Spatial discretization of thick electrodes
+STATEMENT: >>>
+When high-fidelity mode is selected, IronElectrode SHALL discretize through-plane
+or in-plane ionic path length so that front-versus-back HER competition of
+EP4602674A1 [0046]-[0047] is representable.
+
+Interdigitated OER SHALL shorten the modeled ionic path to the entire iron area
+relative to planar OER at the same loading (FIGS. 19-24).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-005
+
+[[/SECTION]]
