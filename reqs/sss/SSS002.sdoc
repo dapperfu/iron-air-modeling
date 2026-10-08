@@ -63,7 +63,8 @@ UID: IA-HER-001
 STATUS: Active
 TITLE: Hydrogen evolution ODE
 STATEMENT: >>>
-Module ironair.components.hydrogen SHALL provide class HydrogenEvolution.
+Module plant_sim.components.her SHALL provide class HydrogenEvolution
+(notebook plant_sim/02_HER.ipynb).
 
 States SHALL include hydrogen inventory and applicable interfacial or gas-transfer dynamics.
 
@@ -80,6 +81,10 @@ US12308414B2 remove evolved hydrogen from the vessel headspace.
 COMMENT: >>>
 H2 inventory increases under negative iron overpotential. Open-circuit HER is smaller
 than strong cathodic charging HER.
+
+Changed because ironair.components.hydrogen does not exist. plant_sim.components.her
+implements HydrogenEvolution with channel bubble-egress and thick-electrode HER
+competition used by the plant stack.
 <<<
 RELATIONS:
 - TYPE: Parent

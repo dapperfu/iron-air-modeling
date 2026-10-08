@@ -1,5 +1,7 @@
 """Hydrogen evolution ODE (IA-HER-001).
 
+@relation(IA-HER-001, scope=module)
+
 HER 2 H2O + 2 e- -> H2 + 2 OH- competes with iron recharge (EP4602674A1 [0044]-[0047]).
 Vertical channels provide bubble egress; thick planar electrodes lose coulombic efficiency
 when ionic path to the back exceeds front-surface HER.
@@ -70,6 +72,10 @@ def her_rhs(
     u: Mapping[str, float],
     p: PlantParams,
 ) -> NDArray[np.float64]:
+    """HER inventory and bubble-holdup RHS.
+
+    @relation(IA-HER-001, scope=function)
+    """
     n_H2, theta, p_H2 = y
     I_fe_A = float(u.get("I_fe_A", 0.0))
     T = float(u.get("T_K", p.T_ep_sim_K))
@@ -118,6 +124,11 @@ def her_outputs(
 
 
 class HydrogenEvolution(RHSComponent):
+    """IA-HER-001 hydrogen evolution.
+
+    @relation(IA-HER-001, scope=class)
+    """
+
     def __init__(self, p: PlantParams | None = None, y0: NDArray[np.float64] | None = None) -> None:
         p = p or default_params()
         y0 = default_y0(p) if y0 is None else y0
