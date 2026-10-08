@@ -214,7 +214,9 @@ versus capacity (EP4602674A1 FIG. 27), coulombic efficiency versus charge time
 24, 26) at documented 6 M KOH and 303 K.
 <<<
 COMMENT: >>>
-Each listed scenario has a unique IA-SCN-CHR-* ID, Python scenario function, and notebook.
+Changed because ironair.scenarios is empty. Executable characterization coverage is
+plant_sim/97_ChannelGeometryEP.ipynb and 98_DegradationCE.ipynb (EP FIGS. 19-27
+trends). Remaining CHR IDs are design allocations.
 <<<
 
 [[/SECTION]]
