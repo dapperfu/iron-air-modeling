@@ -46,7 +46,8 @@ Each requirement SHALL possess a permanent unique ID.
 Required prefixes: IA-SYS, IA-REQ, IA-CON, IA-CHM, IA-FE, IA-HER, IA-ORR, IA-OER,
 IA-GDL, IA-ELY, IA-SEP, IA-COL, IA-CEL, IA-THM, IA-AIR, IA-FLD, IA-HEX, IA-STK,
 IA-MOD, IA-ENC, IA-DC, IA-CNV, IA-INV, IA-TRF, IA-GRD, IA-CTL, IA-EST, IA-DEG,
-IA-FLT, IA-ODE, IA-NBK, IA-PLT, IA-TST, IA-DOC.
+IA-FLT, IA-ODE, IA-NBK, IA-PLT, IA-TST, IA-DOC, IA-SDD, IA-IRS, IA-SCN, IA-TP,
+IA-TD.
 
 Patent-mapped system requirements live under IA-SYS in DOC-SRS001 (US12308414B2
 Claims 1-18 and EP4602674A1 Claims 1-89). Component prefixes SHALL be used for
@@ -54,6 +55,10 @@ the corresponding physical models of those claims.
 <<<
 COMMENT: >>>
 UID uniqueness is verified by tests. All required prefixes appear in the requirements tree.
+
+Changed because the prefix list omitted IA-SDD, IA-IRS, IA-SCN, IA-TP, and IA-TD
+even though those UIDs already exist in DOC-SDD001, DOC-IRS001, DOC-SSS003,
+DOC-TP001, and DOC-TD001.
 <<<
 
 [REQUIREMENT]
