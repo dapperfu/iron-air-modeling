@@ -1,4 +1,4 @@
-function options = ironair_solver_options(profile, state_scale, event_function, j_pattern)
+function options = ironair_solver_options(profile, state_scale, event_function, j_pattern, nonnegative)
 %IRONAIR_SOLVER_OPTIONS Build deterministic stiff-solver configuration.
 %   OPTIONS = IRONAIR_SOLVER_OPTIONS(PROFILE, STATE_SCALE, EVENT_FUNCTION,
 %   J_PATTERN) creates an ODE options structure with state-specific absolute
@@ -22,6 +22,7 @@ arguments
     state_scale (:, 1) double {mustBePositive}
     event_function = []
     j_pattern = []
+    nonnegative = []
 end
 
 required = ["rel_tol", "abs_tol_scale", "max_step_s"];
@@ -45,6 +46,9 @@ if ~isempty(event_function)
             "event_function must be a function handle or empty.");
     end
     options = odeset(options, "Events", event_function);
+end
+if ~isempty(nonnegative)
+    options = odeset(options, "NonNegative", nonnegative(:)');
 end
 if ~isempty(j_pattern)
     if ~ismatrix(j_pattern) || size(j_pattern, 1) ~= numel(state_scale) || ...
