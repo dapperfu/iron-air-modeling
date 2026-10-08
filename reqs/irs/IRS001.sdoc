@@ -1,9 +1,21 @@
 [DOCUMENT]
 TITLE: Interface Requirements Specification - IRONAIR Public APIs
 UID: DOC-IRS001
-VERSION: 1.0.0
+VERSION: 1.1.0
 OPTIONS:
   MARKUP: Text
+
+[[SECTION]]
+UID: SEC-IRS-PY
+TITLE: Python package interfaces
+
+[TEXT]
+STATEMENT: >>>
+This Interface Requirements Specification (IRS) covers Python public APIs and the
+physical interfaces of the patented plant that those APIs must expose as named
+inputs, outputs, and couplings: air, electrolyte, electrical tabs, stacking
+contacts, and charge/discharge electrode selection (US12308414B2 and EP4602674A1).
+<<<
 
 [REQUIREMENT]
 UID: IA-IRS-001
@@ -55,6 +67,9 @@ STATEMENT: >>>
 ironair.simulation.CoupledSystem.simulate SHALL accept t_span, optional t_eval,
 optional inputs callable, solver method, and tolerances, and SHALL return a
 SimulationResult.
+
+t_span SHALL accept LODES windows including 8 h, 100 h (3.6e5 s), 300 h, and
+multi-day values from US12308414B2 without changing parameter objects.
 <<<
 COMMENT: >>>
 Default method is BDF or Radau. Result includes t, y, state_names, and diagnostics.
@@ -69,6 +84,9 @@ STATUS: Active
 TITLE: Plotting input types
 STATEMENT: >>>
 ironair.plotting functions SHALL accept SimulationResult or pandas.DataFrame.
+
+Plot metadata SHALL be able to carry scenario identifier, patent source citation,
+and operating assumptions (electrolyte molarity, temperature, architecture mode).
 <<<
 COMMENT: >>>
 Both input types produce a matplotlib Figure.
@@ -91,3 +109,95 @@ Type hints and tests pass a MeasurementVector, not the plant y, into the estimat
 RELATIONS:
 - TYPE: Parent
   VALUE: IA-EST-001
+
+[[/SECTION]]
+
+[[SECTION]]
+UID: SEC-IRS-PHYS
+TITLE: Patented physical interfaces
+
+[REQUIREMENT]
+UID: IA-IRS-006
+STATUS: Active
+TITLE: Air interface
+STATEMENT: >>>
+AirSystem and OxygenReduction SHALL exchange named flows for dry air or oxygen,
+humidity, CO2 mole fraction, pO2, volumetric or mass flow, and manifold pressure.
+
+ORR SHALL expose an electrolyte-facing first surface and an air-facing second
+surface (EP4602674A1 Claim 1). Stacked submerged ORR sections SHALL expose per-
+section pressure drop so that Claim 1 equal-dP can be enforced.
+
+Airflow regulation structures including holed ramp arrays (US12308414B2 Claims 14-15)
+SHALL appear as named hydraulic parameters, not as undocumented magic numbers.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-014
+
+[REQUIREMENT]
+UID: IA-IRS-007
+STATUS: Active
+TITLE: Electrolyte and hydraulic interface
+STATEMENT: >>>
+Electrolyte, Reservoir, Pump, Valve, and Pipe SHALL exchange water, KOH/NaOH/LiOH,
+carbonate, dissolved oxygen, liquid volume, temperature, and leak flows.
+
+Primary-to-secondary containment leak into vessel cavity 161 (US12308414B2
+FIGS. 1E-1F) SHALL be a named leak path. Shared electrolyte baths of multiple
+cells SHALL use a common electrolyte context key.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-021
+
+[REQUIREMENT]
+UID: IA-IRS-008
+STATUS: Active
+TITLE: Electrical tab and stacking interface
+STATEMENT: >>>
+Iron, ORR, and OER components SHALL expose named electrical ports for anode tabs,
+OER cathode tabs, ORR tabs, can-negative housing, and stacking contact points
+(US12308414B2 Claims 3 and 5; EP4602674A1 FIG. 8 tabs 230, 240a, 240b).
+
+Charge and discharge paths SHALL be distinct named connections selectable by
+SupervisoryController. Bus bars outside the active-area plane (EP4602674A1
+Claims 30-31) SHALL be identifiable in the state-index map.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-025
+
+[REQUIREMENT]
+UID: IA-IRS-009
+STATUS: Active
+TITLE: Channel and interdigitation interface
+STATEMENT: >>>
+IronElectrode SHALL publish channel occupancy, ChanFrac, rib width, and whether
+each channel contains OER, additive, both, or neither (EP4602674A1 Claims 5-6).
+
+OxygenEvolution SHALL publish projection length, trunk presence, corrugated versus
+discrete-cathode layout, and iron-OER gap. Separator SHALL publish ionic
+resistance and bubble-egress availability between those ports.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-016
+
+[REQUIREMENT]
+UID: IA-IRS-010
+STATUS: Active
+TITLE: Scenario and architecture selection interface
+STATEMENT: >>>
+ironair.scenarios SHALL accept an architecture identifier covering US12308414B2
+Claim 1 stacked ORR, Claim 18 DRI bed, floating ORR, and EP4602674A1 Claims 1, 20,
+38, 55, 70, and 77 layouts.
+
+Invalid combinations (for example bifunctional ORR forced to OER potential while
+isolation is required) SHALL raise a documented configuration error.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-006
+
+[[/SECTION]]
