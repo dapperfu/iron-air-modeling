@@ -60,7 +60,10 @@ folder. `docs/.nojekyll` is included so StrictDoc `_static` assets are served.
 ```bash
 make strictdoc-validate
 make strictdoc-generate
+make serve
 ```
+
+`make serve` hosts the `docs/` folder at http://127.0.0.1:8000 for a local GitHub Pages preview. `make strictdoc-serve` is the StrictDoc editor on port 5111.
 
 ## Tests are not hardware validation
 
