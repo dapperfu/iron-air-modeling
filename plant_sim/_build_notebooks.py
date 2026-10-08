@@ -80,14 +80,18 @@ def main() -> None:
         "01 Iron anode (IA-FE-001)",
         "IA-FE-001",
         r"""
-Discharge of metallic iron in alkaline electrolyte:
+Discharge of metallic iron in alkaline electrolyte (EP4602674A1 [0042]-[0043] Eq. 1),
+theoretical capacity $960\,\mathrm{mAh\,g^{-1}}$ Fe:
 
-1. \(\mathrm{Fe + 2\,OH^- \leftrightarrow Fe(OH)_2 + 2\,e^-}\) with theoretical capacity **960 mAh/g Fe** (EP4602674A1 [0042]-[0043] Eq. 1).
-2. \(3\,\mathrm{Fe(OH)_2 + 2\,OH^- \leftrightarrow Fe_3O_4 + 4\,H_2O + 2\,e^-}\) with **320 mAh/g Fe** (Eq. 2).
+$$\mathrm{Fe} + 2\,\mathrm{OH^-} \leftrightarrow \mathrm{Fe(OH)_2} + 2\,\mathrm{e^-}$$
 
-Faraday: \(r = I/(nF)\), \(n=2\). Butler-Volmer current from `ironair.chemistry.kinetics`.
+Second discharge step (Eq. 2), $320\,\mathrm{mAh\,g^{-1}}$ Fe:
+
+$$3\,\mathrm{Fe(OH)_2} + 2\,\mathrm{OH^-} \leftrightarrow \mathrm{Fe_3O_4} + 4\,\mathrm{H_2O} + 2\,\mathrm{e^-}$$
+
+Faraday: $r = I/(nF)$, $n=2$. Butler-Volmer current from `ironair.chemistry.kinetics`.
 Porosity absorbs the solid volume increase (IA-SYS-020). DRI beds, porous particles, and
-channeled ribs (EP Claim 1; loading 1-7 g/cm², VF 0.5-0.9) share this RHS.
+channeled ribs (EP Claim 1; loading $1$–$7\,\mathrm{g\,cm^{-2}}$, VF $0.5$–$0.9$) share this RHS.
 """,
         "from plant_sim.components.iron_anode import IronAnode\nfrom plant_sim.components.base import integrate_component",
         """\
@@ -111,10 +115,16 @@ print("loading", P.loading_g_cm2, "g/cm2 in [1,7]; VF", P.vf_electrolyte_charged
         "02 Hydrogen evolution (IA-HER-001)",
         "IA-HER-001",
         r"""
-Parasitic charge reaction \(\mathrm{2\,H_2O + 2\,e^- \to H_2 + 2\,OH^-}\) (EP [0044], [0047]).
-Coulombic efficiency \(\mathrm{CE} = I_\mathrm{Fe}/(I_\mathrm{Fe}+I_\mathrm{HER})\) falls when the
-ionic path to the back of a thick iron electrode exceeds front-surface HER. Vertical channels
-are a bubble-egress path ([0056]).
+Parasitic charge reaction (EP [0044], [0047]):
+
+$$2\,\mathrm{H_2O} + 2\,\mathrm{e^-} \to \mathrm{H_2} + 2\,\mathrm{OH^-}$$
+
+Coulombic efficiency is
+
+$$\mathrm{CE} = \frac{I_\mathrm{Fe}}{I_\mathrm{Fe} + I_\mathrm{HER}}$$
+
+and falls when the ionic path to the back of a thick iron electrode exceeds
+front-surface HER. Vertical channels are a bubble-egress path ([0056]).
 """,
         "from plant_sim.components.her import HydrogenEvolution\nfrom plant_sim.components.base import integrate_component",
         """\
@@ -132,9 +142,13 @@ timeseries(t/60, {"n_H2": y[0], "CE": ce, "theta": y[1]}, xlabel="t (min)", ylab
         "03 Oxygen reduction (IA-ORR-001)",
         "IA-ORR-001",
         r"""
-\(\mathrm{O_2 + 2\,H_2O + 4\,e^- \to 4\,OH^-}\) (US12308414B2). Modes: floating, vertical
-natural-air-breathing, inverse, tubular, stacked submerged with depth-equalized pressure
-drop, wavy/rippled, bifunctional (IA-SYS-009, IA-SYS-012; US Claims 1, 4, 7-12).
+Oxygen reduction (US12308414B2):
+
+$$\mathrm{O_2} + 2\,\mathrm{H_2O} + 4\,\mathrm{e^-} \to 4\,\mathrm{OH^-}$$
+
+Modes: floating, vertical natural-air-breathing, inverse, tubular, stacked
+submerged with depth-equalized pressure drop, wavy/rippled, bifunctional
+(IA-SYS-009, IA-SYS-012; US Claims 1, 4, 7-12).
 One face to electrolyte/channels, opposing face to air (EP Claim 1). PTFE/GDE parameterizable.
 """,
         "from plant_sim.components.orr import OxygenReduction, ORR_MODES, stacked_orr_flows\nfrom plant_sim.components.base import integrate_component",
@@ -154,8 +168,12 @@ xy_plot(eq["z_m"], {"dP": eq["dP_Pa"]}, xlabel="z (m)", ylabel="ΔP (Pa)", title
         "04 Oxygen evolution (IA-OER-001)",
         "IA-OER-001",
         r"""
-\(\mathrm{4\,OH^- \to O_2 + 2\,H_2O + 4\,e^-}\). Layouts: planar, submerged, interdigitated
-trunk-and-projection, corrugated, serpentine, discrete arrays, spiral bifilar, pleated
+Oxygen evolution:
+
+$$4\,\mathrm{OH^-} \to \mathrm{O_2} + 2\,\mathrm{H_2O} + 4\,\mathrm{e^-}$$
+
+Layouts: planar, submerged, interdigitated trunk-and-projection, corrugated,
+serpentine, discrete arrays, spiral bifilar, pleated
 (EP Claims 1, 3, 12, 32, 38, 70, 77). Default porous metal mesh + OER catalyst (Claim 11).
 OER sits closer to iron than ORR on charge and is electrically isolatable (US FIGS. 5A-5B).
 """,
@@ -175,10 +193,15 @@ xy_plot(np.arange(len(LAYOUT_AREA_FACTOR)), {"af": np.array(list(LAYOUT_AREA_FAC
         "05 Gas diffusion layer (IA-GDL-001)",
         "IA-GDL-001",
         r"""
-Method-of-lines diffusion \(\partial_t c = \nabla\cdot(D_\mathrm{eff}\nabla c) - s_\mathrm{ORR}\).
-\(D_\mathrm{eff} = D_\mathrm{gas}\,\varepsilon^{1.5}(1-s)^3\). Flooding (\(s\to 1\)) kills gas
-diffusivity. Hydraulic head on vertical ORR drives liquid; OER bubbles on a horizontal
-electrode can dry the TPB (US FIGS. 8-9B). pO2 0.01-100 atm discharge, 0.001-100 atm charge.
+Method-of-lines diffusion:
+
+$$\frac{\partial c}{\partial t} = \nabla\cdot(D_\mathrm{eff}\nabla c) - s_\mathrm{ORR}$$
+
+$$D_\mathrm{eff} = D_\mathrm{gas}\,\varepsilon^{1.5}(1-s)^{3}$$
+
+Flooding ($s \to 1$) kills gas diffusivity. Hydraulic head on vertical ORR drives
+liquid; OER bubbles on a horizontal electrode can dry the TPB (US FIGS. 8-9B).
+pO2 $0.01$–$100\,\mathrm{atm}$ discharge, $0.001$–$100\,\mathrm{atm}$ charge.
 """,
         "from plant_sim.components.gdl import GasDiffusionLayer\nfrom plant_sim.components.base import integrate_component",
         """\
@@ -197,9 +220,13 @@ timeseries(t, {"air": y[0], "tpb": y[n-1], "s": y[n]}, xlabel="t (s)", ylabel="c
         "06 Electrolyte (IA-ELY-001)",
         "IA-ELY-001",
         r"""
-Default **6 M aqueous KOH**. Carbonation \(\mathrm{CO_2 + 2\,OH^- \to CO_3^{2-} + H_2O}\)
-consumes OH- and may clog pores (US). Alternate recipes from IA-SYS-021 (LiOH blends,
-NaOH, high hydroxide ≥ 7 M as a CE lever, EP). Conductivity from `ironair.properties`.
+Default $6\,\mathrm{M}$ aqueous KOH. Carbonation
+
+$$\mathrm{CO_2} + 2\,\mathrm{OH^-} \to \mathrm{CO_3^{2-}} + \mathrm{H_2O}$$
+
+consumes $\mathrm{OH^-}$ and may clog pores (US). Alternate recipes from IA-SYS-021
+(LiOH blends, NaOH, high hydroxide $\ge 7\,\mathrm{M}$ as a CE lever, EP).
+Conductivity from `ironair.properties`.
 """,
         "from plant_sim.components.electrolyte import Electrolyte\nfrom plant_sim.components.base import integrate_component",
         """\
@@ -217,9 +244,11 @@ print("recipes", P.with_recipe("7M_KOH").c_KOH_mol_m3)
         "07 Separator (IA-SEP-001)",
         "IA-SEP-001",
         r"""
-\(R_\mathrm{ionic} = L\,\tau / (\sigma A \varepsilon s^{1.5})\). Separator blocks dissolved O2
-and bubbles from iron without a large ionic penalty, remaining hydrophilic/macroporous
-(US FIG. 4A; EP Claim 2, [0048]). Wrapped stacked-core pores 1 µm to 1 cm (US FIG. 36A).
+$$R_\mathrm{ionic} = \frac{L\,\tau}{\sigma A \varepsilon s^{1.5}}$$
+
+Separator blocks dissolved $\mathrm{O_2}$ and bubbles from iron without a large
+ionic penalty, remaining hydrophilic/macroporous (US FIG. 4A; EP Claim 2, [0048]).
+Wrapped stacked-core pores $1\,\mu\mathrm{m}$ to $1\,\mathrm{cm}$ (US FIG. 36A).
 """,
         "from plant_sim.components.separator import Separator\nfrom plant_sim.components.base import integrate_component",
         """\
@@ -236,7 +265,9 @@ timeseries(t, {"T": y[0], "s": y[1], "c_O2": y[2], "R": R}, xlabel="t (s)", ylab
         "08 Current collector (IA-COL-001)",
         "IA-COL-001",
         r"""
-\(V_\mathrm{ohm} = I\,R(T,\mathrm{degradation})\). No fake lag on resistance.
+$$V_\mathrm{ohm} = I\,R(T,\mathrm{degradation})$$
+
+No fake lag on resistance.
 Anode branch-plus-primary, ORR dual-face tabs, Ni-coated-steel + EPDM (US FIGS. 4B-4C),
 SS mesh in iron ribs (EP), can-negative housing (US Claim 5).
 """,
