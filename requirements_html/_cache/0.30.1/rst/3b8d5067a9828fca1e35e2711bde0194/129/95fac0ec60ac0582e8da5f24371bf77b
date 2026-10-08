@@ -1,0 +1,3 @@
+<div class="document">
+<p>generate_mock_cell_curves SHALL write synthetic V-I-t and coulombic efficiency data under data/mock/ loaded by lib_IronAir_init.</p>
+</div>

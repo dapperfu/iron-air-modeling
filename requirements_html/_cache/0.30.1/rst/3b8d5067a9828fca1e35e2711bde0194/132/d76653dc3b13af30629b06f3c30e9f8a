@@ -1,0 +1,3 @@
+<div class="document">
+<p>Cell voltage RMSE against mock discharge curves SHALL be within 50 mV for the reference constant-current case after parameter lock.</p>
+</div>

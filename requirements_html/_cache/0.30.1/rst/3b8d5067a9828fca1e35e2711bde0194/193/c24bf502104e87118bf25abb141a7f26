@@ -1,0 +1,3 @@
+<div class="document">
+<p>H2 evolution uses Tafel/Butler-Volmer form i_H2 = i0_H2 * exp(alpha_H2*F*eta_H2/(R*T)) gated by metal overpotential; n_dot_H2 = i_H2*A/(2*F); Faradaic efficiency eta_F = 1 - I_H2/(abs(I)+eps).</p>
+</div>

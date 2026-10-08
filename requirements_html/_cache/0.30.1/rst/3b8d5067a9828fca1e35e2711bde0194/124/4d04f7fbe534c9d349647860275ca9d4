@@ -1,0 +1,3 @@
+<div class="document">
+<p>Each atomic library block SHALL have a MATLAB unit harness under tests/ verifying conservation and/or mock-data regression.</p>
+</div>

@@ -1,0 +1,3 @@
+<div class="document">
+<p>tests/test_H2_Evolution.m SHALL verify H2 rate &gt;= 0 and Faradaic efficiency in [0,1] for cathodic overpotentials.</p>
+</div>

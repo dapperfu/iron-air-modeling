@@ -1,0 +1,3 @@
+<div class="document">
+<p>Cell_IronAir output bus SHALL include at minimum: Voltage_V, Current_A, SOC, Temperature_K, H2_Rate_mol_s, H2_Volume_m3, FaradaicEfficiency.</p>
+</div>

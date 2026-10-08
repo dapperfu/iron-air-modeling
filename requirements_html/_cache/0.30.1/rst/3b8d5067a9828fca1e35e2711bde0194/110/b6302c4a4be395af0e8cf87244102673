@@ -1,0 +1,3 @@
+<div class="document">
+<p>tests/test_Thermal_Node_1D.m SHALL verify temperature remains finite and increases under positive heat input.</p>
+</div>

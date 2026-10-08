@@ -1,0 +1,3 @@
+<div class="document">
+<p>Atomic physics blocks SHALL use continuous-time integrators / ODE formulations suitable for variable-step stiff solvers (ode15s / ode23tb class).</p>
+</div>

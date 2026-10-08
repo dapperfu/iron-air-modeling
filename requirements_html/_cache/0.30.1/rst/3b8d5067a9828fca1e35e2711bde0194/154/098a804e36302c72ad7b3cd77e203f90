@@ -1,0 +1,3 @@
+<div class="document">
+<p>Plant_BESS_Schedule SHALL accept exogenous plant power/energy schedules spanning 24–100 h and apply a simple PCS efficiency gain (no switching inverter).</p>
+</div>

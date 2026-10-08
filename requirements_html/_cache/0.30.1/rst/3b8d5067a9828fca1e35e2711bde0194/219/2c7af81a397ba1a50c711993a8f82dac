@@ -1,0 +1,3 @@
+<div class="document">
+<p>Each 1D domain uses Nx control volumes. State vectors are length Nx (or species×Nx). Spatial operators use second-order central differences with Neumann/Dirichlet boundaries as documented in src/ ironair_*_ode.m files.</p>
+</div>

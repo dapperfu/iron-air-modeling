@@ -1,0 +1,60 @@
+[DOCUMENT]
+TITLE: Test Descriptions - Iron-Air Modeling
+UID: DOC-TD001
+VERSION: 0.1.0
+
+[REQUIREMENT]
+UID: TD001
+TITLE: Electrolyte mass conservation
+STATEMENT: >>>
+tests/test_Electrolyte_1D.m SHALL verify KOH moles conserved within 1e-6 relative under zero-flux boundaries and zero source.
+<<<
+
+[REQUIREMENT]
+UID: TD002
+TITLE: H2 evolution positivity
+STATEMENT: >>>
+tests/test_H2_Evolution.m SHALL verify H2 rate >= 0 and Faradaic efficiency in [0,1] for cathodic overpotentials.
+<<<
+
+[REQUIREMENT]
+UID: TD003
+TITLE: Metal utilization bounds
+STATEMENT: >>>
+tests/test_Metal_Electrode_1D.m SHALL keep solid-phase utilization in [0,1].
+<<<
+
+[REQUIREMENT]
+UID: TD004
+TITLE: ORR OER polarity
+STATEMENT: >>>
+tests/test_ORR_OER_1D.m SHALL verify ORR current sign on discharge and OER on charge.
+<<<
+
+[REQUIREMENT]
+UID: TD005
+TITLE: Thermal stability
+STATEMENT: >>>
+tests/test_Thermal_Node_1D.m SHALL verify temperature remains finite and increases under positive heat input.
+<<<
+
+[REQUIREMENT]
+UID: TD006
+TITLE: Cell mock regression
+STATEMENT: >>>
+tests/test_Cell_IronAir_mock.m SHALL compare simulated V(t) to data/mock/mock_discharge_VI.mat within TP003 RMSE bound.
+<<<
+
+[REQUIREMENT]
+UID: TD007
+TITLE: Pack aggregation
+STATEMENT: >>>
+tests/test_Pack_Aggregation.m SHALL verify series voltage scaling and parallel current scaling.
+<<<
+
+[REQUIREMENT]
+UID: TD008
+TITLE: Plant ride-through
+STATEMENT: >>>
+tests/test_Plant_RideThrough.m SHALL inject voltage/frequency excursions and assert monitor Pass/Fail matches IEEE 1547-style envelopes in IronAir.Standards.
+<<<

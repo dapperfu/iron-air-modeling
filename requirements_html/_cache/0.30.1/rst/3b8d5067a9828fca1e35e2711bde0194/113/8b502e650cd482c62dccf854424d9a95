@@ -1,0 +1,3 @@
+<div class="document">
+<p>Physics SHALL be implemented as pure Simulink continuous-time ODE systems (no Simscape custom components in v1).</p>
+</div>

@@ -1,0 +1,39 @@
+[DOCUMENT]
+TITLE: Interface Requirements Specification - Iron-Air Library
+UID: DOC-IRS001
+VERSION: 0.1.0
+
+[REQUIREMENT]
+UID: IRS001
+TITLE: Cell bus signals
+STATEMENT: >>>
+Cell_IronAir output bus SHALL include at minimum: Voltage_V, Current_A, SOC, Temperature_K, H2_Rate_mol_s, H2_Volume_m3, FaradaicEfficiency.
+<<<
+
+[REQUIREMENT]
+UID: IRS002
+TITLE: Pack bus signals
+STATEMENT: >>>
+Pack_IronAir SHALL aggregate Voltage_V (series), Current_A (parallel), Energy_Wh, SOC, H2_Volume_m3, Temperature_K.
+<<<
+
+[REQUIREMENT]
+UID: IRS003
+TITLE: Plant schedule inputs
+STATEMENT: >>>
+Plant_BESS_Schedule SHALL accept PowerSchedule_W(t) and optional GridVoltage_pu(t), GridFrequency_Hz(t) for ride-through injection.
+<<<
+
+[REQUIREMENT]
+UID: IRS004
+TITLE: Monitor outputs
+STATEMENT: >>>
+DER_RideThrough_Monitors and Standards_Assert_* SHALL output boolean Pass flags and violation counters for voltage, frequency, thermal, and H2 envelopes.
+<<<
+
+[REQUIREMENT]
+UID: IRS005
+TITLE: Data dictionary API
+STATEMENT: >>>
+lib_IronAir_init SHALL create or update lib_IronAir.sldd with section Design Data entries for IronAir.Cell, IronAir.Stack, IronAir.Module, IronAir.Pack, IronAir.Plant, IronAir.Standards, IronAir.MockData.
+<<<

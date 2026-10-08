@@ -1,0 +1,116 @@
+[DOCUMENT]
+TITLE: Software/Model Requirements Specification - Iron-Air Library
+UID: DOC-SSS001
+VERSION: 0.1.0
+
+[REQUIREMENT]
+UID: SSS001
+TITLE: Library file
+STATEMENT: >>>
+The implementation SHALL provide lib_IronAir.slx containing masked first-principles subsystems.
+<<<
+
+[REQUIREMENT]
+UID: SSS002
+TITLE: Continuous-time ODEs
+STATEMENT: >>>
+Atomic physics blocks SHALL use continuous-time integrators / ODE formulations suitable for variable-step stiff solvers (ode15s / ode23tb class).
+<<<
+
+[REQUIREMENT]
+UID: SSS003
+TITLE: Electrolyte_1D block
+STATEMENT: >>>
+lib_IronAir SHALL include Electrolyte_1D implementing 1D KOH transport (Fick + migration approximation) and ohmic drop between oxygen-electrode and metal-electrode domains.
+<<<
+
+[REQUIREMENT]
+UID: SSS004
+TITLE: Metal_Electrode_1D block
+STATEMENT: >>>
+lib_IronAir SHALL include Metal_Electrode_1D implementing Fe / Fe(OH)2 / Fe3O4 utilization via Faraday's law and Butler-Volmer kinetics.
+<<<
+
+[REQUIREMENT]
+UID: SSS005
+TITLE: ORR_Electrode_1D block
+STATEMENT: >>>
+lib_IronAir SHALL include ORR_Electrode_1D for oxygen reduction with O2 mass-transport limitation.
+<<<
+
+[REQUIREMENT]
+UID: SSS006
+TITLE: OER_Electrode_1D block
+STATEMENT: >>>
+lib_IronAir SHALL include OER_Electrode_1D for oxygen evolution on a dedicated electrode during charge.
+<<<
+
+[REQUIREMENT]
+UID: SSS007
+TITLE: H2_Evolution block
+STATEMENT: >>>
+lib_IronAir SHALL include H2_Evolution computing parasitic HER rate, cumulative H2, and Faradaic efficiency loss.
+<<<
+
+[REQUIREMENT]
+UID: SSS008
+TITLE: Thermal_Node_1D block
+STATEMENT: >>>
+lib_IronAir SHALL include Thermal_Node_1D coupling Joule and reaction heat into temperature ODEs that feed Arrhenius kinetics.
+<<<
+
+[REQUIREMENT]
+UID: SSS009
+TITLE: Cell composition
+STATEMENT: >>>
+Cell_IronAir SHALL compose Electrolyte_1D, Metal_Electrode_1D, ORR_Electrode_1D, OER_Electrode_1D, H2_Evolution, and Thermal_Node_1D via library links.
+<<<
+
+[REQUIREMENT]
+UID: SSS010
+TITLE: Stack Module Pack composition
+STATEMENT: >>>
+Stack_IronAir, Module_IronAir, and Pack_IronAir SHALL aggregate lower-level library blocks for series/parallel scaling and bus aggregation only.
+<<<
+
+[REQUIREMENT]
+UID: SSS011
+TITLE: Plant schedule block
+STATEMENT: >>>
+Plant_BESS_Schedule SHALL accept exogenous plant power/energy schedules spanning 24-100 h and apply a simple PCS efficiency gain (no switching inverter).
+<<<
+
+[REQUIREMENT]
+UID: SSS012
+TITLE: DER ride-through monitors
+STATEMENT: >>>
+DER_RideThrough_Monitors SHALL assert IEEE 1547-2018 / UL 1741 style voltage and frequency ride-through envelopes at the plant interface.
+<<<
+
+[REQUIREMENT]
+UID: SSS013
+TITLE: Standards assert blocks
+STATEMENT: >>>
+Standards_Assert blocks SHALL monitor UL 9540, NFPA 855, and IEEE 1547.9-2022 envelopes for thermal, H2, SOC, and power quantities where physics exists.
+<<<
+
+[REQUIREMENT]
+UID: SSS014
+TITLE: Init and data dictionary
+STATEMENT: >>>
+lib_IronAir_init.m SHALL populate nested IronAir.* structs and write lib_IronAir.sldd; models SHALL reference the dictionary rather than free-floating base workspace policy after init.
+<<<
+
+[REQUIREMENT]
+UID: SSS015
+TITLE: Per-block testability
+STATEMENT: >>>
+Each atomic library block SHALL have a MATLAB unit harness under tests/ verifying conservation and/or mock-data regression.
+<<<
+
+[REQUIREMENT]
+UID: SSS016
+TITLE: Mock cell curves
+STATEMENT: >>>
+generate_mock_cell_curves SHALL write synthetic V-I-t and coulombic efficiency data under data/mock/ loaded by lib_IronAir_init.
+<<<

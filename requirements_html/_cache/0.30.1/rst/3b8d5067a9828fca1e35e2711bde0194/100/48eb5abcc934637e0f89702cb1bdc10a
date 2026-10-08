@@ -1,0 +1,3 @@
+<div class="document">
+<p>Unit tests SHALL use the MATLAB Unit Testing Framework under tests/ and be invoked via <cite>make test</cite>.</p>
+</div>

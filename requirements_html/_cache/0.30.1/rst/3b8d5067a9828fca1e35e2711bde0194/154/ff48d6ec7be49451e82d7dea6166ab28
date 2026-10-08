@@ -1,0 +1,3 @@
+<div class="document">
+<p>DER_RideThrough_Monitors and Standards_Assert_* SHALL output boolean Pass flags and violation counters for voltage, frequency, thermal, and H2 envelopes.</p>
+</div>

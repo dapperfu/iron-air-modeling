@@ -1,0 +1,3 @@
+<div class="document">
+<p>lib_IronAir_init.m SHALL populate nested IronAir.* structs and write lib_IronAir.sldd; models SHALL reference the dictionary rather than free-floating base workspace policy after init.</p>
+</div>

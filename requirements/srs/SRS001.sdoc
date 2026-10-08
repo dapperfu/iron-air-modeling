@@ -1,0 +1,129 @@
+[DOCUMENT]
+TITLE: System Requirements Specification - Iron-Air BESS Model
+UID: DOC-SRS001
+VERSION: 0.1.0
+
+[REQUIREMENT]
+UID: SRS001
+TITLE: Project identity
+STATEMENT: >>>
+The project SHALL provide a first-principles continuous-time Simulink model of an aqueous alkaline iron-air battery energy storage system (BESS) under the project name iron-air-modeling.
+<<<
+RATIONALE: >>>
+Establishes system scope and naming for all subordinate requirements.
+<<<
+
+[REQUIREMENT]
+UID: SRS002
+TITLE: Chemistry and cell architecture
+STATEMENT: >>>
+The model SHALL represent aqueous alkaline iron-air chemistry with a metal electrode, a dedicated ORR electrode, a dedicated OER electrode, and a static flooded KOH electrolyte domain separating the oxygen electrodes from the metal electrode.
+<<<
+
+[REQUIREMENT]
+UID: SRS003
+TITLE: Spatial fidelity
+STATEMENT: >>>
+Electrode and electrolyte domains SHALL be modeled in one spatial dimension (1D) with finite-volume / control-volume discretization.
+<<<
+
+[REQUIREMENT]
+UID: SRS004
+TITLE: Hydrogen evolution
+STATEMENT: >>>
+The model SHALL include parasitic hydrogen evolution (HER) on the metal electrode and SHALL expose H2 molar rate, cumulative H2 volume, and Faradaic efficiency loss.
+<<<
+
+[REQUIREMENT]
+UID: SRS005
+TITLE: Hierarchical composition
+STATEMENT: >>>
+The system SHALL compose Cell, Stack, Module, Pack, and Plant levels from reusable library components without duplicating physics at higher levels.
+<<<
+
+[REQUIREMENT]
+UID: SRS006
+TITLE: Multi-day energy arbitrage
+STATEMENT: >>>
+The plant-level model SHALL support continuous simulation of 24 h to 100 h energy arbitrage power/energy schedules.
+<<<
+
+[REQUIREMENT]
+UID: SRS007
+TITLE: Multi-rate timescales
+STATEMENT: >>>
+The system SHALL support electrical, thermal, and multi-day SOC timescales with multi-rate / co-simulation guidance so each component can be simulated and tested independently.
+<<<
+
+[REQUIREMENT]
+UID: SRS008
+TITLE: Parameter management
+STATEMENT: >>>
+All model parameters SHALL be defined in lib_IronAir_init.m and stored in the Simulink Data Dictionary lib_IronAir.sldd.
+<<<
+
+[REQUIREMENT]
+UID: SRS009
+TITLE: Library packaging
+STATEMENT: >>>
+First-principles components SHALL be packaged in a single Simulink library file lib_IronAir.slx with masks on subsystems where appropriate.
+<<<
+
+[REQUIREMENT]
+UID: SRS010
+TITLE: Requirements management
+STATEMENT: >>>
+All project requirements SHALL be managed with StrictDoc under requirements/ using MIL-STD-498 document types (SRS, SSS, SDD, IRS, TP, TD). Doorstop SHALL NOT be used.
+<<<
+
+[REQUIREMENT]
+UID: SRS011
+TITLE: IEEE 1547-2018 compliance intent
+STATEMENT: >>>
+The project SHALL document and implement plant-level Simulink monitors consistent with IEEE 1547-2018 interconnection and ride-through behavioral envelopes (voltage and frequency) for DER/ESS plant interface studies. Switching-level inverter models are out of scope.
+<<<
+COMMENT: >>>
+Simulink linkage: DER_RideThrough_Monitors block.
+<<<
+
+[REQUIREMENT]
+UID: SRS012
+TITLE: IEEE 1547.9-2022 compliance intent
+STATEMENT: >>>
+The project SHALL document ESS interconnection guidance per IEEE 1547.9-2022 as plant interconnection requirements and associated Simulink assertion monitors for energy storage plant studies.
+<<<
+
+[REQUIREMENT]
+UID: SRS013
+TITLE: UL 1741 compliance intent
+STATEMENT: >>>
+The project SHALL implement plant-interface behavioral interconnection envelopes consistent with UL 1741 (without PWM/switching PCS detail) via Simulink monitors linked to this requirement.
+<<<
+
+[REQUIREMENT]
+UID: SRS014
+TITLE: UL 9540 compliance intent
+STATEMENT: >>>
+The project SHALL implement ESS safety envelope monitors consistent with UL 9540 for thermal limits and abnormal operating conditions exposable by the physics model.
+<<<
+
+[REQUIREMENT]
+UID: SRS015
+TITLE: NFPA 855 compliance intent
+STATEMENT: >>>
+The project SHALL implement monitors related to NFPA 855 for thermal and hydrogen accumulation quantities produced by the physics model.
+<<<
+
+[REQUIREMENT]
+UID: SRS016
+TITLE: Validation data
+STATEMENT: >>>
+The project SHALL provide estimated synthetic mock cell charge/discharge curves under data/mock/ for regression testing.
+<<<
+
+[REQUIREMENT]
+UID: SRS017
+TITLE: Pure Simulink continuous ODEs
+STATEMENT: >>>
+Physics SHALL be implemented as pure Simulink continuous-time ODE systems (no Simscape custom components in v1).
+<<<
