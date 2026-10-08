@@ -163,7 +163,10 @@ def equal_dp_inputs(p: PlantParams | None = None) -> Mapping[str, float]:
 
 
 def full_mission_inputs(p: PlantParams | None = None):
-    """Commission -> charge -> idle -> discharge -> rest (multi-segment)."""
+    """Commission -> charge -> idle -> discharge -> rest (multi-segment).
+
+    @relation(IA-NBK-015, scope=function)
+    """
     p = p or default_params()
     u_comm = commissioning_inputs(p)
 

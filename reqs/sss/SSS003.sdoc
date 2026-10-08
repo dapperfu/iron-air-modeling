@@ -192,7 +192,9 @@ seasonal storage of surplus solar, and calendar aging of replaceable electrodes
 (US12308414B2 Definitions and replaceable-electrode discussion).
 <<<
 COMMENT: >>>
-Each listed scenario has a unique IA-SCN-LT-* ID, Python scenario function, and notebook.
+Changed because ironair.scenarios is empty. Executable long-term coverage is
+plant_sim/99_FullPlantMission.ipynb and 91_ChargeDischarge.ipynb 100 h/300 h
+windows. Remaining LT IDs are design allocations.
 <<<
 
 [REQUIREMENT]
