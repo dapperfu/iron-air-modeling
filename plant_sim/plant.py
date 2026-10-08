@@ -259,7 +259,9 @@ class PlantModel:
         eta_fe = asinh_overpotential_V(I_fe / max(p.A_geom_m2, 1e-8), i0f, T)
         eta_orr = asinh_overpotential_V(I_orr / max(p.A_geom_m2, 1e-8), i0_T(p.i0_orr_A_m2, p.Ea_orr_J_mol, T), T)
         eta_oer = asinh_overpotential_V(I_oer / max(p.A_geom_m2, 1e-8), i0_T(p.i0_oer_A_m2, p.Ea_oer_J_mol, T), T)
-        Rsep = sep_mod.ionic_resistance_ohm(T, float(ely[0]) / Vely, float(self.slice(y, "sep")[1]), float(self.slice(y, "sep")[3]), p)
+        Rsep = sep_mod.ionic_resistance_ohm(
+            T, float(ely[0]) / Vely, float(self.slice(y, "sep")[1]), float(self.slice(y, "sep")[3]), p
+        )
         Rcol = col_mod.collector_resistance_ohm(T, float(self.slice(y, "col_fe")[1]), p)
         Rcol += col_mod.collector_resistance_ohm(T, float(self.slice(y, "col_air")[1]), p)
         Rcol *= 1.0 + float(deg[1])
@@ -272,7 +274,11 @@ class PlantModel:
         r_orr = abs(min(I_orr, 0.0)) / (4.0 * constants.F_C_MOL)
         r_oer = max(I_oer, 0.0) / (4.0 * constants.F_C_MOL)
         r_her = I_her / (2.0 * constants.F_C_MOL)
-        q_irrev = irreversible_heat_w(eta_fe, I_fe) + irreversible_heat_w(eta_orr, I_orr) + irreversible_heat_w(eta_oer, I_oer)
+        q_irrev = (
+            irreversible_heat_w(eta_fe, I_fe)
+            + irreversible_heat_w(eta_orr, I_orr)
+            + irreversible_heat_w(eta_oer, I_oer)
+        )
         return {
             "mode": mode,
             "I_cell_A": I_cmd,
@@ -316,14 +322,39 @@ class PlantModel:
         dy = np.zeros_like(y)
         a_oh = alg["a_oh"]
         T = alg["T_K"]
-        u_fe = {"I_fe_A": alg["I_fe_A"], "T_amb_K": float(u.get("T_amb_K", p.T_ref_K)), "a_oh": a_oh, "a_h2o": alg["a_h2o"]}
+        u_fe = {
+            "I_fe_A": alg["I_fe_A"],
+            "T_amb_K": float(u.get("T_amb_K", p.T_ref_K)),
+            "a_oh": a_oh,
+            "a_h2o": alg["a_h2o"],
+        }
         dy[b["fe"][0] : b["fe"][1]] = fe_mod.iron_anode_rhs(t, self.slice(y, "fe"), u_fe, p)
-        u_her = {"I_fe_A": alg["I_fe_A"], "T_K": T, "L_path_m": p.L_anode_m * (1.0 - 0.6 * p.chan_frac), "a_oh": a_oh, "a_h2o": alg["a_h2o"]}
+        u_her = {
+            "I_fe_A": alg["I_fe_A"],
+            "T_K": T,
+            "L_path_m": p.L_anode_m * (1.0 - 0.6 * p.chan_frac),
+            "a_oh": a_oh,
+            "a_h2o": alg["a_h2o"],
+        }
         dy[b["her"][0] : b["her"][1]] = her_mod.her_rhs(t, self.slice(y, "her"), u_her, p)
         c_gdl_tpb = float(self.slice(y, "gdl")[p.n_gdl_nodes - 1])
-        u_orr = {"I_orr_A": alg["I_orr_A"], "T_K": T, "c_O2_gdl_mol_m3": c_gdl_tpb, "p_O2_Pa": alg["p_O2_Pa"], "a_oh": a_oh, "a_h2o": alg["a_h2o"]}
+        u_orr = {
+            "I_orr_A": alg["I_orr_A"],
+            "T_K": T,
+            "c_O2_gdl_mol_m3": c_gdl_tpb,
+            "p_O2_Pa": alg["p_O2_Pa"],
+            "a_oh": a_oh,
+            "a_h2o": alg["a_h2o"],
+        }
         dy[b["orr"][0] : b["orr"][1]] = orr_mod.orr_rhs(t, self.slice(y, "orr"), u_orr, p)
-        u_oer = {"I_oer_A": alg["I_oer_A"], "T_K": T, "a_oh": a_oh, "a_h2o": alg["a_h2o"], "p_O2_Pa": alg["p_O2_Pa"], "oer_isolated": alg["oer_isolated"]}
+        u_oer = {
+            "I_oer_A": alg["I_oer_A"],
+            "T_K": T,
+            "a_oh": a_oh,
+            "a_h2o": alg["a_h2o"],
+            "p_O2_Pa": alg["p_O2_Pa"],
+            "oer_isolated": alg["oer_isolated"],
+        }
         dy[b["oer"][0] : b["oer"][1]] = oer_mod.oer_rhs(t, self.slice(y, "oer"), u_oer, p, self.oer_layout)
         omega_fan = float(self.slice(y, "fan")[0])
         mdot_air = 1.2e-5 * omega_fan + float(u.get("mdot_air_kg_s", 0.0))
@@ -368,22 +399,38 @@ class PlantModel:
             "mdot_coolant_kg_s": float(u.get("mdot_coolant_kg_s", 0.04)),
         }
         dy[b["th"][0] : b["th"][1]] = th_mod.thermal_rhs(t, self.slice(y, "th"), u_th, p)
-        u_air = {"mdot_air_kg_s": mdot_air, "r_orr_mol_s": alg["r_orr_mol_s"], "r_oer_mol_s": alg["r_oer_mol_s"], "T_K": T}
+        u_air = {
+            "mdot_air_kg_s": mdot_air,
+            "r_orr_mol_s": alg["r_orr_mol_s"],
+            "r_oer_mol_s": alg["r_oer_mol_s"],
+            "T_K": T,
+        }
         dy[b["air"][0] : b["air"][1]] = air_mod.air_rhs(t, self.slice(y, "air"), u_air, p)
         I_fan = float(u.get("I_fan_A", 0.8 if abs(alg["I_cell_A"]) > 1e-3 else 0.1))
         dy[b["fan"][0] : b["fan"][1]] = air_mod.fan_rhs(t, self.slice(y, "fan"), {"I_fan_A": I_fan}, p)
         dy[b["flow"][0] : b["flow"][1]] = hyd_mod.flow_rhs(
             t,
             self.slice(y, "flow"),
-            {"omega_pump_rad_s": float(self.slice(y, "pump")[0]), "valve_pos": float(self.slice(y, "valve")[0]), "T_ely_K": float(self.slice(y, "ely")[4])},
+            {
+                "omega_pump_rad_s": float(self.slice(y, "pump")[0]),
+                "valve_pos": float(self.slice(y, "valve")[0]),
+                "T_ely_K": float(self.slice(y, "ely")[4]),
+            },
             p,
         )
-        dy[b["pump"][0] : b["pump"][1]] = hyd_mod.Pump(p)._rhs(t, self.slice(y, "pump"), {"I_pump_A": float(u.get("I_pump_A", 1.5))}, {})
+        dy[b["pump"][0] : b["pump"][1]] = hyd_mod.Pump(p)._rhs(
+            t, self.slice(y, "pump"), {"I_pump_A": float(u.get("I_pump_A", 1.5))}, {}
+        )
         mdot = float(self.slice(y, "flow")[0])
         dy[b["res"][0] : b["res"][1]] = hyd_mod.Reservoir(p)._rhs(
-            t, self.slice(y, "res"), {"mdot_in_kg_s": mdot, "mdot_out_kg_s": mdot * 0.98, "T_in_K": float(self.slice(y, "ely")[4])}, {}
+            t,
+            self.slice(y, "res"),
+            {"mdot_in_kg_s": mdot, "mdot_out_kg_s": mdot * 0.98, "T_in_K": float(self.slice(y, "ely")[4])},
+            {},
         )
-        dy[b["valve"][0] : b["valve"][1]] = hyd_mod.Valve(p)._rhs(t, self.slice(y, "valve"), {"valve_cmd": float(u.get("valve_cmd", 0.75)), "dP_Pa": 2e4}, {})
+        dy[b["valve"][0] : b["valve"][1]] = hyd_mod.Valve(p)._rhs(
+            t, self.slice(y, "valve"), {"valve_cmd": float(u.get("valve_cmd", 0.75)), "dP_Pa": 2e4}, {}
+        )
         c_ely = float(self.slice(y, "ely")[0]) / max(float(self.slice(y, "ely")[5]), 1e-8)
         dy[b["pipe"][0] : b["pipe"][1]] = hyd_mod.Pipe(p)._rhs(
             t, self.slice(y, "pipe"), {"c_in_mol_m3": c_ely, "T_in_K": float(self.slice(y, "ely")[4]), "tau_s": 8.0}, {}
@@ -391,14 +438,23 @@ class PlantModel:
         dy[b["hex"][0] : b["hex"][1]] = th_mod.hex_rhs(
             t,
             self.slice(y, "hex"),
-            {"mdot_hot_kg_s": 0.04, "mdot_cold_kg_s": 0.05, "T_hot_in_K": float(self.slice(y, "th")[2]), "T_cold_in_K": float(u.get("T_amb_K", p.T_ref_K))},
+            {
+                "mdot_hot_kg_s": 0.04,
+                "mdot_cold_kg_s": 0.05,
+                "T_hot_in_K": float(self.slice(y, "th")[2]),
+                "T_cold_in_K": float(u.get("T_amb_K", p.T_ref_K)),
+            },
             p,
         )
         P_dc = alg["V_cell_V"] * alg["I_cell_A"] * p.n_cells_series * p.n_cells_parallel * p.n_stacks
         P_grid = float(u.get("P_grid_W", 0.0))
         dy[b["dc"][0] : b["dc"][1]] = el_mod.DCBus(p)._rhs(t, self.slice(y, "dc"), {"P_net_W": P_grid - P_dc}, {})
-        dy[b["inv"][0] : b["inv"][1]] = el_mod.GridInverter(p)._rhs(t, self.slice(y, "inv"), {"P_ref_W": P_grid, "Q_ref_var": float(u.get("Q_ref_var", 0.0))}, {})
-        dy[b["grid"][0] : b["grid"][1]] = el_mod.GridInterface(p)._rhs(t, self.slice(y, "grid"), {"P_grid_W": P_grid}, {})
+        dy[b["inv"][0] : b["inv"][1]] = el_mod.GridInverter(p)._rhs(
+            t, self.slice(y, "inv"), {"P_ref_W": P_grid, "Q_ref_var": float(u.get("Q_ref_var", 0.0))}, {}
+        )
+        dy[b["grid"][0] : b["grid"][1]] = el_mod.GridInterface(p)._rhs(
+            t, self.slice(y, "grid"), {"P_grid_W": P_grid}, {}
+        )
         u_deg = {
             "I_cell_A": alg["I_cell_A"],
             "eta_oer_V": alg["eta_oer_V"],
