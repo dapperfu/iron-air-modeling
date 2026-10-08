@@ -1,4 +1,7 @@
-"""12 Dual-electrode cell (US12308414B2): independent ORR/OER with iron anode."""
+"""12 Dual-electrode cell (US12308414B2): independent ORR/OER with iron anode.
+
+@relation(IA-CEL-001, scope=module)
+"""
 
 from __future__ import annotations
 
@@ -23,6 +26,10 @@ def _oer_rhs(t: float, y: NDArray[np.float64], u: Mapping[str, float], p: PlantP
 
 
 def _couple(t: float, y: NDArray[np.float64], u: Mapping[str, float], p: PlantParams, parts: dict[str, NDArray[np.float64]]) -> dict[str, Mapping[str, float]]:
+    """Charge closes iron-OER-source; discharge closes iron-ORR-load.
+
+    @relation(IA-CEL-001, scope=function)
+    """
     mode = float(u.get("mode", -1.0))
     I = float(u.get("I_cell_A", p.I_discharge_100h_A))
     T = float(parts["fe"][3])
@@ -48,6 +55,11 @@ def _couple(t: float, y: NDArray[np.float64], u: Mapping[str, float], p: PlantPa
 
 
 class DualElectrodeCell(CoupledSubstructure):
+    """IA-CEL-001 dual-electrode iron-air cell.
+
+    @relation(IA-CEL-001, scope=class)
+    """
+
     def __init__(self, p: PlantParams | None = None) -> None:
         p = p or default_params()
         oer_fn: Rhs = _oer_rhs

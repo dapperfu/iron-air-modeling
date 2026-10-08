@@ -302,7 +302,8 @@ UID: IA-CEL-001
 STATUS: Active
 TITLE: Complete cell ODE
 STATEMENT: >>>
-Module ironair.components.cell SHALL provide class IronAirCell.
+Module plant_sim.substructures.dual_electrode_cell SHALL provide class DualElectrodeCell
+(notebook plant_sim/12_DualElectrodeCell.ipynb).
 
 The cell SHALL couple iron electrode, air electrode, hydrogen evolution, electrolyte,
 separator, gas diffusion, current collectors, and thermal dynamics.
@@ -323,6 +324,10 @@ EP4602674A1 dual-electrode switch; US12308414B2 dual-cathode and duration scalin
 <<<
 COMMENT: >>>
 Cell rhs solves algebraic current/voltage consistency. Outputs include V, I, P, SOC.
+
+Changed because ironair.components.cell.IronAirCell does not exist.
+plant_sim.substructures.dual_electrode_cell.DualElectrodeCell couples Fe/HER/ORR/OER/GDL/electrolyte/separator
+and switches charge (iron-OER) versus discharge (iron-ORR) per EP [0049].
 <<<
 RELATIONS:
 - TYPE: Parent
