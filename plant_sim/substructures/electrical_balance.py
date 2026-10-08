@@ -32,7 +32,9 @@ def _grd(t, y, u, p):  # type: ignore[no-untyped-def]
     return el_mod.GridInterface(p)._rhs(t, y, u, {})
 
 
-def _couple(t: float, y: NDArray[np.float64], u: Mapping[str, float], p: PlantParams, parts: dict[str, NDArray[np.float64]]) -> dict[str, Mapping[str, float]]:
+def _couple(
+    t: float, y: NDArray[np.float64], u: Mapping[str, float], p: PlantParams, parts: dict[str, NDArray[np.float64]]
+) -> dict[str, Mapping[str, float]]:
     P = float(u.get("P_grid_W", 500.0))
     Vdc = float(parts["dc"][0])
     return {
