@@ -86,7 +86,9 @@ class CurrentCollector(RHSComponent):
     @relation(IA-COL-001, scope=class)
     """
 
-    def __init__(self, p: PlantParams | None = None, y0: NDArray[np.float64] | None = None, name: str = "collector") -> None:
+    def __init__(
+        self, p: PlantParams | None = None, y0: NDArray[np.float64] | None = None, name: str = "collector"
+    ) -> None:
         p = p or default_params()
         y0 = default_y0(p) if y0 is None else y0
 
