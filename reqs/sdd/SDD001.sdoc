@@ -215,13 +215,18 @@ UID: IA-SDD-009
 STATUS: Active
 TITLE: Vessel and lid design mapping
 STATEMENT: >>>
-BatteryEnclosure SHALL represent inner wall, outer wall, cavity, optional bag-in-box,
+VesselLidAir SHALL represent inner wall, outer wall, cavity, optional bag-in-box,
 stacking contacts, and can-negative conduction (US12308414B2 Claims 3 and 5;
 FIGS. 1E-1F, 11).
 
-Lid functions (air distribution, vent, thermal, current collection, sensing, DC
-links) SHALL map to AirSystem, ThermalNetwork, CurrentCollector, DynamicSensor,
-and DCBus ports rather than a monolithic undocumented object.
+Lid functions (air distribution, vent, thermal, current collection, DC links)
+SHALL map to AirSystem, ThermalNetwork, CurrentCollector, and DCBus ports rather
+than a monolithic undocumented object. DynamicSensor remains a design-only
+allocation (IA-FLT-001).
+<<<
+COMMENT: >>>
+Changed because BatteryEnclosure and DynamicSensor classes do not exist.
+VesselLidAir is the implemented vessel/lid/air image.
 <<<
 RELATIONS:
 - TYPE: Parent
