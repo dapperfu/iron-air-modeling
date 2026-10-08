@@ -17,11 +17,18 @@ def _fan_rhs(t, y, u, p):  # type: ignore[no-untyped-def]
     return air_mod.fan_rhs(t, y, u, p)
 
 
-def _couple(t: float, y: NDArray[np.float64], u: Mapping[str, float], p: PlantParams, parts: dict[str, NDArray[np.float64]]) -> dict[str, Mapping[str, float]]:
+def _couple(
+    t: float, y: NDArray[np.float64], u: Mapping[str, float], p: PlantParams, parts: dict[str, NDArray[np.float64]]
+) -> dict[str, Mapping[str, float]]:
     mdot = 1.2e-5 * float(parts["fan"][0])
     r_orr = float(u.get("r_orr_mol_s", 1e-6))
     return {
-        "air": {"mdot_air_kg_s": mdot, "r_orr_mol_s": r_orr, "r_oer_mol_s": float(u.get("r_oer_mol_s", 0.0)), "T_K": p.T_ep_sim_K},
+        "air": {
+            "mdot_air_kg_s": mdot,
+            "r_orr_mol_s": r_orr,
+            "r_oer_mol_s": float(u.get("r_oer_mol_s", 0.0)),
+            "T_K": p.T_ep_sim_K,
+        },
         "fan": {"I_fan_A": float(u.get("I_fan_A", 1.0))},
     }
 
