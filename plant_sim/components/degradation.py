@@ -1,4 +1,7 @@
-"""Degradation ODE (IA-DEG-001): ORR damage, PTFE loss, carbonate clog, passivation."""
+"""Degradation ODE (IA-DEG-001): ORR damage, PTFE loss, carbonate clog, passivation.
+
+@relation(IA-DEG-001, scope=module)
+"""
 
 from __future__ import annotations
 
@@ -28,6 +31,10 @@ def default_y0() -> NDArray[np.float64]:
 
 
 def degradation_rhs(t: float, y: NDArray[np.float64], u: Mapping[str, float], p: PlantParams) -> NDArray[np.float64]:
+    """Irreversible capacity, ASR, ORR, and PTFE aging RHS.
+
+    @relation(IA-DEG-001, scope=function)
+    """
     Q, Rg, kdec, ptfe = y
     I = float(u.get("I_cell_A", 0.0))
     eta_oer = float(u.get("eta_oer_V", 0.0))
@@ -43,6 +50,11 @@ def degradation_rhs(t: float, y: NDArray[np.float64], u: Mapping[str, float], p:
 
 
 class Degradation(RHSComponent):
+    """IA-DEG-001 aging states.
+
+    @relation(IA-DEG-001, scope=class)
+    """
+
     def __init__(self, p: PlantParams | None = None) -> None:
         p = p or default_params()
 

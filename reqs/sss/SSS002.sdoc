@@ -775,7 +775,8 @@ UID: IA-DEG-001
 STATUS: Active
 TITLE: Degradation ODE
 STATEMENT: >>>
-Module ironair.components.degradation SHALL provide class Degradation.
+Module plant_sim.components.degradation SHALL provide class Degradation
+(notebook plant_sim/98_DegradationCE.ipynb).
 
 The model SHALL represent irreversible material changes, catalyst decay, resistance
 growth, and active capacity loss.
@@ -788,6 +789,10 @@ SHALL be an allowed discrete maintenance event (US12308414B2 replaceable electro
 <<<
 COMMENT: >>>
 Degradation states are nondecreasing under positive aging rates. Capacity loss is irreversible.
+
+Changed because ironair.components.degradation does not exist.
+plant_sim.components.degradation.Degradation implements ORR damage, PTFE loss,
+carbonate ASR growth, and irreversible capacity loss used by PlantModel.
 <<<
 RELATIONS:
 - TYPE: Parent
