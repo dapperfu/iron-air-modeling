@@ -1,8 +1,18 @@
 # Python
 .venv/
+venv_iron-air-modeling/
 __pycache__/
 *.pyc
 .pytest_cache/
+.mypy_cache/
+.ruff_cache/
+htmlcov/
+.coverage
+coverage.xml
+*.egg-info/
+dist/
+build/
+.ipynb_checkpoints/
 
 # MATLAB / Simulink
 *.asv
