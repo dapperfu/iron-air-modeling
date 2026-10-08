@@ -100,11 +100,13 @@ UID: IA-IRS-005
 STATUS: Active
 TITLE: Estimator measurement-only interface
 STATEMENT: >>>
-BatteryStateEstimator SHALL accept measurements and prior estimates only. It SHALL
-NOT receive the plant hidden state vector during observer execution.
+When a state estimator is implemented, it SHALL accept measurements and prior
+estimates only. It SHALL NOT receive the plant hidden state vector during observer
+execution. No BatteryStateEstimator class exists today (IA-EST-001 design-only).
 <<<
 COMMENT: >>>
-Type hints and tests pass a MeasurementVector, not the plant y, into the estimator.
+Changed because BatteryStateEstimator and tests that pass MeasurementVector do not
+exist. The measurement-only interface remains the allocation when an observer is added.
 <<<
 RELATIONS:
 - TYPE: Parent
