@@ -852,15 +852,21 @@ UID: IA-EST-001
 STATUS: Active
 TITLE: State estimation
 STATEMENT: >>>
-Module ironair.controls.estimation SHALL provide class BatteryStateEstimator.
+Battery state estimation (SOC, SOH, active iron inventory, and available
+charge/discharge power) SHALL remain a design-only requirement until an observer
+module exists. No ironair.controls.estimation.BatteryStateEstimator class is
+implemented.
 
-The model SHALL estimate SOC, SOH, active iron inventory, and available charge/discharge power.
-
-It SHALL not access the simulated plant's true hidden states during observer execution.
+When implemented, the estimator SHALL accept measurements and prior estimates only
+and SHALL NOT receive the plant hidden state vector during observer execution.
 <<<
 COMMENT: >>>
-Estimator rhs and update methods accept only measurements and previous estimates,
-never plant.y hidden components.
+Changed because ironair.controls.estimation.BatteryStateEstimator does not exist
+(src/ironair/controls is an empty package) and plant_sim has no observer.
+Leaving a module SHALL would be a false implementation claim.
 <<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-CTL-001
 
 [[/SECTION]]
