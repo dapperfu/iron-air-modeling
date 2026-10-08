@@ -1,9 +1,22 @@
 [DOCUMENT]
 TITLE: Software Requirements Specification - Foundation, Chemistry, ODE, Notebooks, Verification
 UID: DOC-SSS001
-VERSION: 1.0.0
+VERSION: 1.1.0
 OPTIONS:
   MARKUP: Text
+
+[[SECTION]]
+UID: SEC-SSS1-REQ
+TITLE: Requirements management
+
+[TEXT]
+STATEMENT: >>>
+This document specifies foundation, chemistry, ODE, notebook, and verification
+requirements for ironair. Chemical stoichiometry, capacities, electrolyte
+compositions, and kinetics domains are taken from US12308414B2 and EP4602674A1.
+Software tests verify implementation against these statements; they do not
+validate the patents experimentally.
+<<<
 
 [REQUIREMENT]
 UID: IA-REQ-001
@@ -34,6 +47,10 @@ Required prefixes: IA-SYS, IA-REQ, IA-CON, IA-CHM, IA-FE, IA-HER, IA-ORR, IA-OER
 IA-GDL, IA-ELY, IA-SEP, IA-COL, IA-CEL, IA-THM, IA-AIR, IA-FLD, IA-HEX, IA-STK,
 IA-MOD, IA-ENC, IA-DC, IA-CNV, IA-INV, IA-TRF, IA-GRD, IA-CTL, IA-EST, IA-DEG,
 IA-FLT, IA-ODE, IA-NBK, IA-PLT, IA-TST, IA-DOC.
+
+Patent-mapped system requirements live under IA-SYS in DOC-SRS001 (US12308414B2
+Claims 1-18 and EP4602674A1 Claims 1-89). Component prefixes SHALL be used for
+the corresponding physical models of those claims.
 <<<
 COMMENT: >>>
 UID uniqueness is verified by tests. All required prefixes appear in the requirements tree.
@@ -89,7 +106,22 @@ Passing software tests SHALL NOT be represented as physical validation against e
 <<<
 COMMENT: >>>
 Physical requirements include ACCEPTANCE_CRITERIA. Validation status is tracked separately
-from software verification in ironair.validation.
+from software verification in ironair.validation. Patent claims are traced by UID
+and source citation, not by copying claim text as a test oracle.
+<<<
+
+[[/SECTION]]
+
+[[SECTION]]
+UID: SEC-SSS1-CON
+TITLE: Constants, parameters, and property models
+
+[TEXT]
+STATEMENT: >>>
+US12308414B2 defines room temperature as 25 C and standard temperature and
+pressure as 25 C and 1 atm, with "about" meaning plus or minus 10 percent or
+instrument error, whichever is larger. EP4602674A1 simulations use 6 M KOH at
+303 K. Property models SHALL cover those reference states.
 <<<
 
 [REQUIREMENT]
@@ -99,6 +131,10 @@ TITLE: Constants module
 STATEMENT: >>>
 Implement src/ironair/constants.py providing F_C_MOL, R_J_MOL_K, T_REF_K, P_REF_PA,
 M_FE_KG_MOL, M_O2_KG_MOL, M_H2O_KG_MOL, and M_KOH_KG_MOL.
+
+T_REF_K SHALL default to 298.15 K (25 C) and P_REF_PA to 101325 Pa (1 atm) to
+match US12308414B2 standard ambient temperature and pressure. A 303 K property
+set SHALL be available for EP4602674A1 simulation conditions.
 
 Fundamental constants SHALL be immutable.
 <<<
@@ -122,6 +158,12 @@ and calibration status.
 Parameter categories SHALL distinguish fundamental constant, literature value,
 experimental measurement, engineering design assumption, calibrated coefficient,
 and unverified placeholder.
+
+Patent-disclosed values (electrolyte molarity, channel lengths, iron loading,
+pO2 windows, theoretical mAh/g) SHALL be tagged as literature value with the
+patent number and claim or paragraph in the literature-reference field. They
+SHALL NOT be tagged as experimental measurement unless an independent hardware
+campaign is recorded.
 <<<
 COMMENT: >>>
 PhysicalParameter dataclass enforces required fields and rejects out-of-range values.
@@ -139,10 +181,31 @@ solubility, oxygen diffusivity, gas-phase diffusivity, iron conductivity, therma
 conductivity, reaction rate constants, and electrochemical exchange-current densities.
 
 Property models SHALL enforce their valid domains.
+
+KOH molarity domain SHALL include the patented compositions 5 M to 11 M hydroxide,
+including 6 M KOH, 5.5 M KOH + 0.5 M LiOH, 6 M NaOH, 5 M NaOH + 1 M KOH, and
+7 M or greater hydroxide (US12308414B2 electrolyte examples; EP4602674A1
+[0231]-[0241]).
 <<<
 COMMENT: >>>
 Property functions raise a domain error outside documented T and concentration ranges
 and return finite SI values inside the range.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-021
+
+[[/SECTION]]
+
+[[SECTION]]
+UID: SEC-SSS1-CHM
+TITLE: Shared iron-air chemistry (US12308414B2 and EP4602674A1)
+
+[TEXT]
+STATEMENT: >>>
+EP4602674A1 Equations 1-2 and US12308414B2 air-electrode half-reactions are the
+stoichiometric source for ironair.chemistry. Elemental conservation is a software
+requirement; the patents supply the reaction identities and theoretical capacities.
 <<<
 
 [REQUIREMENT]
@@ -173,13 +236,24 @@ UID: IA-CHM-002
 STATUS: Active
 TITLE: Iron conversion
 STATEMENT: >>>
-Implement Fe + 2OH- <-> Fe(OH)2 + 2e-.
+Implement Fe + 2OH- <-> Fe(OH)2 + 2e- as EP4602674A1 [0042] Equation 1.
 
 Calculate reaction rates from electrode kinetics and Faraday's law.
+
+Theoretical first-step capacity SHALL be 960 mAh per gram of metallic Fe
+(EP4602674A1 [0043]). Net volume increase on discharge SHALL be accommodated in
+anode porosity rather than by creating unphysical inventory.
+<<<
+RATIONALE: >>>
+EP4602674A1 [0042]-[0043]. US12308414B2 identifies Fe and Fe-alloys (FeAl, FeZn,
+FeMg) as metal-electrode options; iron is the default LODES anode.
 <<<
 COMMENT: >>>
 Two electrons per iron atom. Faraday mapping r = i * A / (n * F) holds within solver tolerance.
 <<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-020
 
 [REQUIREMENT]
 UID: IA-CHM-003
@@ -188,44 +262,95 @@ TITLE: Magnetite formation
 STATEMENT: >>>
 Implement configurable conversion between iron hydroxide and magnetite, including
 electron transfer and correct stoichiometry.
+
+The second discharge step SHALL correspond to further oxidation of Fe(OH)2 to
+Fe3O4 with theoretical capacity 320 mAh per gram of Fe (EP4602674A1 [0043]
+Equation 2). Charge SHALL reduce higher-valence iron species toward Fe(0)
+(EP4602674A1 [0049]).
+<<<
+RATIONALE: >>>
+EP4602674A1 [0042]-[0043], [0049]. Magnetite is the example higher-valence product
+on discharge through the dual-electrode load path.
 <<<
 COMMENT: >>>
 Default electrochemical path conserves Fe, O, H, and charge. A Schikorr chemical path
 may be enabled without inventing extra electrons.
 <<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-020
 
 [REQUIREMENT]
 UID: IA-CHM-004
 STATUS: Active
 TITLE: Oxygen reduction reaction
 STATEMENT: >>>
-Implement O2 + 2H2O + 4e- -> 4OH-.
+Implement O2 + 2H2O + 4e- -> 4OH- as the ORR discharge reaction of
+US12308414B2 (four-electron oxygen reduction at the gas-solid-electrolyte
+triple-phase boundary).
+
+ORR SHALL consume gaseous oxygen typically sourced from air and SHALL require
+triple-phase contact among O2, an electronically conductive solid, and
+electrolyte.
+<<<
+RATIONALE: >>>
+US12308414B2 detailed description of cathode 120 / GDE operation. EP4602674A1
+FIG. 1 ORR electrode 104 is the discharge positive.
 <<<
 COMMENT: >>>
 Four electrons per O2. OH- production matches Faraday's law.
 <<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-020
 
 [REQUIREMENT]
 UID: IA-CHM-005
 STATUS: Active
 TITLE: Oxygen evolution reaction
 STATEMENT: >>>
-Implement 4OH- -> O2 + 2H2O + 4e-.
+Implement 4OH- -> O2 + 2H2O + 4e- as the OER charge reaction on a dedicated
+OER electrode (US12308414B2 dual cathode; EP4602674A1 [0048]-[0049]).
+
+OER kinetics, catalyst state, and bubble generation SHALL be independent of ORR
+so that high OER potentials do not oxidize the ORR electrode when the electrodes
+are electrically separated (US12308414B2 FIGS. 5A-5B).
+<<<
+RATIONALE: >>>
+Dual-electrode configuration in both patents. EP4602674A1 Claim 11: OER as porous
+metal mesh plus oxygen-evolution catalyst (Ni, Ni-Fe, Mn oxide, Fe, NiOx,
+NiOx(OH)y, FeOx, FeOx(OH)y).
 <<<
 COMMENT: >>>
 OER is the reverse four-electron oxygen couple of ORR with independent kinetics.
 <<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-020
 
 [REQUIREMENT]
 UID: IA-CHM-006
 STATUS: Active
 TITLE: Hydrogen evolution reaction
 STATEMENT: >>>
-Implement 2H2O + 2e- -> H2 + 2OH-.
+Implement 2H2O + 2e- -> H2 + 2OH- as the parasitic hydrogen evolution reaction
+that competes with iron recharge (EP4602674A1 [0044], [0047]).
+
+HER SHALL be favored at the electrode front when ionic path length to unreacted
+oxidized iron at the back is large. Channeled and interdigitated geometries
+SHALL reduce that path length and SHALL be able to increase coulombic efficiency
+relative to planar electrodes (EP4602674A1 FIGS. 19-21).
+<<<
+RATIONALE: >>>
+EP4602674A1 [0044]-[0050] and FIGS. 19-26. Water as HER reactant can be replenished
+while iron hydroxide at the back remains transport-limited.
 <<<
 COMMENT: >>>
 Two electrons per H2. Rate increases with more negative iron overpotential.
 <<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-020
 
 [REQUIREMENT]
 UID: IA-CHM-007
@@ -235,6 +360,11 @@ STATEMENT: >>>
 Implement nonlinear electrode kinetics with exchange-current density, transfer coefficients,
 local overpotential, temperature, species activities, electrode surface area, and
 reaction availability.
+
+Exchange-current densities SHALL be temperature- and concentration-dependent
+within the patented alkaline domain. Interdigitated OER SHALL be allowed to
+lower effective ionic overpotential relative to planar OER at the same loading
+(EP4602674A1 FIGS. 19-24).
 <<<
 COMMENT: >>>
 Zero overpotential yields zero net Faradaic current at unit activities. Current is
@@ -278,6 +408,37 @@ COMMENT: >>>
 Elemental residual norms are below 1e-12 relative to characteristic inventory for
 closed-system reaction extents.
 <<<
+
+[REQUIREMENT]
+UID: IA-CHM-011
+STATUS: Active
+TITLE: Coulombic efficiency versus electrode architecture
+STATEMENT: >>>
+The chemistry-to-electrode coupling SHALL report instantaneous coulombic charge
+efficiency as the fraction of charge current stored in intended iron reduction
+products rather than HER (EP4602674A1 [0044], FIGS. 19, 21, 23, 25).
+
+Planar, channeled, and interdigitated OER/iron layouts SHALL be comparable on
+the same ParameterSet. Interdigitated layouts SHALL be able to show higher
+coulombic efficiency and lower sensitivity of efficiency to areal loading than
+planar layouts, matching the qualitative simulation results of EP4602674A1
+FIGS. 19-24 at 6 M KOH, 303 K, initial rib porosity 0.6, example ChanFrac 0.4,
+w_rib 5 mm, and example loading 4 g Fe/cm2.
+<<<
+RATIONALE: >>>
+EP4602674A1 [0261]-[0280] and FIGS. 19-27. FIG. 27 experimental interdigitated
+cell showed an extended upper discharge voltage plateau versus planar control
+at matched loading, temperature, current, electrolyte, and ORR.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-015
+
+[[/SECTION]]
+
+[[SECTION]]
+UID: SEC-SSS1-ODE
+TITLE: ODE protocol, solvers, and multiscale execution
 
 [REQUIREMENT]
 UID: IA-ODE-001
@@ -367,7 +528,18 @@ different model fidelity settings while sharing the same physical parameter defi
 COMMENT: >>>
 The same ParameterSet can be passed to detailed and reduced-order components.
 t_span may be [0, 1e-3] or [0, 7*86400] without changing parameter objects.
+LODES windows of 8 h, 100 h, 300 h, week-scale, and seasonal duration from
+US12308414B2 SHALL use the same ParameterSet with documented fidelity flags.
 <<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-007
+
+[[/SECTION]]
+
+[[SECTION]]
+UID: SEC-SSS1-NBK
+TITLE: Notebooks and plotting
 
 [REQUIREMENT]
 UID: IA-NBK-001
@@ -428,6 +600,8 @@ Each notebook SHALL call the actual associated Python component.
 <<<
 COMMENT: >>>
 Required chemistry notebooks exist under notebooks/chemistry and import ironair.chemistry.
+Notebooks SHALL cite US12308414B2 and EP4602674A1 for reaction identities and
+shall not present software plots as hardware validation of those patents.
 <<<
 
 [REQUIREMENT]
@@ -469,6 +643,12 @@ plotting helpers reject empty axis labels.
 RELATIONS:
 - TYPE: Parent
   VALUE: IA-NBK-002
+
+[[/SECTION]]
+
+[[SECTION]]
+UID: SEC-SSS1-TST
+TITLE: Verification, conservation, and reproducibility
 
 [REQUIREMENT]
 UID: IA-TST-001
@@ -617,6 +797,7 @@ requirements coverage, and executable notebook demonstrations.
 <<<
 COMMENT: >>>
 README documents install, architecture, limitations, and that passing tests are not
-hardware validation.
+hardware validation of US12308414B2 or EP4602674A1.
 <<<
 
+[[/SECTION]]
