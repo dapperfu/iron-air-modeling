@@ -1,9 +1,23 @@
 [DOCUMENT]
 TITLE: Software Requirements Specification - Component ODE Models
 UID: DOC-SSS002
-VERSION: 1.0.0
+VERSION: 1.1.0
 OPTIONS:
   MARKUP: Text
+
+[[SECTION]]
+UID: SEC-SSS2-ELECTRODES
+TITLE: Iron electrode, hydrogen evolution, and dual air electrodes
+
+[TEXT]
+STATEMENT: >>>
+Each DynamicComponent in this document is the software image of a patented plant
+part. Iron, ORR, OER, electrolyte, separator, collector, cell, stack, module,
+and enclosure geometries are taken from US12308414B2 (Claims 1-18 and FIGS. 1-93)
+and EP4602674A1 (Claims 1-89 and FIGS. 1-27). Balance-of-plant electrical and
+thermal components remain required to close the LODES plant of US12308414B2
+FIGS. 94-102.
+<<<
 
 [REQUIREMENT]
 UID: IA-FE-001
@@ -17,6 +31,19 @@ area, passivation thickness, porosity, electrode temperature, and irreversible
 active-material loss.
 
 The RHS SHALL calculate iron phase derivatives from the shared reaction network.
+
+The iron electrode SHALL support DRI pellet beds (US12308414B2 Claim 18), porous
+particle assemblies, and channeled rib-and-spine electrodes (EP4602674A1 Claim 1)
+with areal loading 1-7 g Fe/cm2 and electrolyte volume fraction 0.5-0.9 when
+fully charged (EP4602674A1 Claim 16-17).
+
+Channel length, width, spacing, shape, slope, channel fraction, and spine/rib
+porosity SHALL match IA-SYS-016 and IA-SYS-018. Position relative to ORR and OER
+SHALL be changeable (US12308414B2 Claim 13).
+<<<
+RATIONALE: >>>
+US12308414B2 Claim 18 and FIG. 3 packed DRI bed; EP4602674A1 Claims 1, 16-17 and
+[0051]-[0061]. Thick electrodes need channels to keep HER from dominating charge.
 <<<
 COMMENT: >>>
 Discharge of Fe increases Fe(OH)2 using IA-CHM-002 stoichiometry. Temperature is a
@@ -36,11 +63,22 @@ Module ironair.components.hydrogen SHALL provide class HydrogenEvolution.
 States SHALL include hydrogen inventory and applicable interfacial or gas-transfer dynamics.
 
 The component SHALL couple hydrogen generation to charging current and electrode potential.
+
+Vertical channels SHALL provide a bubble-egress path for HER (EP4602674A1 [0056]).
+Coulombic efficiency SHALL decrease when ionic path length to the back of a thick
+iron electrode exceeds the resistance of front-surface HER (EP4602674A1 [0047]).
+<<<
+RATIONALE: >>>
+EP4602674A1 [0044]-[0047], [0056]. Enclosure ventilation and lid venting in
+US12308414B2 remove evolved hydrogen from the vessel headspace.
 <<<
 COMMENT: >>>
 H2 inventory increases under negative iron overpotential. Open-circuit HER is smaller
 than strong cathodic charging HER.
 <<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-020
 
 [REQUIREMENT]
 UID: IA-ORR-001
@@ -52,11 +90,27 @@ Module ironair.components.oxygen_reduction SHALL provide class OxygenReduction.
 States SHALL include interfacial charge storage and oxygen availability where applicable.
 
 The component SHALL calculate nonlinear ORR kinetics and oxygen consumption.
+
+ORR SHALL be configurable as floating, vertical natural-air-breathing, inverse
+air-breathing, tubular, stacked submerged sections with depth-equalized pressure
+drop, wavy/rippled, or bifunctional, per IA-SYS-009 and IA-SYS-012
+(US12308414B2 Claims 1, 4, 7-12).
+
+One ORR face SHALL face electrolyte or channels and the opposing face SHALL
+contact air (EP4602674A1 Claim 1). Hydrophobic GDE layers with PTFE/carbon MPL
+examples from US12308414B2 SHALL be parameterizable.
+<<<
+RATIONALE: >>>
+US12308414B2 Claims 1, 4, 7-12 and cathode construction; EP4602674A1 Claim 1
+air-facing second surface.
 <<<
 COMMENT: >>>
 ORR current is negative (cathodic) for eta < 0 versus the ORR Nernst potential.
 Oxygen consumption matches Faraday's law for four-electron ORR.
 <<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-012
 
 [REQUIREMENT]
 UID: IA-OER-001
@@ -67,10 +121,24 @@ Module ironair.components.oxygen_evolution SHALL provide class OxygenEvolution.
 
 The component SHALL calculate oxygen evolution, catalyst activity, and applicable
 dynamic electrode states.
+
+OER SHALL support planar, submerged, interdigitated trunk-and-projection,
+corrugated, serpentine, discrete cathode arrays, spiral bifilar, and pleated
+layouts (EP4602674A1 Claims 1, 3, 12, 32, 38, 70, 77).
+
+Default OER construction SHALL be porous metal mesh plus oxygen-evolution
+catalyst (Claim 11). OER SHALL sit closer to the iron electrode than ORR during
+charge and SHALL be electrically isolatable from ORR (US12308414B2 FIGS. 5A-5B).
+<<<
+RATIONALE: >>>
+EP4602674A1 Claims 1, 3, 11-12, 38, 70, 77; US12308414B2 dual-cathode toggle.
 <<<
 COMMENT: >>>
 OER current is positive (anodic) for eta > 0 versus the OER Nernst potential.
 <<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-015
 
 [REQUIREMENT]
 UID: IA-GDL-001
@@ -81,11 +149,25 @@ Module ironair.components.gas_diffusion SHALL provide class GasDiffusionLayer.
 
 The component SHALL calculate transient oxygen concentration profiles, effective
 diffusion, pore saturation, flooding, and gas/liquid transport.
+
+Hydraulic head on vertical ORR SHALL be able to drive liquid migration and
+flooding; OER bubbles trapped at a horizontal air electrode SHALL be able to
+dry the triple-phase boundary (US12308414B2 vertical versus horizontal
+architecture discussion, FIGS. 8-9B). Stacked submerged ORR SHALL capture
+cascading bubbles with baffles, lips, or increasing pocket thickness
+(FIGS. 25A-36B, Claims 1 and 14-15).
+<<<
+RATIONALE: >>>
+US12308414B2 flooding, dry-out, bubble-trap, and stacked-core air utilization.
+pO2 window 0.01-100 atm discharge and 0.001-100 atm charge.
 <<<
 COMMENT: >>>
 A step decrease in boundary O2 mole fraction produces a delayed interior O2 decline.
 Flooding (saturation -> 1) reduces effective O2 diffusivity.
 <<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-014
 
 [REQUIREMENT]
 UID: IA-ELY-001
@@ -98,11 +180,24 @@ States SHALL include water inventory, dissolved species, electrolyte temperature
 carbonation, and spatial concentration distributions where enabled.
 
 The model SHALL include concentration-dependent KOH physical properties.
+
+Default composition SHALL be 6 M aqueous KOH. Alternate patented mixtures from
+IA-SYS-021 SHALL be selectable. Carbonation from CO2-bearing air SHALL consume
+OH- and MAY precipitate solids that clog pores (US12308414B2). High hydroxide
+(7 M or greater) SHALL be allowed as a capacity and coulombic-efficiency lever
+(EP4602674A1).
+<<<
+RATIONALE: >>>
+US12308414B2 electrolyte examples and CO2 discussion; EP4602674A1 Claims 14-15
+and high-hydroxide paragraph.
 <<<
 COMMENT: >>>
 Conductivity is computed from instantaneous KOH concentration and temperature via
 ironair.properties. Carbonate accumulation consumes OH-.
 <<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-021
 
 [REQUIREMENT]
 UID: IA-SEP-001
@@ -115,11 +210,25 @@ The model SHALL represent transient species transport, electrolyte saturation wh
 applicable, degradation, and separator temperature.
 
 Ionic resistance SHALL be calculated from the instantaneous physical state.
+
+The separator SHALL be able to block dissolved oxygen and oxygen bubbles from
+reaching the iron electrode without a substantial ionic-resistance penalty, while
+remaining hydrophilic and macroporous (US12308414B2 FIG. 4A). It MAY be a
+compression frame, porous insulator, ribbed bubble-egress structure, or porous
+dielectric coating on iron and/or OER (EP4602674A1 [0048], Claim 2). Wrapped
+stacked-core separators MAY use 1 micrometer to 1 centimeter pores
+(US12308414B2 FIG. 36A).
+<<<
+RATIONALE: >>>
+US12308414B2 oxygen-blocking separator; EP4602674A1 Claim 2 and [0048].
 <<<
 COMMENT: >>>
 R_ionic is algebraic in conductivity, thickness, area, and saturation. Temperature
 is dynamic.
 <<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-025
 
 [REQUIREMENT]
 UID: IA-COL-001
@@ -132,10 +241,21 @@ The model SHALL include thermal dynamics and configurable long-term contact or
 resistance degradation.
 
 Ohmic voltage loss SHALL be calculated algebraically.
+
+Collectors SHALL include anode branch-plus-primary layouts, ORR dual-face tabs,
+Ni-coated-steel ORR collectors with EPDM gasket compression
+(US12308414B2 FIGS. 4B-4C), stainless-steel wires/sheets or mesh cages in iron
+ribs (EP4602674A1), and can-negative housings (US12308414B2 Claim 5).
+<<<
+RATIONALE: >>>
+US12308414B2 Claims 5 and 17 and FIGS. 4B-4C; EP4602674A1 Claims 13, 30-31.
 <<<
 COMMENT: >>>
 No fake lag state for resistance. V_ohm = I * R(T, degradation_state).
 <<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-025
 
 [REQUIREMENT]
 UID: IA-CEL-001
@@ -151,10 +271,28 @@ The cell SHALL calculate instantaneous terminal voltage, current, power, SOC, an
 available capacity.
 
 The component SHALL solve coupled nonlinear electrochemical and electrical constraints.
+
+Charge SHALL close iron to OER to power source; discharge SHALL close iron to ORR
+to load (EP4602674A1 [0049]). Independent charge and discharge length scales
+SHALL be parameterizable (US12308414B2 Lc versus Ld, including 100 h / 300 h
+asymmetric example). Shared-electrolyte baths of multiple cells SHALL be allowed
+(US12308414B2 FIG. 9A vessel 970).
+<<<
+RATIONALE: >>>
+EP4602674A1 dual-electrode switch; US12308414B2 dual-cathode and duration scaling.
 <<<
 COMMENT: >>>
 Cell rhs solves algebraic current/voltage consistency. Outputs include V, I, P, SOC.
 <<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-008
+
+[[/SECTION]]
+
+[[SECTION]]
+UID: SEC-SSS2-BOP
+TITLE: Thermal, air, and electrolyte hydraulic plant
 
 [REQUIREMENT]
 UID: IA-THM-001
@@ -166,10 +304,21 @@ Module ironair.components.thermal SHALL provide class ThermalNetwork.
 States SHALL include thermal energy or temperature at relevant physical nodes.
 
 The model SHALL calculate conduction, convection, radiation, reaction heat, and cooling.
+
+Vessel cavity flow (air or liquid), thermal-mass water fill, and lid-level thermal
+management from US12308414B2 FIGS. 1E-1F and 9A SHALL map onto ThermalNetwork
+nodes. Wide/low vessels SHALL be usable to increase surface area for heat
+rejection.
+<<<
+RATIONALE: >>>
+US12308414B2 double-wall cavity 161 and multi-function lid thermal management.
 <<<
 COMMENT: >>>
 Adiabatic isolated node with positive heat source increases temperature.
 <<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-011
 
 [REQUIREMENT]
 UID: IA-AIR-001
@@ -180,10 +329,23 @@ Module ironair.components.air_system SHALL provide class AirSystem.
 
 The component SHALL include gas inventories, manifold pressure dynamics, oxygen
 concentration, humidity, and airflow coupling.
+
+Air delivery SHALL include natural air-breathing, forced supply, sparging/bubbling
+into submerged ORR, cascading stacked-core flow, snorkel/test-tube mixed-phase
+channels, and ramp arrays with holes (US12308414B2 Claims 9, 14-15; FIGS. 37-51,
+71A-71B). Outlet pressure regulation SHALL be able to hold unsealed air-chamber
+pressure.
+<<<
+RATIONALE: >>>
+US12308414B2 air-supply and stacked-core architectures. Equal pressure drop across
+depth-stacked ORR sections is Claim 1.
 <<<
 COMMENT: >>>
 Manifold pressure rises when inlet mass flow exceeds outlet plus consumption.
 <<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-014
 
 [REQUIREMENT]
 UID: IA-AIR-002
@@ -193,10 +355,16 @@ STATEMENT: >>>
 Module ironair.components.fan SHALL provide class Fan.
 
 The model SHALL include rotor speed dynamics and fan power consumption.
+
+Fan/blower air SHALL be able to feed submerged ORR stacks and lid air-distribution
+plenums of US12308414B2 FIG. 9A.
 <<<
 COMMENT: >>>
 Rotor speed is a dynamic state. Electrical power is an algebraic output from speed and torque.
 <<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-AIR-001
 
 [REQUIREMENT]
 UID: IA-FLD-001
@@ -237,6 +405,8 @@ and boundary flows.
 <<<
 COMMENT: >>>
 Mass balance: dM/dt equals inlet minus outlet minus leak.
+The vessel cavity MAY hold drained electrolyte during maintenance
+(US12308414B2 FIGS. 1E-1F) without requiring off-site storage volume.
 <<<
 
 [REQUIREMENT]
@@ -278,7 +448,15 @@ The component SHALL represent thermal storage and dynamic heat transfer between 
 <<<
 COMMENT: >>>
 Two fluid temperatures approach each other under heat transfer with no external loss.
+Cavity coolant and lid thermal loops of US12308414B2 SHALL be representable as
+HeatExchanger circuits.
 <<<
+
+[[/SECTION]]
+
+[[SECTION]]
+UID: SEC-SSS2-PLANT
+TITLE: Stack, module, enclosure, and electrical conversion
 
 [REQUIREMENT]
 UID: IA-STK-001
@@ -289,10 +467,22 @@ Module ironair.components.stack SHALL provide class BatteryStack.
 
 The component SHALL aggregate cell states while preserving cell-level variations and
 electrical current conservation.
+
+Stacked vessels with conductive contact points SHALL be able to place cells in
+series (US12308414B2 Claim 3). Arrays of coaxial ORR-core / hexagonal-anode cells
+in a shared electrolyte pool (FIGS. 27-34) and multi-cell housings with dividing
+walls (FIG. 13) SHALL be supported. Double-sided and air-channel-paired cells
+from EP4602674A1 Claims 18-19 SHALL be stackable.
+<<<
+RATIONALE: >>>
+US12308414B2 Claims 3 and 5, FIGS. 13 and 27-34; EP4602674A1 Claims 18-19.
 <<<
 COMMENT: >>>
 Series stack current is identical through cells. Terminal voltage is the sum of cell voltages.
 <<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-011
 
 [REQUIREMENT]
 UID: IA-MOD-001
@@ -302,10 +492,16 @@ STATEMENT: >>>
 Module ironair.components.module SHALL provide class BatteryModule.
 
 The model SHALL include coupled stacks, shared fluid equipment, air equipment, and thermal states.
+
+A module MAY be a stack of 40 housings as illustrated in US12308414B2 FIG. 13,
+sharing lid air distribution, venting, and DC connections (FIG. 9A).
 <<<
 COMMENT: >>>
 Module assembles at least one stack plus shared thermal or fluid nodes.
 <<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-011
 
 [REQUIREMENT]
 UID: IA-ENC-001
@@ -316,10 +512,24 @@ Module ironair.components.enclosure SHALL provide class BatteryEnclosure.
 
 The model SHALL include enclosure temperature, ventilation, auxiliary electrical loads,
 and enclosure-level gas inventories.
+
+The enclosure SHALL implement stackable-vessel, double-wall secondary containment,
+optional bag-in-box, trough/dished mechanical shapes, and multi-function lid
+(air distribution, process-gas vent, thermal management, current collection,
+controls/sensing, DC connections) from US12308414B2 Claims 3 and 5 and
+FIGS. 1E-1F, 9A, 12A-12F. Alkaline electrolyte SHALL have primary plus secondary
+containment.
+<<<
+RATIONALE: >>>
+US12308414B2 Claim 3 vessel, Claim 5 can-negative housing, hazardous-electrolyte
+containment, and lid 902 functions.
 <<<
 COMMENT: >>>
 Ventilation flow reduces enclosure H2 inventory. Auxiliary load is an algebraic electrical output.
 <<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-026
 
 [REQUIREMENT]
 UID: IA-DC-001
@@ -388,11 +598,18 @@ equations, and configurable external-grid dynamic models.
 
 A prescribed grid voltage or frequency SHALL be treated as an external input, not an
 invented dynamic state.
+
+Grid-connected LODES dispatch of surplus solar over seasonal windows
+(US12308414B2 Definitions; FIGS. 94-102 bulk energy storage systems) SHALL be
+representable as GridInterface scenarios.
 <<<
 COMMENT: >>>
 When voltage/frequency are prescribed, they appear in inputs. Optional swing-equation
 mode is explicitly identified.
 <<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-007
 
 [REQUIREMENT]
 UID: IA-DEG-001
@@ -403,10 +620,19 @@ Module ironair.components.degradation SHALL provide class Degradation.
 
 The model SHALL represent irreversible material changes, catalyst decay, resistance
 growth, and active capacity loss.
+
+ORR damage from high OER potential, PTFE hydrophobicity loss, carbonate pore
+clogging, salt crusting on air electrodes, and iron passivation SHALL be
+representable aging modes (US12308414B2 dual-cathode isolation, CO2, and crusting
+discussion; EP4602674A1 passivation via Fe(OH)2 films). Seasonal anode replacement
+SHALL be an allowed discrete maintenance event (US12308414B2 replaceable electrodes).
 <<<
 COMMENT: >>>
 Degradation states are nondecreasing under positive aging rates. Capacity loss is irreversible.
 <<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-023
 
 [REQUIREMENT]
 UID: IA-FLT-001
@@ -416,10 +642,17 @@ STATEMENT: >>>
 Module ironair.components.sensors SHALL provide class DynamicSensor.
 
 The model SHALL include finite response time, sensor drift, bias, and noise.
+
+Lid-mounted reactor controls and sensing of US12308414B2 FIG. 9A SHALL map onto
+DynamicSensor instances for voltage, current, temperature, electrolyte level, gas
+flow, and hydrogen.
 <<<
 COMMENT: >>>
 First-order sensor lag is a dynamic state. Noise uses a documented random seed.
 <<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-011
 
 [REQUIREMENT]
 UID: IA-CTL-001
@@ -432,10 +665,17 @@ The controller SHALL include explicit continuous controller states where applica
 as well as discrete operating modes.
 
 It SHALL be implemented as a hybrid system with ODE dynamics and discrete transitions.
+
+Discrete modes SHALL include charge (iron-OER-source), discharge (iron-ORR-load),
+rest, protection, and optional airflow-flex isolation of ORR from OER
+(EP4602674A1 switch 116; US12308414B2 switch 550 and Claim 16).
 <<<
 COMMENT: >>>
 Mode transitions are event-driven. PI or equivalent continuous states exist for current/power regulation.
 <<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-008
 
 [REQUIREMENT]
 UID: IA-EST-001
@@ -452,3 +692,5 @@ COMMENT: >>>
 Estimator rhs and update methods accept only measurements and previous estimates,
 never plant.y hidden components.
 <<<
+
+[[/SECTION]]
