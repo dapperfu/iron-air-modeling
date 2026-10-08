@@ -161,7 +161,13 @@ class Reservoir(RHSComponent):
         def out(t, y, inputs, context):  # type: ignore[no-untyped-def]
             M, n_OH, T = y
             dens = koh_density_kg_m3(min(max(float(T), 274.0), 372.0), p.c_KOH_mol_m3)
-            return {"M_kg": float(M), "V_m3": float(M / dens), "c_OH_mol_m3": float(n_OH / max(M / dens, 1e-12)), "T_K": float(T), "t_s": t}
+            return {
+                "M_kg": float(M),
+                "V_m3": float(M / dens),
+                "c_OH_mol_m3": float(n_OH / max(M / dens, 1e-12)),
+                "T_K": float(T),
+                "t_s": t,
+            }
 
         super().__init__(
             name="reservoir",
