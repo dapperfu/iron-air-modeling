@@ -1,0 +1,3 @@
+<div class="document">
+<p>Atomic physics blocks SHALL implement continuous first-order ODEs using Simulink Integrator blocks driven by explicit dy/dt equations (no S-Functions), suitable for variable-step stiff solvers (ode15s / ode23tb class).</p>
+</div>

@@ -17,7 +17,7 @@ make strictdoc-generate
 |------|------|
 | `lib_IronAir.slx` | Masked first-principles library |
 | `lib_IronAir_init.m` | Parameters → `lib_IronAir.sldd` |
-| `src/` | ODE kernels + Level-2 MATLAB S-Functions |
+| `src/` | ODE kernels; `src/sl/` Simulink dy/dt wrappers (Integrator-based, no S-Functions) |
 | `models/` | Cell, stack, 24–100 h plant demos |
 | `tests/` | MATLAB unit tests (TD001–TD008) |
 | `requirements/` | StrictDoc MIL-STD-498 (SRS…TD) |

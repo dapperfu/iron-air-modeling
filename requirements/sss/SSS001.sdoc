@@ -14,7 +14,7 @@ The implementation SHALL provide lib_IronAir.slx containing masked first-princip
 UID: SSS002
 TITLE: Continuous-time ODEs
 STATEMENT: >>>
-Atomic physics blocks SHALL use continuous-time integrators / ODE formulations suitable for variable-step stiff solvers (ode15s / ode23tb class).
+Atomic physics blocks SHALL implement continuous first-order ODEs using Simulink Integrator blocks driven by explicit dy/dt equations (no S-Functions), suitable for variable-step stiff solvers (ode15s / ode23tb class).
 <<<
 
 [REQUIREMENT]
