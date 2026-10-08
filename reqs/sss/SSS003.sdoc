@@ -1,0 +1,1486 @@
+[DOCUMENT]
+TITLE: Software Requirements Specification - Operating Scenarios
+UID: DOC-SSS003
+VERSION: 1.0.0
+OPTIONS:
+  MARKUP: Text
+
+[REQUIREMENT]
+UID: IA-NBK-007
+STATUS: Active
+TITLE: Charge scenarios
+STATEMENT: >>>
+Required charge scenarios: constant-current, constant-power, constant-voltage,
+charge tapering, partial charge, charge termination, overcharge protection,
+low-temperature charging, high-temperature charging, charging with hydrogen
+evolution, and charging with limited electrolyte circulation.
+<<<
+COMMENT: >>>
+Each listed scenario has a unique IA-SCN-CHG-* ID, Python scenario function, notebook,
+and seaborn plots.
+<<<
+
+[REQUIREMENT]
+UID: IA-NBK-008
+STATUS: Active
+TITLE: Discharge scenarios
+STATEMENT: >>>
+Required discharge scenarios: constant-current, constant-power, variable-load,
+partial discharge, deep discharge, oxygen-limited, thermal-limited, high-rate,
+low-rate, and 100-hour discharge.
+<<<
+COMMENT: >>>
+Each listed scenario has a unique IA-SCN-DCH-* ID, Python scenario function, and notebook.
+<<<
+
+[REQUIREMENT]
+UID: IA-NBK-009
+STATUS: Active
+TITLE: Transition scenarios
+STATEMENT: >>>
+Required transition scenarios: charge to discharge, discharge to charge, rapid power
+reversal, rest period, voltage relaxation, repeated cycling, startup, shutdown, and
+restart after protection trip.
+<<<
+COMMENT: >>>
+Each listed scenario has a unique IA-SCN-TRN-* ID, Python scenario function, and notebook.
+<<<
+
+[REQUIREMENT]
+UID: IA-NBK-010
+STATUS: Active
+TITLE: Chemistry scenarios
+STATEMENT: >>>
+Required chemistry scenarios: iron passivation, magnetite formation, hydrogen evolution,
+oxygen starvation, carbonate accumulation, water depletion, electrolyte dilution,
+electrolyte concentration increase, electrode aging, and catalyst degradation.
+<<<
+COMMENT: >>>
+Each listed scenario has a unique IA-SCN-CHM-* ID, Python scenario function, and notebook.
+<<<
+
+[REQUIREMENT]
+UID: IA-NBK-011
+STATUS: Active
+TITLE: Environmental scenarios
+STATEMENT: >>>
+Required environmental scenarios: cold start, hot start, ambient temperature cycling,
+high relative humidity, low relative humidity, high altitude, reduced atmospheric
+oxygen, and thermal control failure.
+<<<
+COMMENT: >>>
+Each listed scenario has a unique IA-SCN-ENV-* ID, Python scenario function, and notebook.
+<<<
+
+[REQUIREMENT]
+UID: IA-NBK-012
+STATUS: Active
+TITLE: Mechanical fault scenarios
+STATEMENT: >>>
+Required mechanical fault scenarios: fan failure, pump failure, filter blockage,
+valve failure, electrolyte leak, reservoir depletion, reduced circulation, heat
+exchanger failure, and ventilation failure.
+<<<
+COMMENT: >>>
+Each listed scenario has a unique IA-SCN-MCH-* ID, Python scenario function, and notebook.
+<<<
+
+[REQUIREMENT]
+UID: IA-NBK-013
+STATUS: Active
+TITLE: Electrical scenarios
+STATEMENT: >>>
+Required electrical scenarios: cell short, cell open circuit, cell imbalance, stack
+mismatch, converter overload, DC bus undervoltage, DC bus overvoltage, inverter
+current limit, and sensor failure.
+<<<
+COMMENT: >>>
+Each listed scenario has a unique IA-SCN-ELC-* ID, Python scenario function, and notebook.
+<<<
+
+[REQUIREMENT]
+UID: IA-NBK-014
+STATUS: Active
+TITLE: Grid scenarios
+STATEMENT: >>>
+Required grid scenarios: voltage sag, voltage swell, underfrequency, overfrequency,
+frequency-watt response, volt-var response, grid disconnection, reconnection,
+ride-through, and active/reactive power limits.
+<<<
+COMMENT: >>>
+Each listed scenario has a unique IA-SCN-GRD-* ID, Python scenario function, and notebook.
+<<<
+
+[REQUIREMENT]
+UID: IA-NBK-015
+STATUS: Active
+TITLE: Long-term scenarios
+STATEMENT: >>>
+Required long-term scenarios: 100-hour discharge, multiple-day energy dispatch,
+charge/discharge cycling, seasonal storage, calendar aging, cycle aging, capacity
+fade, efficiency degradation, and annual operating profile.
+<<<
+COMMENT: >>>
+Each listed scenario has a unique IA-SCN-LT-* ID, Python scenario function, and notebook.
+<<<
+
+[REQUIREMENT]
+UID: IA-NBK-016
+STATUS: Active
+TITLE: Characterization scenarios
+STATEMENT: >>>
+Required characterization scenarios: current-voltage polarization curves,
+charge/discharge voltage versus SOC, efficiency versus power, efficiency versus
+temperature, SOC versus time, oxygen demand versus power, hydrogen generation versus
+charge current, KOH concentration sweep, thermal response, parameter sensitivity,
+and uncertainty analysis.
+<<<
+COMMENT: >>>
+Each listed scenario has a unique IA-SCN-CHR-* ID, Python scenario function, and notebook.
+<<<
+
+[REQUIREMENT]
+UID: IA-SCN-CHG-CC
+STATUS: Active
+TITLE: Constant-current charging
+STATEMENT: >>>
+Apply a constant charging current and record voltage, SOC, HER, and temperature.
+<<<
+COMMENT: >>>
+SOC increases. Terminal voltage rises. Current remains at the commanded charge value
+until a termination limit.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-007
+
+[REQUIREMENT]
+UID: IA-SCN-CHG-CP
+STATUS: Active
+TITLE: Constant-power charging
+STATEMENT: >>>
+Apply a constant charging power command.
+<<<
+COMMENT: >>>
+Electrical power tracks the charge setpoint within solver tolerance until limits.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-007
+
+[REQUIREMENT]
+UID: IA-SCN-CHG-CV
+STATUS: Active
+TITLE: Constant-voltage charging
+STATEMENT: >>>
+Hold a constant charge voltage after a current-limited approach.
+<<<
+COMMENT: >>>
+Charge current tapers as SOC increases under CV hold.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-007
+
+[REQUIREMENT]
+UID: IA-SCN-CHG-TAPER
+STATUS: Active
+TITLE: Charge tapering
+STATEMENT: >>>
+Execute CC-CV tapering to a cutoff current.
+<<<
+COMMENT: >>>
+Simulation stops or flags complete when abs(I) falls below cutoff while voltage is held.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-007
+
+[REQUIREMENT]
+UID: IA-SCN-CHG-PARTIAL
+STATUS: Active
+TITLE: Partial charge
+STATEMENT: >>>
+Charge from an intermediate SOC to a higher intermediate SOC.
+<<<
+COMMENT: >>>
+Final SOC is between the start SOC and 1.0 and matches the scheduled stop.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-007
+
+[REQUIREMENT]
+UID: IA-SCN-CHG-TERM
+STATUS: Active
+TITLE: Charge termination
+STATEMENT: >>>
+Terminate charge on voltage, current, SOC, or hydrogen-rate limits.
+<<<
+COMMENT: >>>
+Supervisory controller enters a rest or protection mode when a documented limit is crossed.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-007
+
+[REQUIREMENT]
+UID: IA-SCN-CHG-OVER
+STATUS: Active
+TITLE: Overcharge protection
+STATEMENT: >>>
+Attempt overcharge and verify protection action.
+<<<
+COMMENT: >>>
+Current is removed or limited after the overcharge threshold. HER may rise before trip.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-007
+
+[REQUIREMENT]
+UID: IA-SCN-CHG-LOWT
+STATUS: Active
+TITLE: Low-temperature charging
+STATEMENT: >>>
+Charge at a cold ambient temperature within the property-model domain.
+<<<
+COMMENT: >>>
+Polarization is larger than the 298 K reference case. Solver remains stable.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-007
+
+[REQUIREMENT]
+UID: IA-SCN-CHG-HIGHT
+STATUS: Active
+TITLE: High-temperature charging
+STATEMENT: >>>
+Charge at an elevated ambient temperature within the property-model domain.
+<<<
+COMMENT: >>>
+HER rate is higher than the 298 K reference at the same current.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-007
+
+[REQUIREMENT]
+UID: IA-SCN-CHG-HER
+STATUS: Active
+TITLE: Charging with hydrogen evolution
+STATEMENT: >>>
+Charge under conditions that produce measurable HER.
+<<<
+COMMENT: >>>
+H2 inventory increases. Faradaic efficiency of iron conversion is less than 1.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-007
+
+[REQUIREMENT]
+UID: IA-SCN-CHG-LOWFLOW
+STATUS: Active
+TITLE: Charging with limited electrolyte circulation
+STATEMENT: >>>
+Charge with reduced or zero electrolyte pump flow.
+<<<
+COMMENT: >>>
+Local concentration gradients or voltage penalty exceed the circulating reference case.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-007
+
+[REQUIREMENT]
+UID: IA-SCN-DCH-CC
+STATUS: Active
+TITLE: Constant-current discharge
+STATEMENT: >>>
+Apply a constant discharge current.
+<<<
+COMMENT: >>>
+SOC decreases. Voltage falls. Iron inventory is oxidized.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-008
+
+[REQUIREMENT]
+UID: IA-SCN-DCH-CP
+STATUS: Active
+TITLE: Constant-power discharge
+STATEMENT: >>>
+Apply a constant discharge power command.
+<<<
+COMMENT: >>>
+Power tracks the discharge setpoint until a voltage or SOC limit.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-008
+
+[REQUIREMENT]
+UID: IA-SCN-DCH-VAR
+STATUS: Active
+TITLE: Variable-load discharge
+STATEMENT: >>>
+Apply a time-varying discharge load profile.
+<<<
+COMMENT: >>>
+Current follows the scheduled profile within solver tolerance.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-008
+
+[REQUIREMENT]
+UID: IA-SCN-DCH-PARTIAL
+STATUS: Active
+TITLE: Partial discharge
+STATEMENT: >>>
+Discharge from a high SOC to an intermediate SOC.
+<<<
+COMMENT: >>>
+Final SOC matches the scheduled stop within tolerance.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-008
+
+[REQUIREMENT]
+UID: IA-SCN-DCH-DEEP
+STATUS: Active
+TITLE: Deep discharge
+STATEMENT: >>>
+Discharge toward a low-SOC cutoff.
+<<<
+COMMENT: >>>
+Voltage declines and a low-SOC or low-voltage stop is reached without negative inventories.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-008
+
+[REQUIREMENT]
+UID: IA-SCN-DCH-O2LIM
+STATUS: Active
+TITLE: Oxygen-limited discharge
+STATEMENT: >>>
+Discharge with restricted oxygen supply.
+<<<
+COMMENT: >>>
+Available discharge current or voltage is lower than the air-rich reference.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-008
+
+[REQUIREMENT]
+UID: IA-SCN-DCH-THMLIM
+STATUS: Active
+TITLE: Thermal-limited discharge
+STATEMENT: >>>
+Discharge until a thermal protection limit.
+<<<
+COMMENT: >>>
+Controller reduces current or trips when temperature exceeds the documented limit.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-008
+
+[REQUIREMENT]
+UID: IA-SCN-DCH-HIGHRATE
+STATUS: Active
+TITLE: High-rate discharge
+STATEMENT: >>>
+Discharge at a high C-rate relative to the design current.
+<<<
+COMMENT: >>>
+Overpotential and heat generation exceed the low-rate case.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-008
+
+[REQUIREMENT]
+UID: IA-SCN-DCH-LOWRATE
+STATUS: Active
+TITLE: Low-rate discharge
+STATEMENT: >>>
+Discharge at a low C-rate.
+<<<
+COMMENT: >>>
+Voltage remains closer to Nernst than the high-rate case.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-008
+
+[REQUIREMENT]
+UID: IA-SCN-DCH-100H
+STATUS: Active
+TITLE: 100-hour discharge
+STATEMENT: >>>
+Discharge energy over a 100-hour window.
+<<<
+COMMENT: >>>
+Simulation spans 3.6e5 s and SOC declines monotonically under a positive discharge load.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-008
+
+[REQUIREMENT]
+UID: IA-SCN-TRN-CHG2DCH
+STATUS: Active
+TITLE: Charge to discharge
+STATEMENT: >>>
+Transition from charge to discharge.
+<<<
+COMMENT: >>>
+Current sign reverses. No nonphysical voltage spike is left unreported.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-009
+
+[REQUIREMENT]
+UID: IA-SCN-TRN-DCH2CHG
+STATUS: Active
+TITLE: Discharge to charge
+STATEMENT: >>>
+Transition from discharge to charge.
+<<<
+COMMENT: >>>
+Current sign reverses. SOC slope changes sign.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-009
+
+[REQUIREMENT]
+UID: IA-SCN-TRN-REVERSAL
+STATUS: Active
+TITLE: Rapid power reversal
+STATEMENT: >>>
+Reverse power on a short time scale relative to thermal states.
+<<<
+COMMENT: >>>
+Electrical states respond faster than thermal states. Solver remains stable.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-009
+
+[REQUIREMENT]
+UID: IA-SCN-TRN-REST
+STATUS: Active
+TITLE: Rest period
+STATEMENT: >>>
+Hold zero applied current after operation.
+<<<
+COMMENT: >>>
+Terminal current is ~0. Voltage relaxes toward equilibrium.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-009
+
+[REQUIREMENT]
+UID: IA-SCN-TRN-RELAX
+STATUS: Active
+TITLE: Voltage relaxation
+STATEMENT: >>>
+Record open-circuit voltage relaxation after current interruption.
+<<<
+COMMENT: >>>
+The absolute value of dV/dt decreases with time during rest.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-009
+
+[REQUIREMENT]
+UID: IA-SCN-TRN-CYCLE
+STATUS: Active
+TITLE: Repeated cycling
+STATEMENT: >>>
+Apply repeated charge/discharge cycles.
+<<<
+COMMENT: >>>
+SOC oscillates. Optional degradation states are nondecreasing.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-009
+
+[REQUIREMENT]
+UID: IA-SCN-TRN-STARTUP
+STATUS: Active
+TITLE: Startup
+STATEMENT: >>>
+Start auxiliaries and electrical conversion from a rest state.
+<<<
+COMMENT: >>>
+Fan/pump speeds rise from near zero. DC bus voltage is established.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-009
+
+[REQUIREMENT]
+UID: IA-SCN-TRN-SHUTDOWN
+STATUS: Active
+TITLE: Shutdown
+STATEMENT: >>>
+Command a controlled shutdown.
+<<<
+COMMENT: >>>
+Power command goes to zero and auxiliaries decelerate.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-009
+
+[REQUIREMENT]
+UID: IA-SCN-TRN-RESTART
+STATUS: Active
+TITLE: Restart after protection trip
+STATEMENT: >>>
+Clear a protection trip and resume operation.
+<<<
+COMMENT: >>>
+Mode returns from protection to a documented operating mode without hidden-state cheating.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-009
+
+[REQUIREMENT]
+UID: IA-SCN-CHM-PASS
+STATUS: Active
+TITLE: Iron passivation
+STATEMENT: >>>
+Exercise passivation-thickness growth.
+<<<
+COMMENT: >>>
+Active area or exchange current declines as passivation thickness grows.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-010
+
+[REQUIREMENT]
+UID: IA-SCN-CHM-MAG
+STATUS: Active
+TITLE: Magnetite formation
+STATEMENT: >>>
+Convert Fe(OH)2 toward Fe3O4.
+<<<
+COMMENT: >>>
+Fe3O4 inventory increases and Fe(OH)2 decreases with conserved iron atoms.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-010
+
+[REQUIREMENT]
+UID: IA-SCN-CHM-HER
+STATUS: Active
+TITLE: Hydrogen evolution chemistry scenario
+STATEMENT: >>>
+Isolate HER kinetics versus potential.
+<<<
+COMMENT: >>>
+H2 production increases as iron potential becomes more negative.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-010
+
+[REQUIREMENT]
+UID: IA-SCN-CHM-O2STARV
+STATUS: Active
+TITLE: Oxygen starvation
+STATEMENT: >>>
+Remove oxygen supply during discharge.
+<<<
+COMMENT: >>>
+ORR current collapses as O2 inventory approaches the documented floor.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-010
+
+[REQUIREMENT]
+UID: IA-SCN-CHM-CARB
+STATUS: Active
+TITLE: Carbonate accumulation
+STATEMENT: >>>
+Expose electrolyte to CO2-bearing air.
+<<<
+COMMENT: >>>
+CO3 inventory increases and OH- inventory decreases.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-010
+
+[REQUIREMENT]
+UID: IA-SCN-CHM-H2ODEP
+STATUS: Active
+TITLE: Water depletion
+STATEMENT: >>>
+Operate with net water consumption or evaporation.
+<<<
+COMMENT: >>>
+Water inventory declines and is flagged before becoming negative.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-010
+
+[REQUIREMENT]
+UID: IA-SCN-CHM-DILUTE
+STATUS: Active
+TITLE: Electrolyte dilution
+STATEMENT: >>>
+Add water or reduce KOH inventory.
+<<<
+COMMENT: >>>
+KOH concentration and conductivity decrease.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-010
+
+[REQUIREMENT]
+UID: IA-SCN-CHM-CONC
+STATUS: Active
+TITLE: Electrolyte concentration increase
+STATEMENT: >>>
+Remove water or add KOH.
+<<<
+COMMENT: >>>
+KOH concentration increases within the property-model domain.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-010
+
+[REQUIREMENT]
+UID: IA-SCN-CHM-AGE
+STATUS: Active
+TITLE: Electrode aging
+STATEMENT: >>>
+Apply aging rates to iron active material.
+<<<
+COMMENT: >>>
+Available capacity declines irreversibly.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-010
+
+[REQUIREMENT]
+UID: IA-SCN-CHM-CATDEG
+STATUS: Active
+TITLE: Catalyst degradation
+STATEMENT: >>>
+Decay ORR/OER catalyst activity.
+<<<
+COMMENT: >>>
+Exchange current densities decrease over time under the aging model.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-010
+
+[REQUIREMENT]
+UID: IA-SCN-ENV-COLD
+STATUS: Active
+TITLE: Cold start
+STATEMENT: >>>
+Start from a cold soaked initial temperature.
+<<<
+COMMENT: >>>
+Temperatures rise toward a warmer operating band under load or heaters if modeled.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-011
+
+[REQUIREMENT]
+UID: IA-SCN-ENV-HOT
+STATUS: Active
+TITLE: Hot start
+STATEMENT: >>>
+Start from an elevated soaked temperature.
+<<<
+COMMENT: >>>
+Initial temperatures are above T_REF_K and remain within validity limits or are flagged.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-011
+
+[REQUIREMENT]
+UID: IA-SCN-ENV-TAMP
+STATUS: Active
+TITLE: Ambient temperature cycling
+STATEMENT: >>>
+Apply a cyclic ambient temperature boundary.
+<<<
+COMMENT: >>>
+Enclosure or cell temperature lags the ambient cycle.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-011
+
+[REQUIREMENT]
+UID: IA-SCN-ENV-HIGHRH
+STATUS: Active
+TITLE: High relative humidity
+STATEMENT: >>>
+Supply high-humidity air.
+<<<
+COMMENT: >>>
+Gas humidity state increases relative to a dry-air case.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-011
+
+[REQUIREMENT]
+UID: IA-SCN-ENV-LOWRH
+STATUS: Active
+TITLE: Low relative humidity
+STATEMENT: >>>
+Supply dry air.
+<<<
+COMMENT: >>>
+Electrolyte or GDL water is more depleted than the high-RH case.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-011
+
+[REQUIREMENT]
+UID: IA-SCN-ENV-ALT
+STATUS: Active
+TITLE: High altitude
+STATEMENT: >>>
+Reduce ambient pressure.
+<<<
+COMMENT: >>>
+Inlet oxygen partial pressure is lower than the sea-level reference.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-011
+
+[REQUIREMENT]
+UID: IA-SCN-ENV-LOWO2
+STATUS: Active
+TITLE: Reduced atmospheric oxygen
+STATEMENT: >>>
+Reduce inlet O2 mole fraction.
+<<<
+COMMENT: >>>
+Discharge capability is reduced versus 0.21 mole fraction air.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-011
+
+[REQUIREMENT]
+UID: IA-SCN-ENV-THMFAIL
+STATUS: Active
+TITLE: Thermal control failure
+STATEMENT: >>>
+Disable cooling while load continues.
+<<<
+COMMENT: >>>
+Temperatures rise above the cooled reference. Protection may trip.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-011
+
+[REQUIREMENT]
+UID: IA-SCN-MCH-FAN
+STATUS: Active
+TITLE: Fan failure
+STATEMENT: >>>
+Force fan speed toward zero during operation.
+<<<
+COMMENT: >>>
+Airflow and O2 delivery fall. Discharge voltage penalty increases.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-012
+
+[REQUIREMENT]
+UID: IA-SCN-MCH-PUMP
+STATUS: Active
+TITLE: Pump failure
+STATEMENT: >>>
+Force pump speed toward zero.
+<<<
+COMMENT: >>>
+Electrolyte circulation collapses.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-012
+
+[REQUIREMENT]
+UID: IA-SCN-MCH-FILTER
+STATUS: Active
+TITLE: Filter blockage
+STATEMENT: >>>
+Increase air-path resistance.
+<<<
+COMMENT: >>>
+Airflow falls for the same fan command.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-012
+
+[REQUIREMENT]
+UID: IA-SCN-MCH-VALVE
+STATUS: Active
+TITLE: Valve failure
+STATEMENT: >>>
+Hold a valve at a failed position.
+<<<
+COMMENT: >>>
+Flow does not follow the commanded position.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-012
+
+[REQUIREMENT]
+UID: IA-SCN-MCH-LEAK
+STATUS: Active
+TITLE: Electrolyte leak
+STATEMENT: >>>
+Impose a leak mass-flow from the electrolyte circuit.
+<<<
+COMMENT: >>>
+Liquid inventory declines.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-012
+
+[REQUIREMENT]
+UID: IA-SCN-MCH-RESDEP
+STATUS: Active
+TITLE: Reservoir depletion
+STATEMENT: >>>
+Operate until reservoir inventory approaches empty.
+<<<
+COMMENT: >>>
+An invalid or empty-reservoir condition is reported before negative mass.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-012
+
+[REQUIREMENT]
+UID: IA-SCN-MCH-CIRC
+STATUS: Active
+TITLE: Reduced circulation
+STATEMENT: >>>
+Command a reduced pump flow.
+<<<
+COMMENT: >>>
+Circulation flow is lower than the design case.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-012
+
+[REQUIREMENT]
+UID: IA-SCN-MCH-HEX
+STATUS: Active
+TITLE: Heat exchanger failure
+STATEMENT: >>>
+Reduce heat-exchanger UA toward zero.
+<<<
+COMMENT: >>>
+Cooling heat transfer falls versus the healthy HEX case.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-012
+
+[REQUIREMENT]
+UID: IA-SCN-MCH-VENT
+STATUS: Active
+TITLE: Ventilation failure
+STATEMENT: >>>
+Disable enclosure ventilation.
+<<<
+COMMENT: >>>
+Enclosure gas inventories of H2 or heat rise relative to ventilated operation.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-012
+
+[REQUIREMENT]
+UID: IA-SCN-ELC-SHORT
+STATUS: Active
+TITLE: Cell short
+STATEMENT: >>>
+Impose a low-resistance cell short.
+<<<
+COMMENT: >>>
+Faulted cell voltage collapses and local heating increases.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-013
+
+[REQUIREMENT]
+UID: IA-SCN-ELC-OC
+STATUS: Active
+TITLE: Cell open circuit
+STATEMENT: >>>
+Open a cell in a series string.
+<<<
+COMMENT: >>>
+String current falls to ~0 or the open-cell path is flagged.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-013
+
+[REQUIREMENT]
+UID: IA-SCN-ELC-IMBAL
+STATUS: Active
+TITLE: Cell imbalance
+STATEMENT: >>>
+Initialize cells at different SOC.
+<<<
+COMMENT: >>>
+Cell voltages differ at the same string current.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-013
+
+[REQUIREMENT]
+UID: IA-SCN-ELC-MISMATCH
+STATUS: Active
+TITLE: Stack mismatch
+STATEMENT: >>>
+Operate paralleled or series stacks with mismatched capacity or resistance.
+<<<
+COMMENT: >>>
+Current sharing is unequal.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-013
+
+[REQUIREMENT]
+UID: IA-SCN-ELC-CNVOVL
+STATUS: Active
+TITLE: Converter overload
+STATEMENT: >>>
+Command converter current above rating.
+<<<
+COMMENT: >>>
+Current is limited to the rated value or a protection trip occurs.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-013
+
+[REQUIREMENT]
+UID: IA-SCN-ELC-UV
+STATUS: Active
+TITLE: DC bus undervoltage
+STATEMENT: >>>
+Drive DC-link voltage below the undervoltage threshold.
+<<<
+COMMENT: >>>
+Protection or limiter responds at the documented UV setpoint.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-013
+
+[REQUIREMENT]
+UID: IA-SCN-ELC-OV
+STATUS: Active
+TITLE: DC bus overvoltage
+STATEMENT: >>>
+Drive DC-link voltage above the overvoltage threshold.
+<<<
+COMMENT: >>>
+Protection or limiter responds at the documented OV setpoint.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-013
+
+[REQUIREMENT]
+UID: IA-SCN-ELC-ILIM
+STATUS: Active
+TITLE: Inverter current limit
+STATEMENT: >>>
+Command inverter current above the limit.
+<<<
+COMMENT: >>>
+Delivered current does not exceed the limit except for documented transient overshoot.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-013
+
+[REQUIREMENT]
+UID: IA-SCN-ELC-SENSOR
+STATUS: Active
+TITLE: Sensor failure
+STATEMENT: >>>
+Inject sensor bias, stuck, or noise faults.
+<<<
+COMMENT: >>>
+Estimator and controller use the failed measurement, not the hidden true plant state.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-013
+
+[REQUIREMENT]
+UID: IA-SCN-GRD-SAG
+STATUS: Active
+TITLE: Grid voltage sag
+STATEMENT: >>>
+Apply a grid voltage sag as an external input.
+<<<
+COMMENT: >>>
+Grid voltage is not a fabricated dynamic state when prescribed. Ride-through monitors record the event.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-014
+
+[REQUIREMENT]
+UID: IA-SCN-GRD-SWELL
+STATUS: Active
+TITLE: Grid voltage swell
+STATEMENT: >>>
+Apply a grid voltage swell as an external input.
+<<<
+COMMENT: >>>
+Prescribed swell appears in inputs. Inverter reactive response follows the configured Q(V) curve if enabled.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-014
+
+[REQUIREMENT]
+UID: IA-SCN-GRD-UF
+STATUS: Active
+TITLE: Underfrequency
+STATEMENT: >>>
+Apply a grid underfrequency input.
+<<<
+COMMENT: >>>
+Frequency is an input unless swing-equation mode is explicitly enabled.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-014
+
+[REQUIREMENT]
+UID: IA-SCN-GRD-OF
+STATUS: Active
+TITLE: Overfrequency
+STATEMENT: >>>
+Apply a grid overfrequency input.
+<<<
+COMMENT: >>>
+Frequency-watt reduction of active power occurs when enabled.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-014
+
+[REQUIREMENT]
+UID: IA-SCN-GRD-FW
+STATUS: Active
+TITLE: Frequency-watt response
+STATEMENT: >>>
+Exercise P(f) droop.
+<<<
+COMMENT: >>>
+Active power decreases for overfrequency according to the configured droop.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-014
+
+[REQUIREMENT]
+UID: IA-SCN-GRD-VV
+STATUS: Active
+TITLE: Volt-var response
+STATEMENT: >>>
+Exercise Q(V) droop.
+<<<
+COMMENT: >>>
+Reactive power sign follows the configured volt-var curve.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-014
+
+[REQUIREMENT]
+UID: IA-SCN-GRD-DISC
+STATUS: Active
+TITLE: Grid disconnection
+STATEMENT: >>>
+Open the grid interconnect.
+<<<
+COMMENT: >>>
+Grid current goes to ~0. Plant enters island or shutdown per controller mode.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-014
+
+[REQUIREMENT]
+UID: IA-SCN-GRD-RECON
+STATUS: Active
+TITLE: Grid reconnection
+STATEMENT: >>>
+Reconnect after a disconnect.
+<<<
+COMMENT: >>>
+Power exchange resumes only after documented sync/permission conditions.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-014
+
+[REQUIREMENT]
+UID: IA-SCN-GRD-RT
+STATUS: Active
+TITLE: Ride-through
+STATEMENT: >>>
+Remain connected through a documented disturbance envelope.
+<<<
+COMMENT: >>>
+Trip does not occur inside the configured ride-through region.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-014
+
+[REQUIREMENT]
+UID: IA-SCN-GRD-PQ
+STATUS: Active
+TITLE: Active/reactive power limits
+STATEMENT: >>>
+Command P and Q outside the capability curve.
+<<<
+COMMENT: >>>
+Delivered P/Q remain inside the capability region.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-014
+
+[REQUIREMENT]
+UID: IA-SCN-LT-100H
+STATUS: Active
+TITLE: Long-term 100-hour discharge
+STATEMENT: >>>
+Run the 100-hour discharge as a long-horizon scenario sharing cell parameters.
+<<<
+COMMENT: >>>
+Uses the same ParameterSet as short-horizon discharge, with fidelity settings documented.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-015
+
+[REQUIREMENT]
+UID: IA-SCN-LT-DISPATCH
+STATUS: Active
+TITLE: Multiple-day energy dispatch
+STATEMENT: >>>
+Follow a multi-day power schedule.
+<<<
+COMMENT: >>>
+SOC tracks charge and discharge windows in the schedule.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-015
+
+[REQUIREMENT]
+UID: IA-SCN-LT-CYCLE
+STATUS: Active
+TITLE: Charge/discharge cycling long-term
+STATEMENT: >>>
+Cycle for many days.
+<<<
+COMMENT: >>>
+Cycle count increases. Optional fade is nondecreasing.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-015
+
+[REQUIREMENT]
+UID: IA-SCN-LT-SEASON
+STATUS: Active
+TITLE: Seasonal storage
+STATEMENT: >>>
+Hold energy over a seasonal horizon using reduced-order options as needed.
+<<<
+COMMENT: >>>
+Calendar aging can proceed while cycling rate is low. Reduced-order use is flagged.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-015
+
+[REQUIREMENT]
+UID: IA-SCN-LT-CAL
+STATUS: Active
+TITLE: Calendar aging
+STATEMENT: >>>
+Age at rest.
+<<<
+COMMENT: >>>
+Capacity or resistance changes with time at zero cycling current.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-015
+
+[REQUIREMENT]
+UID: IA-SCN-LT-CYCAGE
+STATUS: Active
+TITLE: Cycle aging
+STATEMENT: >>>
+Age under cycling.
+<<<
+COMMENT: >>>
+Fade rate exceeds the rest-only calendar case for the same elapsed time.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-015
+
+[REQUIREMENT]
+UID: IA-SCN-LT-FADE
+STATUS: Active
+TITLE: Capacity fade
+STATEMENT: >>>
+Track available capacity versus time or throughput.
+<<<
+COMMENT: >>>
+Reported capacity is nonincreasing under the aging model.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-015
+
+[REQUIREMENT]
+UID: IA-SCN-LT-EFF
+STATUS: Active
+TITLE: Efficiency degradation
+STATEMENT: >>>
+Track round-trip efficiency versus aging state.
+<<<
+COMMENT: >>>
+Efficiency declines as resistance grows.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-015
+
+[REQUIREMENT]
+UID: IA-SCN-LT-ANNUAL
+STATUS: Active
+TITLE: Annual operating profile
+STATEMENT: >>>
+Execute a year-scale operating profile with documented fidelity.
+<<<
+COMMENT: >>>
+Scenario metadata records duration and fidelity setting. Parameters are shared with cell models.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-015
+
+[REQUIREMENT]
+UID: IA-SCN-CHR-IV
+STATUS: Active
+TITLE: Current-voltage polarization
+STATEMENT: >>>
+Sweep current and record voltage.
+<<<
+COMMENT: >>>
+Discharge branch voltage decreases with increasing current magnitude.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-016
+
+[REQUIREMENT]
+UID: IA-SCN-CHR-VSOC
+STATUS: Active
+TITLE: Voltage versus SOC
+STATEMENT: >>>
+Record charge and discharge voltage versus SOC.
+<<<
+COMMENT: >>>
+Charge voltage lies above discharge voltage at the same SOC for nonzero current.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-016
+
+[REQUIREMENT]
+UID: IA-SCN-CHR-EFFP
+STATUS: Active
+TITLE: Efficiency versus power
+STATEMENT: >>>
+Compute round-trip or one-way efficiency versus power.
+<<<
+COMMENT: >>>
+Efficiency is in (0, 1] for finite nonzero power.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-016
+
+[REQUIREMENT]
+UID: IA-SCN-CHR-EFFT
+STATUS: Active
+TITLE: Efficiency versus temperature
+STATEMENT: >>>
+Sweep temperature and compute efficiency.
+<<<
+COMMENT: >>>
+Results stay within the property-model temperature domain.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-016
+
+[REQUIREMENT]
+UID: IA-SCN-CHR-SOCT
+STATUS: Active
+TITLE: SOC versus time
+STATEMENT: >>>
+Record SOC(t) for a documented load.
+<<<
+COMMENT: >>>
+SOC is in [0, 1] and consistent with Faraday accounting.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-016
+
+[REQUIREMENT]
+UID: IA-SCN-CHR-O2P
+STATUS: Active
+TITLE: Oxygen demand versus power
+STATEMENT: >>>
+Compute O2 molar demand versus discharge power.
+<<<
+COMMENT: >>>
+O2 demand increases with discharge power under ORR Faraday accounting.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-016
+
+[REQUIREMENT]
+UID: IA-SCN-CHR-H2I
+STATUS: Active
+TITLE: Hydrogen generation versus charge current
+STATEMENT: >>>
+Compute H2 rate versus charge current.
+<<<
+COMMENT: >>>
+H2 rate is nonnegative and increases with more severe charge polarization.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-016
+
+[REQUIREMENT]
+UID: IA-SCN-CHR-KOH
+STATUS: Active
+TITLE: KOH concentration sweep
+STATEMENT: >>>
+Sweep KOH concentration through the property domain.
+<<<
+COMMENT: >>>
+Conductivity and Nernst potentials vary with concentration. Domain errors are raised outside range.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-016
+
+[REQUIREMENT]
+UID: IA-SCN-CHR-THM
+STATUS: Active
+TITLE: Thermal response characterization
+STATEMENT: >>>
+Record temperature response to a load step.
+<<<
+COMMENT: >>>
+Temperature rises under dissipative load in an undercooled configuration.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-016
+
+[REQUIREMENT]
+UID: IA-SCN-CHR-SENS
+STATUS: Active
+TITLE: Parameter sensitivity
+STATEMENT: >>>
+Perturb selected parameters and record output change.
+<<<
+COMMENT: >>>
+Sensitivity results identify which parameters were perturbed and their source_class.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-016
+
+[REQUIREMENT]
+UID: IA-SCN-CHR-UNC
+STATUS: Active
+TITLE: Uncertainty analysis
+STATEMENT: >>>
+Propagate documented parameter uncertainties with a fixed random seed.
+<<<
+COMMENT: >>>
+Results are reproducible given the same seed and parameter uncertainty data.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-016
+
