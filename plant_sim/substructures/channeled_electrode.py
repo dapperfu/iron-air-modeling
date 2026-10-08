@@ -1,4 +1,7 @@
-"""21 Channeled / interdigitated / spiral bifilar / pleated electrode (EP4602674A1)."""
+"""21 Channeled / interdigitated / spiral bifilar / pleated electrode (EP4602674A1).
+
+@relation(IA-SCN-PAT-INTERDIG, scope=module)
+"""
 
 from __future__ import annotations
 
@@ -32,6 +35,11 @@ def ionic_path_length_m(layout: str, p: PlantParams) -> float:
 
 @dataclass
 class ChanneledElectrode:
+    """EP channeled / interdigitated iron-OER layouts.
+
+    @relation(IA-SCN-PAT-INTERDIG, scope=class)
+    """
+
     params: PlantParams | None = None
     layout: str = "interdigitated"
 

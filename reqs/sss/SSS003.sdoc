@@ -1690,6 +1690,9 @@ Interdigitated configuration shows higher coulombic efficiency and an extended
 upper discharge voltage plateau relative to planar, matching FIG. 27 qualitative
 behavior. Software comparison is verification against the disclosed trends, not
 reproduction of unpublished experimental tables.
+
+Changed because this comparison is implemented in plant_sim/97_ChannelGeometryEP.ipynb
+and 21_ChanneledElectrode.ipynb, not ironair.scenarios.
 <<<
 RELATIONS:
 - TYPE: Parent
