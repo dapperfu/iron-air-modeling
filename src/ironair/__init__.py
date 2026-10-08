@@ -4,7 +4,7 @@
 @relation(IA-IRS-001, scope=module)
 """
 
-from ironair import chemistry, components, constants, plotting, scenarios, simulation
+from ironair import chemistry, components, constants, scenarios, simulation
 
 __version__ = "1.0.0"
 
@@ -12,7 +12,6 @@ __all__ = [
     "chemistry",
     "components",
     "constants",
-    "plotting",
     "scenarios",
     "simulation",
     "__version__",

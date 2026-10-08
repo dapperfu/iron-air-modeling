@@ -52,7 +52,15 @@ All public APIs SHALL be importable using:
   from ironair import components
   from ironair import simulation
   from ironair import scenarios
-  from ironair import plotting
+
+ironair SHALL be the physics plant only: atomic ODEs, constitutive equations,
+parameters, and integration that returns numeric trajectories (time and state
+arrays).
+
+ironair SHALL NOT include plotting, matplotlib, seaborn, plotly, image I/O,
+figure styling, or pandas analysis. Notebooks SHALL build pandas DataFrames
+and seaborn figures outside the package and SHALL display those figures in
+the notebook.
 
 The implementation SHALL use a standard src/ package layout.
 
@@ -66,8 +74,9 @@ coupled simulation of the patented iron-air plant. The SDRS src/ layout takes
 precedence over the generic no-src-directory Cursor rule for this project.
 <<<
 COMMENT: >>>
-Package ironair installs in a virtual environment. The listed imports succeed after
-pip install -e ".[dev,notebooks]" or the equivalent uv installation.
+Changed because ironair.plotting was removed. The listed physics imports succeed
+after editable install. Pandas and seaborn are notebook dependencies, used in
+plant_sim notebooks, not inside src/ironair.
 <<<
 
 [REQUIREMENT]

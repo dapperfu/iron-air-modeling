@@ -31,6 +31,13 @@ a generic Cursor rule discourages src/ layouts.
 
 Patent-derived parameters, architecture enumerations, and claim citations SHALL
 live in typed parameter objects under the same package, not in notebooks.
+
+src/ironair SHALL contain physics only: chemistry, ODE components, parameters,
+and the coupled integrator that returns numeric trajectories.
+
+src/ironair SHALL NOT contain plotting modules, seaborn, matplotlib, or pandas
+analysis. Those belong in plant_sim notebooks, which display the figures in
+the notebook.
 <<<
 COMMENT: >>>
 pyproject.toml configures setuptools package discovery with where = ["src"].

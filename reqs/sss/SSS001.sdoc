@@ -66,8 +66,11 @@ UID: IA-REQ-003
 STATUS: Active
 TITLE: Function-level traceability
 STATEMENT: >>>
-Every public physics, control, solver, plotting, and scenario function SHALL contain a
+Every public physics, control, solver, and scenario function SHALL contain a
 StrictDoc @relation marker.
+
+Notebook plotting SHALL be plant_sim notebook source. It SHALL NOT be an ironair
+function and SHALL NOT require an @relation marker inside src/ironair.
 
 A function implementing several requirements SHALL contain separate relation markers
 for every applicable requirement.
@@ -576,31 +579,42 @@ SHALL unverifiable against the plant_sim ODE stack.
 [REQUIREMENT]
 UID: IA-NBK-002
 STATUS: Active
-TITLE: Seaborn visualization
+TITLE: Seaborn visualization in the notebook
 STATEMENT: >>>
-All scenario notebooks SHALL use seaborn for the principal plots.
+Scenario notebooks SHALL call seaborn directly in the notebook cell for the
+principal plots. They SHALL NOT call an ironair plotting API or a project
+plotting helper to draw those figures.
 
-Matplotlib MAY be used for figure management, multi-axis plots, annotations, and
-specialized graphics.
+Matplotlib MAY create the figure, set labels, and add a short assumption note.
 
-Plots SHALL include title, axis labels, physical units, legend where necessary,
-scenario identifier, and physical operating assumptions.
+Plots SHALL include a title, axis labels with physical units, a legend where
+more than one series is drawn, and the physical operating assumption.
+
+The figure SHALL render as notebook cell output.
 <<<
 COMMENT: >>>
-Principal plotting helpers call seaborn and require title, xlabel, ylabel, and scenario_id.
+Changed because plots were drawn by plant_sim.plotting, which saved a PNG and
+closed the figure. Notebook cells now build a pandas DataFrame and call
+sns.lineplot. The matplotlib inline backend publishes the figure as display_data.
 <<<
 
 [REQUIREMENT]
 UID: IA-NBK-003
 STATUS: Active
-TITLE: Shared plotting API
+TITLE: Physics package excludes plotting
 STATEMENT: >>>
-Implement reusable plotting functions under ironair.plotting.
+The ironair package SHALL contain atomic ODE and other plant equations only.
 
-Plotting functions SHALL accept structured simulation results or pandas DataFrames.
+ironair SHALL NOT include plotting, matplotlib, seaborn, plotly, image I/O,
+figure styling, or pandas data-visualization.
+
+Notebooks SHALL build pandas DataFrames from the numeric trajectories ironair
+or plant_sim returns, SHALL plot those frames with seaborn in the cell, and
+SHALL display the figure in the notebook.
 <<<
 COMMENT: >>>
-from ironair import plotting succeeds and plot_states accepts SimulationResult or DataFrame.
+Changed because ironair.plotting and plot_states were removed. src/ironair has
+no matplotlib, seaborn, or pandas import. plant_sim notebooks call sns.lineplot.
 <<<
 
 [REQUIREMENT]
@@ -660,13 +674,21 @@ coverage; SSS003 still specifies additional design-level cases.
 [REQUIREMENT]
 UID: IA-PLT-001
 STATUS: Active
-TITLE: Plot styling contract
+TITLE: Notebook seaborn figures
 STATEMENT: >>>
-Shared plotting functions SHALL apply a consistent seaborn theme and include physical units
-on labeled axes.
+A notebook plot SHALL call seaborn in that notebook cell and SHALL display the
+figure in the cell output.
+
+Axis labels SHALL include physical units.
+
+A notebook SHALL NOT use a saved image file as the way to show a plot.
+File export of figures MAY exist only for a non-notebook script, and that export
+SHALL NOT live in ironair and SHALL NOT be the notebook display path.
 <<<
 COMMENT: >>>
-plotting helpers reject empty axis labels.
+Changed because the shared ironair plotting helper was removed. Notebooks use
+sns.set_theme and sns.lineplot. plant_sim/verify_components.py may still write
+PNGs through plant_sim/plotting.py, which notebooks do not import.
 <<<
 RELATIONS:
 - TYPE: Parent

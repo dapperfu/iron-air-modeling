@@ -30,12 +30,12 @@ The following imports SHALL succeed after editable install:
   from ironair import components
   from ironair import simulation
   from ironair import scenarios
-  from ironair import plotting
+
+ironair SHALL NOT export a plotting, seaborn, matplotlib, or pandas API.
 <<<
 COMMENT: >>>
-Changed because tests/test_package_imports.py does not exist. The listed ironair
-imports still succeed after editable install; plant physics is imported from
-plant_sim in addition to those package roots.
+Changed because ironair.plotting was removed. The physics imports succeed after
+editable install. Plotting is notebook code under plant_sim, not an ironair import.
 <<<
 RELATIONS:
 - TYPE: Parent
@@ -83,15 +83,20 @@ RELATIONS:
 [REQUIREMENT]
 UID: IA-IRS-004
 STATUS: Active
-TITLE: Plotting input types
+TITLE: Numeric trajectory result
 STATEMENT: >>>
-ironair.plotting functions SHALL accept SimulationResult or pandas.DataFrame.
+SimulationResult SHALL carry numeric trajectories: time array t, state array y,
+state names, state units, and solver diagnostics.
 
-Plot metadata SHALL be able to carry scenario identifier, patent source citation,
-and operating assumptions (electrolyte molarity, temperature, architecture mode).
+ironair SHALL NOT convert those trajectories to pandas or draw them.
+
+Notebooks SHALL build a pandas DataFrame from t and y and SHALL plot that frame
+with seaborn in the notebook cell. The figure SHALL be notebook output.
 <<<
 COMMENT: >>>
-Both input types produce a matplotlib Figure.
+Changed because ironair.plotting and SimulationResult.to_dataframe were removed.
+The physics result is arrays. DataFrame construction and sns.lineplot live in
+plant_sim notebooks.
 <<<
 RELATIONS:
 - TYPE: Parent

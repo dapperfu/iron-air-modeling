@@ -47,18 +47,6 @@ class SimulationResult:
     diagnostics: SolverDiagnostics
     metadata: dict[str, Any]
 
-    def to_dataframe(self):  # type: ignore[no-untyped-def]
-        """Convert trajectories to a pandas DataFrame.
-
-        @relation(IA-NBK-003, scope=function)
-        """
-        import pandas as pd
-
-        data = {"t_s": self.t}
-        for i, name in enumerate(self.state_names):
-            data[name] = self.y[i]
-        return pd.DataFrame(data)
-
 
 class CoupledSystem:
     """Global ODE assembled from DynamicComponentProtocol objects.
