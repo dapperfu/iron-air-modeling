@@ -1,0 +1,454 @@
+[DOCUMENT]
+TITLE: Software Requirements Specification - Component ODE Models
+UID: DOC-SSS002
+VERSION: 1.0.0
+OPTIONS:
+  MARKUP: Text
+
+[REQUIREMENT]
+UID: IA-FE-001
+STATUS: Active
+TITLE: Iron electrode ODE
+STATEMENT: >>>
+Module ironair.components.iron_electrode SHALL provide class IronElectrode.
+
+The component SHALL dynamically model metallic iron, Fe(OH)2, Fe3O4, active surface
+area, passivation thickness, porosity, electrode temperature, and irreversible
+active-material loss.
+
+The RHS SHALL calculate iron phase derivatives from the shared reaction network.
+<<<
+COMMENT: >>>
+Discharge of Fe increases Fe(OH)2 using IA-CHM-002 stoichiometry. Temperature is a
+dynamic state. Passivation thickness is nonnegative.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-003
+
+[REQUIREMENT]
+UID: IA-HER-001
+STATUS: Active
+TITLE: Hydrogen evolution ODE
+STATEMENT: >>>
+Module ironair.components.hydrogen SHALL provide class HydrogenEvolution.
+
+States SHALL include hydrogen inventory and applicable interfacial or gas-transfer dynamics.
+
+The component SHALL couple hydrogen generation to charging current and electrode potential.
+<<<
+COMMENT: >>>
+H2 inventory increases under negative iron overpotential. Open-circuit HER is smaller
+than strong cathodic charging HER.
+<<<
+
+[REQUIREMENT]
+UID: IA-ORR-001
+STATUS: Active
+TITLE: Oxygen reduction ODE
+STATEMENT: >>>
+Module ironair.components.oxygen_reduction SHALL provide class OxygenReduction.
+
+States SHALL include interfacial charge storage and oxygen availability where applicable.
+
+The component SHALL calculate nonlinear ORR kinetics and oxygen consumption.
+<<<
+COMMENT: >>>
+ORR current is negative (cathodic) for eta < 0 versus the ORR Nernst potential.
+Oxygen consumption matches Faraday's law for four-electron ORR.
+<<<
+
+[REQUIREMENT]
+UID: IA-OER-001
+STATUS: Active
+TITLE: Oxygen evolution ODE
+STATEMENT: >>>
+Module ironair.components.oxygen_evolution SHALL provide class OxygenEvolution.
+
+The component SHALL calculate oxygen evolution, catalyst activity, and applicable
+dynamic electrode states.
+<<<
+COMMENT: >>>
+OER current is positive (anodic) for eta > 0 versus the OER Nernst potential.
+<<<
+
+[REQUIREMENT]
+UID: IA-GDL-001
+STATUS: Active
+TITLE: Gas diffusion ODE
+STATEMENT: >>>
+Module ironair.components.gas_diffusion SHALL provide class GasDiffusionLayer.
+
+The component SHALL calculate transient oxygen concentration profiles, effective
+diffusion, pore saturation, flooding, and gas/liquid transport.
+<<<
+COMMENT: >>>
+A step decrease in boundary O2 mole fraction produces a delayed interior O2 decline.
+Flooding (saturation -> 1) reduces effective O2 diffusivity.
+<<<
+
+[REQUIREMENT]
+UID: IA-ELY-001
+STATUS: Active
+TITLE: Electrolyte ODE
+STATEMENT: >>>
+Module ironair.components.electrolyte SHALL provide class Electrolyte.
+
+States SHALL include water inventory, dissolved species, electrolyte temperature,
+carbonation, and spatial concentration distributions where enabled.
+
+The model SHALL include concentration-dependent KOH physical properties.
+<<<
+COMMENT: >>>
+Conductivity is computed from instantaneous KOH concentration and temperature via
+ironair.properties. Carbonate accumulation consumes OH-.
+<<<
+
+[REQUIREMENT]
+UID: IA-SEP-001
+STATUS: Active
+TITLE: Separator ODE
+STATEMENT: >>>
+Module ironair.components.separator SHALL provide class Separator.
+
+The model SHALL represent transient species transport, electrolyte saturation where
+applicable, degradation, and separator temperature.
+
+Ionic resistance SHALL be calculated from the instantaneous physical state.
+<<<
+COMMENT: >>>
+R_ionic is algebraic in conductivity, thickness, area, and saturation. Temperature
+is dynamic.
+<<<
+
+[REQUIREMENT]
+UID: IA-COL-001
+STATUS: Active
+TITLE: Current collector ODE
+STATEMENT: >>>
+Module ironair.components.current_collector SHALL provide class CurrentCollector.
+
+The model SHALL include thermal dynamics and configurable long-term contact or
+resistance degradation.
+
+Ohmic voltage loss SHALL be calculated algebraically.
+<<<
+COMMENT: >>>
+No fake lag state for resistance. V_ohm = I * R(T, degradation_state).
+<<<
+
+[REQUIREMENT]
+UID: IA-CEL-001
+STATUS: Active
+TITLE: Complete cell ODE
+STATEMENT: >>>
+Module ironair.components.cell SHALL provide class IronAirCell.
+
+The cell SHALL couple iron electrode, air electrode, hydrogen evolution, electrolyte,
+separator, gas diffusion, current collectors, and thermal dynamics.
+
+The cell SHALL calculate instantaneous terminal voltage, current, power, SOC, and
+available capacity.
+
+The component SHALL solve coupled nonlinear electrochemical and electrical constraints.
+<<<
+COMMENT: >>>
+Cell rhs solves algebraic current/voltage consistency. Outputs include V, I, P, SOC.
+<<<
+
+[REQUIREMENT]
+UID: IA-THM-001
+STATUS: Active
+TITLE: Thermal ODE
+STATEMENT: >>>
+Module ironair.components.thermal SHALL provide class ThermalNetwork.
+
+States SHALL include thermal energy or temperature at relevant physical nodes.
+
+The model SHALL calculate conduction, convection, radiation, reaction heat, and cooling.
+<<<
+COMMENT: >>>
+Adiabatic isolated node with positive heat source increases temperature.
+<<<
+
+[REQUIREMENT]
+UID: IA-AIR-001
+STATUS: Active
+TITLE: Air handling ODE
+STATEMENT: >>>
+Module ironair.components.air_system SHALL provide class AirSystem.
+
+The component SHALL include gas inventories, manifold pressure dynamics, oxygen
+concentration, humidity, and airflow coupling.
+<<<
+COMMENT: >>>
+Manifold pressure rises when inlet mass flow exceeds outlet plus consumption.
+<<<
+
+[REQUIREMENT]
+UID: IA-AIR-002
+STATUS: Active
+TITLE: Fan ODE
+STATEMENT: >>>
+Module ironair.components.fan SHALL provide class Fan.
+
+The model SHALL include rotor speed dynamics and fan power consumption.
+<<<
+COMMENT: >>>
+Rotor speed is a dynamic state. Electrical power is an algebraic output from speed and torque.
+<<<
+
+[REQUIREMENT]
+UID: IA-FLD-001
+STATUS: Active
+TITLE: Electrolyte circulation ODE
+STATEMENT: >>>
+Module ironair.components.electrolyte_flow SHALL provide class ElectrolyteFlow.
+
+The component SHALL dynamically track flow, species transfer, pressure or hydraulic
+storage where physically justified, and temperature.
+<<<
+COMMENT: >>>
+Species transport delay appears when using the detailed hydraulic mode.
+<<<
+
+[REQUIREMENT]
+UID: IA-FLD-002
+STATUS: Active
+TITLE: Pump ODE
+STATEMENT: >>>
+Module ironair.components.pump SHALL provide class Pump.
+
+The component SHALL model motor and hydraulic response, electrical input, and mechanical losses.
+<<<
+COMMENT: >>>
+Shaft speed is dynamic. Hydraulic power is less than electrical input by documented efficiency.
+<<<
+
+[REQUIREMENT]
+UID: IA-FLD-003
+STATUS: Active
+TITLE: Reservoir ODE
+STATEMENT: >>>
+Module ironair.components.reservoir SHALL provide class Reservoir.
+
+The component SHALL model liquid inventory, chemical species inventories, temperature,
+and boundary flows.
+<<<
+COMMENT: >>>
+Mass balance: dM/dt equals inlet minus outlet minus leak.
+<<<
+
+[REQUIREMENT]
+UID: IA-FLD-004
+STATUS: Active
+TITLE: Valve ODE
+STATEMENT: >>>
+Module ironair.components.valve SHALL provide class Valve.
+
+The component SHALL model actuator response, valve position, and flow-dependent
+hydraulic characteristics.
+<<<
+COMMENT: >>>
+Position is a dynamic actuator state. Flow is algebraic in position and pressure drop.
+<<<
+
+[REQUIREMENT]
+UID: IA-FLD-005
+STATUS: Active
+TITLE: Piping ODE
+STATEMENT: >>>
+Module ironair.components.piping SHALL provide class Pipe.
+
+The component SHALL model transient fluid transport and temperature or species
+residence-time dynamics when using the detailed hydraulic mode.
+<<<
+COMMENT: >>>
+Detailed mode has at least one transport delay state. Lumped mode is flagged reduced_order.
+<<<
+
+[REQUIREMENT]
+UID: IA-HEX-001
+STATUS: Active
+TITLE: Heat exchanger ODE
+STATEMENT: >>>
+Module ironair.components.heat_exchanger SHALL provide class HeatExchanger.
+
+The component SHALL represent thermal storage and dynamic heat transfer between fluid circuits.
+<<<
+COMMENT: >>>
+Two fluid temperatures approach each other under heat transfer with no external loss.
+<<<
+
+[REQUIREMENT]
+UID: IA-STK-001
+STATUS: Active
+TITLE: Stack ODE
+STATEMENT: >>>
+Module ironair.components.stack SHALL provide class BatteryStack.
+
+The component SHALL aggregate cell states while preserving cell-level variations and
+electrical current conservation.
+<<<
+COMMENT: >>>
+Series stack current is identical through cells. Terminal voltage is the sum of cell voltages.
+<<<
+
+[REQUIREMENT]
+UID: IA-MOD-001
+STATUS: Active
+TITLE: Module ODE
+STATEMENT: >>>
+Module ironair.components.module SHALL provide class BatteryModule.
+
+The model SHALL include coupled stacks, shared fluid equipment, air equipment, and thermal states.
+<<<
+COMMENT: >>>
+Module assembles at least one stack plus shared thermal or fluid nodes.
+<<<
+
+[REQUIREMENT]
+UID: IA-ENC-001
+STATUS: Active
+TITLE: Enclosure ODE
+STATEMENT: >>>
+Module ironair.components.enclosure SHALL provide class BatteryEnclosure.
+
+The model SHALL include enclosure temperature, ventilation, auxiliary electrical loads,
+and enclosure-level gas inventories.
+<<<
+COMMENT: >>>
+Ventilation flow reduces enclosure H2 inventory. Auxiliary load is an algebraic electrical output.
+<<<
+
+[REQUIREMENT]
+UID: IA-DC-001
+STATUS: Active
+TITLE: DC bus ODE
+STATEMENT: >>>
+Module ironair.components.dc_bus SHALL provide class DCBus.
+
+The component SHALL model DC link capacitor voltage and stored energy.
+<<<
+COMMENT: >>>
+C * V * dV/dt equals net electrical power into the capacitor.
+<<<
+
+[REQUIREMENT]
+UID: IA-CNV-001
+STATUS: Active
+TITLE: DC/DC converter ODE
+STATEMENT: >>>
+Module ironair.components.dc_converter SHALL provide class DCDCConverter.
+
+The model SHALL include averaged inductor current, capacitor voltage, and converter losses.
+<<<
+COMMENT: >>>
+Averaged inductor current is a dynamic state. Losses increase output current demand.
+<<<
+
+[REQUIREMENT]
+UID: IA-INV-001
+STATUS: Active
+TITLE: Inverter ODE
+STATEMENT: >>>
+Module ironair.components.inverter SHALL provide class GridInverter.
+
+The model SHALL include averaged electrical control dynamics, DC link interaction,
+and active/reactive power response.
+<<<
+COMMENT: >>>
+P and Q track references through explicit controller states, not prescribed algebraic jumps only.
+<<<
+
+[REQUIREMENT]
+UID: IA-TRF-001
+STATUS: Active
+TITLE: Transformer ODE
+STATEMENT: >>>
+Module ironair.components.transformer SHALL provide class Transformer.
+
+The component SHALL include electromagnetic dynamic states where detailed transient
+modeling is enabled, along with winding and core thermal dynamics.
+<<<
+COMMENT: >>>
+Detailed mode includes flux or current states. Thermal states exist in both modes.
+Prescribed grid voltage is an input, not a transformer state.
+<<<
+
+[REQUIREMENT]
+UID: IA-GRD-001
+STATUS: Active
+TITLE: Grid interface ODE
+STATEMENT: >>>
+Module ironair.components.grid SHALL provide class GridInterface.
+
+The grid SHALL support dynamic voltage and frequency disturbances, network interface
+equations, and configurable external-grid dynamic models.
+
+A prescribed grid voltage or frequency SHALL be treated as an external input, not an
+invented dynamic state.
+<<<
+COMMENT: >>>
+When voltage/frequency are prescribed, they appear in inputs. Optional swing-equation
+mode is explicitly identified.
+<<<
+
+[REQUIREMENT]
+UID: IA-DEG-001
+STATUS: Active
+TITLE: Degradation ODE
+STATEMENT: >>>
+Module ironair.components.degradation SHALL provide class Degradation.
+
+The model SHALL represent irreversible material changes, catalyst decay, resistance
+growth, and active capacity loss.
+<<<
+COMMENT: >>>
+Degradation states are nondecreasing under positive aging rates. Capacity loss is irreversible.
+<<<
+
+[REQUIREMENT]
+UID: IA-FLT-001
+STATUS: Active
+TITLE: Sensor ODE
+STATEMENT: >>>
+Module ironair.components.sensors SHALL provide class DynamicSensor.
+
+The model SHALL include finite response time, sensor drift, bias, and noise.
+<<<
+COMMENT: >>>
+First-order sensor lag is a dynamic state. Noise uses a documented random seed.
+<<<
+
+[REQUIREMENT]
+UID: IA-CTL-001
+STATUS: Active
+TITLE: Supervisory control dynamics
+STATEMENT: >>>
+Module ironair.controls.supervisory SHALL provide class SupervisoryController.
+
+The controller SHALL include explicit continuous controller states where applicable,
+as well as discrete operating modes.
+
+It SHALL be implemented as a hybrid system with ODE dynamics and discrete transitions.
+<<<
+COMMENT: >>>
+Mode transitions are event-driven. PI or equivalent continuous states exist for current/power regulation.
+<<<
+
+[REQUIREMENT]
+UID: IA-EST-001
+STATUS: Active
+TITLE: State estimation
+STATEMENT: >>>
+Module ironair.controls.estimation SHALL provide class BatteryStateEstimator.
+
+The model SHALL estimate SOC, SOH, active iron inventory, and available charge/discharge power.
+
+It SHALL not access the simulated plant's true hidden states during observer execution.
+<<<
+COMMENT: >>>
+Estimator rhs and update methods accept only measurements and previous estimates,
+never plant.y hidden components.
+<<<
