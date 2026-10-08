@@ -199,12 +199,19 @@ UID: IA-IRS-010
 STATUS: Active
 TITLE: Scenario and architecture selection interface
 STATEMENT: >>>
-ironair.scenarios SHALL accept an architecture identifier covering US12308414B2
-Claim 1 stacked ORR, Claim 18 DRI bed, floating ORR, and EP4602674A1 Claims 1, 20,
-38, 55, 70, and 77 layouts.
+plant_sim.params.PlantParams plus OxygenReduction/OxygenEvolution layout flags SHALL
+accept architecture identifiers covering US12308414B2 Claim 1 stacked ORR, Claim 18
+DRI bed, floating ORR, and EP4602674A1 Claims 1, 20, 38, 55, 70, and 77 layouts.
 
 Invalid combinations (for example bifunctional ORR forced to OER potential while
 isolation is required) SHALL raise a documented configuration error.
+
+ironair.scenarios SHALL NOT be treated as the architecture selector; that package
+is empty. plant_sim.scenarios.mission supplies time-varying inputs, not layout IDs.
+<<<
+COMMENT: >>>
+Changed because ironair.scenarios is an empty package. Architecture is selected by
+PlantParams and ORR/OER mode flags used by DualElectrodeCell and PlantModel.
 <<<
 RELATIONS:
 - TYPE: Parent
