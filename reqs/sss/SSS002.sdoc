@@ -679,13 +679,21 @@ UID: IA-CNV-001
 STATUS: Active
 TITLE: DC/DC converter ODE
 STATEMENT: >>>
-Module ironair.components.dc_converter SHALL provide class DCDCConverter.
+Module plant_sim.components.electrical SHALL provide class DCDCConverter
+(notebook plant_sim/33_ElectricalBalance.ipynb).
 
 The model SHALL include averaged inductor current, capacitor voltage, and converter losses.
 <<<
 COMMENT: >>>
 Averaged inductor current is a dynamic state. Losses increase output current demand.
+
+Changed because ironair.components.dc_converter does not exist.
+plant_sim.components.electrical.DCDCConverter implements averaged inductor/capacitor
+states used by ElectricalBalance.
 <<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-DC-001
 
 [REQUIREMENT]
 UID: IA-INV-001

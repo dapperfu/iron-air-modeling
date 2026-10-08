@@ -1,6 +1,7 @@
 """Electrical BOP: DC bus, converter, inverter, transformer, grid (IA-DC/CNV/INV/TRF/GRD).
 
 @relation(IA-DC-001, scope=module)
+@relation(IA-CNV-001, scope=module)
 """
 
 from __future__ import annotations
@@ -71,11 +72,20 @@ class DCBus(RHSComponent):
 
 
 class DCDCConverter(RHSComponent):
+    """IA-CNV-001 averaged DC/DC converter.
+
+    @relation(IA-CNV-001, scope=class)
+    """
+
     def __init__(self, p: PlantParams | None = None) -> None:
         p = p or default_params()
         y0 = np.array([0.0, 48.0], dtype=np.float64)
 
         def rhs(t, y, inputs, context):  # type: ignore[no-untyped-def]
+            """Averaged converter inductor and capacitor RHS.
+
+            @relation(IA-CNV-001, scope=function)
+            """
             iL, vC = y
             v_in = float(inputs.get("v_in_V", 48.0))
             duty = float(np.clip(inputs.get("duty", 0.5), 0.05, 0.95))
