@@ -1,3 +1,4 @@
+# HTML is published to docs/ for GitHub Pages. See Makefile strictdoc-generate.
 [project]
 title = "iron-air-modeling"
 html_assets_strategy = "copy"
