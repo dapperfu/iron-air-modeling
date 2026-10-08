@@ -234,7 +234,8 @@ UID: IA-SEP-001
 STATUS: Active
 TITLE: Separator ODE
 STATEMENT: >>>
-Module ironair.components.separator SHALL provide class Separator.
+Module plant_sim.components.separator SHALL provide class Separator
+(notebook plant_sim/07_Separator.ipynb).
 
 The model SHALL represent transient species transport, electrolyte saturation where
 applicable, degradation, and separator temperature.
@@ -255,6 +256,10 @@ US12308414B2 oxygen-blocking separator; EP4602674A1 Claim 2 and [0048].
 COMMENT: >>>
 R_ionic is algebraic in conductivity, thickness, area, and saturation. Temperature
 is dynamic.
+
+Changed because ironair.components.separator does not exist.
+plant_sim.components.separator.Separator implements hydrophilic O2-blocking
+separator resistance and saturation used by DualElectrodeCell.
 <<<
 RELATIONS:
 - TYPE: Parent

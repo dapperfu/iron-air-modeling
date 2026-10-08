@@ -1,5 +1,7 @@
 """Separator ODE (IA-SEP-001).
 
+@relation(IA-SEP-001, scope=module)
+
 Hydrophilic macroporous separator that blocks dissolved O2 / bubbles from the
 iron electrode without a large ionic-resistance penalty (US FIG. 4A; EP Claim 2).
 R_ionic = L / (sigma A s^1.5 / tau).
@@ -46,6 +48,10 @@ def separator_rhs(
     u: Mapping[str, float],
     p: PlantParams,
 ) -> NDArray[np.float64]:
+    """Separator thermal, saturation, O2-block, and aging RHS.
+
+    @relation(IA-SEP-001, scope=function)
+    """
     T, s, c_O2, deg = y
     T_ely = float(u.get("T_ely_K", p.T_ep_sim_K))
     c_O2_ely = float(u.get("c_O2_ely_mol_m3", 0.0))
@@ -88,6 +94,11 @@ def separator_outputs(
 
 
 class Separator(RHSComponent):
+    """IA-SEP-001 oxygen-blocking separator.
+
+    @relation(IA-SEP-001, scope=class)
+    """
+
     def __init__(self, p: PlantParams | None = None, y0: NDArray[np.float64] | None = None) -> None:
         p = p or default_params()
         y0 = default_y0(p) if y0 is None else y0
