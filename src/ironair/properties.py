@@ -27,9 +27,7 @@ def _check_domain(temperature_K: float, c_koh_mol_m3: float) -> None:
     if not (T_MIN_K <= temperature_K <= T_MAX_K):
         raise DomainError(f"temperature {temperature_K} K outside [{T_MIN_K}, {T_MAX_K}]")
     if not (C_KOH_MIN_MOL_M3 <= c_koh_mol_m3 <= C_KOH_MAX_MOL_M3):
-        raise DomainError(
-            f"c_KOH {c_koh_mol_m3} mol/m3 outside [{C_KOH_MIN_MOL_M3}, {C_KOH_MAX_MOL_M3}]"
-        )
+        raise DomainError(f"c_KOH {c_koh_mol_m3} mol/m3 outside [{C_KOH_MIN_MOL_M3}, {C_KOH_MAX_MOL_M3}]")
 
 
 def koh_density_kg_m3(temperature_K: float, c_koh_mol_m3: float) -> float:
@@ -185,7 +183,5 @@ def arrhenius_rate(
     if k_ref < 0.0:
         raise DomainError("rate prefactor must be nonnegative")
     return k_ref * math.exp(
-        -activation_energy_j_mol
-        / constants.R_J_MOL_K
-        * (1.0 / temperature_K - 1.0 / constants.T_REF_K)
+        -activation_energy_j_mol / constants.R_J_MOL_K * (1.0 / temperature_K - 1.0 / constants.T_REF_K)
     )
