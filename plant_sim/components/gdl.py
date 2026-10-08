@@ -1,5 +1,7 @@
 """Gas-diffusion layer ODE (IA-GDL-001).
 
+@relation(IA-GDL-001, scope=module)
+
 Method-of-lines O2 diffusion, pore saturation, flooding, and dry-out.
 Hydraulic head on vertical ORR can drive liquid migration; OER bubbles at a
 horizontal electrode can dry the TPB (US12308414B2 FIGS. 8-9B).
@@ -57,6 +59,10 @@ def gdl_rhs(
     u: Mapping[str, float],
     p: PlantParams,
 ) -> NDArray[np.float64]:
+    """Method-of-lines GDL oxygen, saturation, and crust RHS.
+
+    @relation(IA-GDL-001, scope=function)
+    """
     n = p.n_gdl_nodes
     c = np.maximum(y[:n], 0.0)
     s = float(np.clip(y[n], 0.0, 1.0))
@@ -121,6 +127,11 @@ def diffusion_matrix(n: int, Deff: float, dz: float) -> Any:
 
 
 class GasDiffusionLayer(RHSComponent):
+    """IA-GDL-001 gas diffusion layer.
+
+    @relation(IA-GDL-001, scope=class)
+    """
+
     def __init__(self, p: PlantParams | None = None, y0: NDArray[np.float64] | None = None) -> None:
         p = p or default_params()
         y0 = default_y0(p) if y0 is None else y0

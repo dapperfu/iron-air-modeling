@@ -165,7 +165,8 @@ UID: IA-GDL-001
 STATUS: Active
 TITLE: Gas diffusion ODE
 STATEMENT: >>>
-Module ironair.components.gas_diffusion SHALL provide class GasDiffusionLayer.
+Module plant_sim.components.gdl SHALL provide class GasDiffusionLayer
+(notebook plant_sim/05_GDL.ipynb).
 
 The component SHALL calculate transient oxygen concentration profiles, effective
 diffusion, pore saturation, flooding, and gas/liquid transport.
@@ -184,6 +185,10 @@ pO2 window 0.01-100 atm discharge and 0.001-100 atm charge.
 COMMENT: >>>
 A step decrease in boundary O2 mole fraction produces a delayed interior O2 decline.
 Flooding (saturation -> 1) reduces effective O2 diffusivity.
+
+Changed because ironair.components.gas_diffusion does not exist.
+plant_sim.components.gdl.GasDiffusionLayer implements method-of-lines O2 diffusion,
+flooding, and dry-out used by DualElectrodeCell.
 <<<
 RELATIONS:
 - TYPE: Parent
