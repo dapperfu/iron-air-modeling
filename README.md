@@ -83,4 +83,7 @@ Unverified parameters are tagged `unverified_placeholder` or another explicit
 make test
 make test-phase-1
 make test-phase-2
+make format
 ```
+
+`make format` runs `ruff format` on `src/` and `plant_sim/`, including `*.py` and `*.ipynb`.
