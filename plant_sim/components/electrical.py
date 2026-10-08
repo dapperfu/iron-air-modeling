@@ -2,6 +2,7 @@
 
 @relation(IA-DC-001, scope=module)
 @relation(IA-CNV-001, scope=module)
+@relation(IA-INV-001, scope=module)
 """
 
 from __future__ import annotations
@@ -115,11 +116,20 @@ class DCDCConverter(RHSComponent):
 
 
 class GridInverter(RHSComponent):
+    """IA-INV-001 grid inverter P/Q tracker.
+
+    @relation(IA-INV-001, scope=class)
+    """
+
     def __init__(self, p: PlantParams | None = None) -> None:
         p = p or default_params()
         y0 = np.array([0.0, 0.0], dtype=np.float64)
 
         def rhs(t, y, inputs, context):  # type: ignore[no-untyped-def]
+            """Inverter active/reactive power tracker RHS.
+
+            @relation(IA-INV-001, scope=function)
+            """
             P, Q = y
             Pref = float(inputs.get("P_ref_W", 0.0))
             Qref = float(inputs.get("Q_ref_var", 0.0))

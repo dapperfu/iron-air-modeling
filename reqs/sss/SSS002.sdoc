@@ -700,14 +700,22 @@ UID: IA-INV-001
 STATUS: Active
 TITLE: Inverter ODE
 STATEMENT: >>>
-Module ironair.components.inverter SHALL provide class GridInverter.
+Module plant_sim.components.electrical SHALL provide class GridInverter
+(notebook plant_sim/33_ElectricalBalance.ipynb).
 
 The model SHALL include averaged electrical control dynamics, DC link interaction,
 and active/reactive power response.
 <<<
 COMMENT: >>>
 P and Q track references through explicit controller states, not prescribed algebraic jumps only.
+
+Changed because ironair.components.inverter does not exist.
+plant_sim.components.electrical.GridInverter implements P/Q tracker states used by
+PlantModel grid exchange.
 <<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-DC-001
 
 [REQUIREMENT]
 UID: IA-TRF-001
