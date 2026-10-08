@@ -189,9 +189,7 @@ class ReactionNetwork:
             ionic = float(IONIC_CHARGE @ self.S[:, j])
             electrons = float(self.electrons[j])
             if abs(ionic - electrons) > atol:
-                raise ConservationError(
-                    f"{reaction.name}: ionic charge {ionic} != electrons {electrons}"
-                )
+                raise ConservationError(f"{reaction.name}: ionic charge {ionic} != electrons {electrons}")
 
 
 DEFAULT_NETWORK: ReactionNetwork = ReactionNetwork()
