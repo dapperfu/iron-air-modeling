@@ -541,7 +541,8 @@ UID: IA-HEX-001
 STATUS: Active
 TITLE: Heat exchanger ODE
 STATEMENT: >>>
-Module ironair.components.heat_exchanger SHALL provide class HeatExchanger.
+Module plant_sim.components.thermal SHALL provide class HeatExchanger
+(notebook plant_sim/09_Thermal.ipynb).
 
 The component SHALL represent thermal storage and dynamic heat transfer between fluid circuits.
 <<<
@@ -549,7 +550,14 @@ COMMENT: >>>
 Two fluid temperatures approach each other under heat transfer with no external loss.
 Cavity coolant and lid thermal loops of US12308414B2 SHALL be representable as
 HeatExchanger circuits.
+
+Changed because ironair.components.heat_exchanger does not exist.
+plant_sim.components.thermal.HeatExchanger implements two-stream thermal storage
+used by the plant cavity/lid cooling loops.
 <<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-THM-001
 
 [[/SECTION]]
 

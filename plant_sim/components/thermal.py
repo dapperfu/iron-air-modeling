@@ -1,6 +1,7 @@
 """Thermal network and heat exchanger (IA-THM-001, IA-HEX-001).
 
 @relation(IA-THM-001, scope=module)
+@relation(IA-HEX-001, scope=module)
 
 Nodes: electrode cluster, electrolyte, vessel wall, lid, coolant cavity
 (US FIGS. 1E-1F, 9A). Heat exchanger for cavity coolant / lid loops.
@@ -132,6 +133,10 @@ def hex_rhs(
     u: Mapping[str, float],
     p: PlantParams,
 ) -> NDArray[np.float64]:
+    """Two-stream heat-exchanger RHS.
+
+    @relation(IA-HEX-001, scope=function)
+    """
     Th, Tc = y
     m_h = float(u.get("mdot_hot_kg_s", 0.04))
     m_c = float(u.get("mdot_cold_kg_s", 0.05))
@@ -148,6 +153,11 @@ def hex_rhs(
 
 
 class HeatExchanger(RHSComponent):
+    """IA-HEX-001 heat exchanger.
+
+    @relation(IA-HEX-001, scope=class)
+    """
+
     def __init__(self, p: PlantParams | None = None) -> None:
         p = p or default_params()
         y0 = np.array([p.T_ep_sim_K + 5.0, p.T_ref_K + 1.0], dtype=np.float64)
