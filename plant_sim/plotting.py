@@ -4,7 +4,7 @@ Notebooks do not import this module. A notebook builds a pandas DataFrame
 and calls seaborn in the cell so the figure is notebook output.
 
 Axis labels here use Unicode SI (mA h g⁻¹, Pa, K). Notebook Markdown uses
-siunitx macros from siunitx_nb.py; matplotlib cannot render \\qty.
+Jupyter MathJax `$...$` with `\\mathrm{}` SI (siunitx is not available).
 """
 
 from __future__ import annotations
