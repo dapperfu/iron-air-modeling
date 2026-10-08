@@ -1730,6 +1730,9 @@ confirm the ORR remains at the triple-phase boundary.
 COMMENT: >>>
 ORR follows the free surface. OER remains wetted. Flooding and dry-out flags stay
 clear under slow height change.
+
+Changed because this mode is OxygenReduction(mode="floating") in
+plant_sim.components.orr, not an ironair.scenarios function.
 <<<
 RELATIONS:
 - TYPE: Parent

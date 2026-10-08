@@ -1,6 +1,7 @@
 """Oxygen reduction ODE (IA-ORR-001).
 
 @relation(IA-ORR-001, scope=module)
+@relation(IA-SCN-PAT-FLOAT, scope=module)
 
 ORR: O2 + 2 H2O + 4 e- -> 4 OH- (US12308414B2). Configurable as floating,
 vertical natural-air-breathing, inverse, tubular, stacked submerged with
