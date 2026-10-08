@@ -163,8 +163,12 @@ current collectors, cell assembly, thermal system, air intake, fan/blower, gas
 manifolds, ventilation, electrolyte reservoir, circulation pump, piping, valves,
 heat exchanger, battery stack, battery module, battery enclosure, DC electrical
 distribution, DC/DC conversion, grid inverter, transformer, grid interface,
-measurement sensors, battery management, supervisory control, fault management,
-state estimation, and degradation and aging.
+and degradation and aging.
+
+Measurement sensors, dedicated supervisory-controller classes, fault-management
+modules, and state estimators SHALL remain design allocations until implemented
+(IA-FLT-001, IA-CTL-001, IA-EST-001). Discrete charge/discharge/rest modes SHALL
+be provided by plant_sim.plant.PlantModel.
 
 These components SHALL interact through shared physical quantities and conserved
 material, charge, and energy flows.
@@ -182,8 +186,9 @@ multi-function vessels, lids, and bulk energy storage systems. EP4602674A1 FIG. 
 adds the dual-electrode switch between power source (charge) and load (discharge).
 <<<
 COMMENT: >>>
-Every listed component has a DynamicComponent implementation that can be assembled
-into ironair.simulation.CoupledSystem and exchanges named physical flows.
+Changed because ironair.components is empty and CoupledSystem does not assemble the
+patented plant. plant_sim.plant.PlantModel concatenates the implemented component
+RHS functions. Sensors and estimators are not in that concatenation.
 <<<
 
 [REQUIREMENT]
