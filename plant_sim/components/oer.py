@@ -81,7 +81,9 @@ def oer_rhs(
     i0 = i0_T(p.i0_oer_A_m2, p.Ea_oer_J_mol, T)
     eta = asinh_overpotential_V(I_eff / max(p.A_geom_m2 * factor, 1e-12), i0 * max(theta_cat, 0.05), T)
     dtheta_cat = -1.5e-6 * max(eta, 0.0) * theta_cat
-    dtheta_b = 0.6 * r_oer * 800.0 - (0.08 + 0.4 * (layout in {"interdigitated", "spiral_bifilar", "pleated"})) * theta_b
+    dtheta_b = (
+        0.6 * r_oer * 800.0 - (0.08 + 0.4 * (layout in {"interdigitated", "spiral_bifilar", "pleated"})) * theta_b
+    )
     if theta_b <= 0.0 and dtheta_b < 0.0:
         dtheta_b = 0.0
     _ = t
@@ -126,7 +128,9 @@ class OxygenEvolution(RHSComponent):
     @relation(IA-OER-001, scope=class)
     """
 
-    def __init__(self, p: PlantParams | None = None, y0: NDArray[np.float64] | None = None, layout: str = "interdigitated") -> None:
+    def __init__(
+        self, p: PlantParams | None = None, y0: NDArray[np.float64] | None = None, layout: str = "interdigitated"
+    ) -> None:
         if layout not in OER_LAYOUTS:
             raise ValueError(f"OER layout {layout} not in {OER_LAYOUTS}")
         p = p or default_params()
