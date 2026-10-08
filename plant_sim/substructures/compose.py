@@ -21,7 +21,10 @@ class CoupledSubstructure:
         self,
         name: str,
         pieces: Sequence[tuple[str, int, Rhs, NDArray[np.float64]]],
-        couple: Callable[[float, NDArray[np.float64], Mapping[str, float], PlantParams, dict[str, NDArray[np.float64]]], dict[str, Mapping[str, float]]],
+        couple: Callable[
+            [float, NDArray[np.float64], Mapping[str, float], PlantParams, dict[str, NDArray[np.float64]]],
+            dict[str, Mapping[str, float]],
+        ],
         params: PlantParams | None = None,
     ) -> None:
         self.name = name
@@ -53,7 +56,13 @@ class CoupledSubstructure:
             dy[a:b] = fn(t, parts[key], u_map[key], self.params)
         return dy
 
-    def simulate(self, t_span: tuple[float, float], u: Mapping[str, float] | Callable[[float], Mapping[str, float]] | None = None, n_eval: int = 250, method: str = "BDF") -> dict[str, Any]:
+    def simulate(
+        self,
+        t_span: tuple[float, float],
+        u: Mapping[str, float] | Callable[[float], Mapping[str, float]] | None = None,
+        n_eval: int = 250,
+        method: str = "BDF",
+    ) -> dict[str, Any]:
         def u_at(t: float) -> Mapping[str, float]:
             if u is None:
                 return {}
