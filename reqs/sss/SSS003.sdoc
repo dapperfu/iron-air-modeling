@@ -138,7 +138,8 @@ flooding versus dry-out, lid-vent blockage, and primary-vessel leak into seconda
 containment (US12308414B2 vessel cavity 161).
 <<<
 COMMENT: >>>
-Each listed scenario has a unique IA-SCN-MCH-* ID, Python scenario function, and notebook.
+Changed because ironair.scenarios is empty. Executable mechanical-fault coverage is
+plant_sim/94_StarvationAndFlooding.ipynb. Remaining MCH IDs are design allocations.
 <<<
 
 [REQUIREMENT]

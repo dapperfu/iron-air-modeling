@@ -102,6 +102,10 @@ def thermal_excursion_inputs(p: PlantParams | None = None):
 
 
 def starvation_inputs(p: PlantParams | None = None):
+    """Air starvation then hydraulic-head flooding.
+
+    @relation(IA-NBK-012, scope=function)
+    """
     p = p or default_params()
 
     def u(t: float) -> dict[str, float]:
