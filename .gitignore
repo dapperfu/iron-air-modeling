@@ -30,5 +30,11 @@ Desktop.ini
 .idea/
 *.swp
 
-# StrictDoc staging build (published copy lives in docs/)
+# StrictDoc staging and generated review exports
 .strictdoc_build/
+docs/requirements/
+
+# Generated simulation results
+results/*.mat
+results/*.png
+results/*.txt
