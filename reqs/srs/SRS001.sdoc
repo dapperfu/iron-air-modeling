@@ -846,9 +846,9 @@ interdigitated OER, bifunctional versus dual cathode) SHALL be selected by
 configuration flags on the shared components, not by forked governing equations.
 <<<
 COMMENT: >>>
-Notebooks import ironair and do not define replacement governing equations for
-production physics. Reduced-order models are named with a reduced_order flag or
-class name and have comparison tests.
+Changed because plant notebooks import plant_sim component RHS functions (and
+ironair.chemistry), not a second ironair.components physics tree. Reduced-order
+models remain named with a reduced_order flag or class name.
 <<<
 
 [REQUIREMENT]
