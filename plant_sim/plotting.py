@@ -1,4 +1,11 @@
-"""Seaborn helpers with SI units and patent/claim callouts."""
+"""PNG export for plant_sim/verify_components.py.
+
+Notebooks do not import this module. A notebook builds a pandas DataFrame
+and calls seaborn in the cell so the figure is notebook output.
+
+Axis labels here use Unicode SI (mA h g⁻¹, Pa, K). Notebook Markdown uses
+siunitx macros from siunitx_nb.py; matplotlib cannot render \\qty.
+"""
 
 from __future__ import annotations
 
@@ -65,7 +72,9 @@ def timeseries(
     t_scale: float = 1.0,
 ) -> Path:
     apply_style()
-    frame = pd.DataFrame({"t": np.asarray(t_s, dtype=float) / t_scale, **{k: np.asarray(v, dtype=float) for k, v in series.items()}})
+    frame = pd.DataFrame(
+        {"t": np.asarray(t_s, dtype=float) / t_scale, **{k: np.asarray(v, dtype=float) for k, v in series.items()}}
+    )
     melted = frame.melt(id_vars=["t"], var_name="quantity", value_name="value")
     fig, ax = plt.subplots()
     sns.lineplot(data=melted, x="t", y="value", hue="quantity", ax=ax, linewidth=2.0)
@@ -90,7 +99,9 @@ def xy_plot(
     stem: str,
 ) -> Path:
     apply_style()
-    frame = pd.DataFrame({"x": np.asarray(x, dtype=float), **{k: np.asarray(v, dtype=float) for k, v in series.items()}})
+    frame = pd.DataFrame(
+        {"x": np.asarray(x, dtype=float), **{k: np.asarray(v, dtype=float) for k, v in series.items()}}
+    )
     melted = frame.melt(id_vars=["x"], var_name="quantity", value_name="value")
     fig, ax = plt.subplots()
     sns.lineplot(data=melted, x="x", y="value", hue="quantity", ax=ax, linewidth=2.0)
@@ -149,7 +160,9 @@ def verification_table(rows: list[tuple[str, float, float, str]], stem: str) -> 
             "unit": units,
         }
     )
-    melted = frame.melt(id_vars=["check", "unit"], value_vars=["expected", "simulated"], var_name="source", value_name="value")
+    melted = frame.melt(
+        id_vars=["check", "unit"], value_vars=["expected", "simulated"], var_name="source", value_name="value"
+    )
     fig, ax = plt.subplots(figsize=(11.0, 5.5))
     sns.barplot(data=melted, x="check", y="value", hue="source", ax=ax)
     ax.set_xlabel("Verification check")
