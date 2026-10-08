@@ -31,8 +31,11 @@ from ironair import chemistry
 from ironair import components
 from ironair import simulation
 from ironair import scenarios
-from ironair import plotting
 ```
+
+`ironair` is the physics plant: ODEs, parameters, and numeric trajectories.
+Notebooks under `plant_sim/` put those trajectories in a pandas DataFrame and
+call seaborn in the cell so the figure is notebook output.
 
 ## Architecture
 
