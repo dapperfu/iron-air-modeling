@@ -15,14 +15,22 @@ from plant_sim.params import PlantParams, default_params
 from plant_sim.substructures.compose import CoupledSubstructure
 
 
-def _couple(t: float, y: NDArray[np.float64], u: Mapping[str, float], p: PlantParams, parts: dict[str, NDArray[np.float64]]) -> dict[str, Mapping[str, float]]:
+def _couple(
+    t: float, y: NDArray[np.float64], u: Mapping[str, float], p: PlantParams, parts: dict[str, NDArray[np.float64]]
+) -> dict[str, Mapping[str, float]]:
     I = float(u.get("I_fe_A", -p.I_discharge_100h_A))
     T = float(parts["fe"][3])
     V = max(float(parts["ely"][5]), 1e-8)
     a_oh = max(float(parts["ely"][0]) / V / 1000.0, 1e-6)
     return {
         "fe": {"I_fe_A": I, "T_amb_K": float(u.get("T_amb_K", p.T_ep_sim_K)), "a_oh": a_oh, "a_h2o": 0.72},
-        "her": {"I_fe_A": I, "T_K": T, "L_path_m": p.L_anode_m * (1.0 - 0.6 * p.chan_frac), "a_oh": a_oh, "a_h2o": 0.72},
+        "her": {
+            "I_fe_A": I,
+            "T_K": T,
+            "L_path_m": p.L_anode_m * (1.0 - 0.6 * p.chan_frac),
+            "a_oh": a_oh,
+            "a_h2o": 0.72,
+        },
         "col": {"I_cell_A": I, "T_amb_K": float(u.get("T_amb_K", p.T_ep_sim_K))},
         "ely": {
             "r_iron_mol_s": I / (2.0 * 96485.3321233100184),
