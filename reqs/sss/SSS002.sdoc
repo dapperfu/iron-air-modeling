@@ -132,7 +132,8 @@ UID: IA-OER-001
 STATUS: Active
 TITLE: Oxygen evolution ODE
 STATEMENT: >>>
-Module ironair.components.oxygen_evolution SHALL provide class OxygenEvolution.
+Module plant_sim.components.oer SHALL provide class OxygenEvolution
+(notebook plant_sim/04_OER.ipynb).
 
 The component SHALL calculate oxygen evolution, catalyst activity, and applicable
 dynamic electrode states.
@@ -150,6 +151,10 @@ EP4602674A1 Claims 1, 3, 11-12, 38, 70, 77; US12308414B2 dual-cathode toggle.
 <<<
 COMMENT: >>>
 OER current is positive (anodic) for eta > 0 versus the OER Nernst potential.
+
+Changed because ironair.components.oxygen_evolution does not exist.
+plant_sim.components.oer.OxygenEvolution implements interdigitated/planar OER
+layouts and charge-path isolation used by DualElectrodeCell.
 <<<
 RELATIONS:
 - TYPE: Parent

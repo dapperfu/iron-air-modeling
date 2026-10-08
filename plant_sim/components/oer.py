@@ -1,5 +1,7 @@
 """Oxygen evolution ODE (IA-OER-001).
 
+@relation(IA-OER-001, scope=module)
+
 OER: 4 OH- -> O2 + 2 H2O + 4 e-. Layouts: planar, submerged, interdigitated
 trunk-and-projection, corrugated, serpentine, discrete arrays, spiral bifilar,
 pleated (EP4602674A1 Claims 1, 3, 12, 32, 38, 70, 77). During charge OER sits
@@ -63,6 +65,10 @@ def oer_rhs(
     p: PlantParams,
     layout: str = "interdigitated",
 ) -> NDArray[np.float64]:
+    """Four-electron OER Faraday and catalyst-state RHS.
+
+    @relation(IA-OER-001, scope=function)
+    """
     theta_cat, n_O2, theta_b = y
     I_oer_A = float(u.get("I_oer_A", 0.0))  # anodic positive on charge
     T = float(u.get("T_K", p.T_ep_sim_K))
@@ -115,6 +121,11 @@ def oer_outputs(
 
 
 class OxygenEvolution(RHSComponent):
+    """IA-OER-001 oxygen evolution.
+
+    @relation(IA-OER-001, scope=class)
+    """
+
     def __init__(self, p: PlantParams | None = None, y0: NDArray[np.float64] | None = None, layout: str = "interdigitated") -> None:
         if layout not in OER_LAYOUTS:
             raise ValueError(f"OER layout {layout} not in {OER_LAYOUTS}")
