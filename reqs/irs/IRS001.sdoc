@@ -179,12 +179,16 @@ UID: IA-IRS-009
 STATUS: Active
 TITLE: Channel and interdigitation interface
 STATEMENT: >>>
-IronElectrode SHALL publish channel occupancy, ChanFrac, rib width, and whether
+IronAnode SHALL publish channel occupancy, ChanFrac, rib width, and whether
 each channel contains OER, additive, both, or neither (EP4602674A1 Claims 5-6).
 
 OxygenEvolution SHALL publish projection length, trunk presence, corrugated versus
 discrete-cathode layout, and iron-OER gap. Separator SHALL publish ionic
 resistance and bubble-egress availability between those ports.
+<<<
+COMMENT: >>>
+Changed because IronElectrode does not exist. IronAnode and PlantParams publish
+ChanFrac, rib width, and channel occupancy used by channeled-electrode notebooks.
 <<<
 RELATIONS:
 - TYPE: Parent
