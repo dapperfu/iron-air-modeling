@@ -1,0 +1,55 @@
+[DOCUMENT]
+TITLE: Test Plan - IRONAIR
+UID: DOC-TP001
+VERSION: 1.0.0
+OPTIONS:
+  MARKUP: Text
+
+[REQUIREMENT]
+UID: IA-TP-001
+STATUS: Active
+TITLE: Phase-gate testing
+STATEMENT: >>>
+Each development phase SHALL have a passing pytest suite before the phase is complete.
+
+Phase 1: package import, constants, parameters, ODE protocol, StrictDoc UIDs.
+Phase 2: stoichiometric conservation, Butler-Volmer, Nernst, thermodynamics.
+Phase 3: chemistry notebooks execute.
+Phase 4+: component, coupled, scenario, and conservation tests as implemented.
+<<<
+COMMENT: >>>
+make test-phase-1 through make test-phase-2 fail closed when the corresponding tests fail.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-TST-007
+
+[REQUIREMENT]
+UID: IA-TP-002
+STATUS: Active
+TITLE: Verification versus validation
+STATEMENT: >>>
+Automated tests verify software against the SDRS. They SHALL NOT be labeled as
+experimental hardware validation.
+<<<
+COMMENT: >>>
+README and ironair.validation state this distinction.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-TST-006
+
+[REQUIREMENT]
+UID: IA-TP-003
+STATUS: Active
+TITLE: CI quality gates
+STATEMENT: >>>
+CI SHALL run ruff, mypy, pytest with coverage, StrictDoc validation, and
+requirements traceability.
+<<<
+COMMENT: >>>
+.github/workflows/ci.yml implements these steps.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-TST-010
