@@ -43,22 +43,26 @@ python plant_sim/_build_notebooks.py
 make format
 ```
 
-## Units (siunitx in Markdown, Unicode on axes)
+## Units (Jupyter MathJax subset, Unicode on axes)
 
-Jupyter does not load the real LaTeX `siunitx` package. Every notebook includes
-the MathJax preamble from `plant_sim/siunitx_nb.py` (`$$\newcommand{...}$$`) so
-narrative math can use siunitx v3 syntax:
+Jupyter MathJax does **not** load the LaTeX `siunitx` package. Macros such as
+`\qty`, `\unit`, `\qtyrange`, and `\molar` are not built-in. A
+`$$\newcommand{...}$$` preamble in one cell does not reliably apply to later
+markdown cells (each cell is typeset independently).
 
-- `$\qty{960}{\milli\ampere\hour\per\gram}$`
-- `$\qty{6}{\molar}$`, `$\qty{25}{\celsius}$`, `$\qty{1}{\atm}$`
-- `$\qtyrange{1}{7}{\gram\per\centi\metre\squared}$`
+Write quantities as ordinary `\mathrm{}` SI in `$...$` / `$$...$$`:
+
+- `$6\,\mathrm{M}$` KOH; temperatures in `$\mathrm{K}$`; power in `$\mathrm{W}$`;
+  current in `$\mathrm{A}$`; voltage in `$\mathrm{V}$`
+- `$960\,\mathrm{mAh\,g^{-1}}$`, `$1\,\mathrm{g\,cm^{-2}}$`, `$\mathrm{A\,m^{-2}}$`
+- Ranges: `$3$–$50\,\mathrm{mm}$`
 
 Chemistry stays `\mathrm{Fe(OH)_2}` (not mhchem). Do not use `\begin{align}`,
 `\begin{equation}`, or `\(...\)`.
 
 Seaborn/matplotlib labels use Unicode SI (`mA h g⁻¹`, `g cm⁻²`, `mol m⁻³`,
-`ΔP (Pa)`). Matplotlib mathtext does not expand `\qty`; keep siunitx in
-Markdown only. PNG exports from `plotting.py` follow the same Unicode convention.
+`ΔP (Pa)`). Matplotlib mathtext is a different renderer; keep Unicode on axes.
+PNG exports from `plotting.py` follow the same Unicode convention.
 
 ## How an engineer verifies against the patents
 
