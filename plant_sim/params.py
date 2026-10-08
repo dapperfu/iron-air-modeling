@@ -8,6 +8,7 @@ Defaults:
 @relation(IA-SYS-020, scope=module)
 @relation(IA-SYS-021, scope=module)
 @relation(IA-SYS-022, scope=module)
+@relation(IA-SCN-PAT-PO2, scope=module)
 @relation(IA-FE-001, scope=module)
 """
 

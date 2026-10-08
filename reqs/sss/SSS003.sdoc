@@ -1788,6 +1788,9 @@ Raise pO2 on discharge within 0.01-100 atm and lower pO2 on charge within
 COMMENT: >>>
 Discharge driving force increases with pO2. Charge OER is not forced to high pO2.
 Solver remains within property-model domain.
+
+Changed because pO2 windows are PlantParams / GDL domain limits used by plant_sim
+ORR, not an ironair.scenarios function.
 <<<
 RELATIONS:
 - TYPE: Parent
