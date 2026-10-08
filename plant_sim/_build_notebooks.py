@@ -13,8 +13,6 @@ ROOT = HERE.parent
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "src"))
 
-from plant_sim.siunitx_nb import SIUNITX_PREAMBLE
-
 IMPORTS = """\
 from pathlib import Path
 import sys
@@ -35,12 +33,10 @@ from plant_sim.bootstrap import setup_path
 
 setup_path()
 from plant_sim.params import CAPACITY_FE_OH2_MAH_G, CAPACITY_MAGNETITE_MAH_G, default_params
-from plant_sim.siunitx_nb import SIUNITX_PREAMBLE
 """
 
 SETUP = """\
 from IPython import get_ipython
-from IPython.display import Markdown, display
 
 _ipy = get_ipython()
 if _ipy is not None:
@@ -56,10 +52,23 @@ sns.set(
         "figure.edgecolor": "k",
     }
 )
-display(Markdown(SIUNITX_PREAMBLE))
 P = default_params()
 print("KOH default", P.c_KOH_mol_m3 / 1000, "M; T_ep", P.T_ep_sim_K, "K")
 print("Faraday 960/320 checks", round(CAPACITY_FE_OH2_MAH_G, 2), round(CAPACITY_MAGNETITE_MAH_G, 2))
+"""
+
+# Jupyter MathJax only ($...$ / $$...$$). No siunitx; no preamble newcommands.
+GOV_DEFAULT = (
+    "See the requirement UID and patent claims cited in the title cell. "
+    r"Default electrolyte $6\,\mathrm{M}$ KOH at $303\,\mathrm{K}$ and $1\,\mathrm{atm}$. "
+    r"Currents in $\mathrm{A}$, voltages in $\mathrm{V}$, power in $\mathrm{W}$. "
+    r"Chemistry remains $\mathrm{...}$ (not mhchem)."
+)
+
+GOV_SCENARIO = r"""
+Default electrolyte $6\,\mathrm{M}$ KOH at $303\,\mathrm{K}$ unless noted.
+Quantities use Jupyter MathJax with $\mathrm{}$ SI (siunitx is not available).
+Patents: US12308414B2, EP4602674A1.
 """
 
 
@@ -91,7 +100,6 @@ def component_nb(fname, title, uid, equations, import_block, sim_block, verify_b
             "Patents: US12308414B2, EP4602674A1. Equations are paraphrased; "
             "see claims/paragraphs cited below."
         ),
-        md_cell(SIUNITX_PREAMBLE.strip() + "\n"),
         md_cell("## Governing equations\n\n" + equations.strip() + "\n"),
         code_cell(IMPORTS),
         code_cell(SETUP),
@@ -117,7 +125,6 @@ def story_nb(
         head += f"\n**Requirement:** `{uid}`\n"
     cells = [
         md_cell(head),
-        md_cell(SIUNITX_PREAMBLE.strip() + "\n"),
         md_cell("## Governing equations\n\n" + equations.strip() + "\n"),
         code_cell(IMPORTS),
         code_cell(SETUP),
@@ -141,17 +148,17 @@ def main() -> None:
         "IA-FE-001",
         r"""
 Discharge of metallic iron in alkaline electrolyte (EP4602674A1 [0042]-[0043] Eq. 1),
-theoretical capacity $\qty{960}{\milli\ampere\hour\per\gram}$ Fe:
+theoretical capacity $960\,\mathrm{mAh\,g^{-1}}$ Fe:
 
 $$\mathrm{Fe} + 2\,\mathrm{OH^-} \leftrightarrow \mathrm{Fe(OH)_2} + 2\,\mathrm{e^-}$$
 
-Second discharge step (Eq. 2), $\qty{320}{\milli\ampere\hour\per\gram}$ Fe:
+Second discharge step (Eq. 2), $320\,\mathrm{mAh\,g^{-1}}$ Fe:
 
 $$3\,\mathrm{Fe(OH)_2} + 2\,\mathrm{OH^-} \leftrightarrow \mathrm{Fe_3O_4} + 4\,\mathrm{H_2O} + 2\,\mathrm{e^-}$$
 
 Faraday: $r = I/(nF)$, $n=2$. Butler-Volmer current from `ironair.chemistry.kinetics`.
 Porosity absorbs the solid volume increase (IA-SYS-020). DRI beds, porous particles, and
-channeled ribs (EP Claim 1; loading $\qtyrange{1}{7}{\gram\per\centi\metre\squared}$, VF $0.5$–$0.9$) share this RHS.
+channeled ribs (EP Claim 1; loading $1$–$7\,\mathrm{g\,cm^{-2}}$, VF $0.5$–$0.9$) share this RHS.
 """,
         "from plant_sim.components.iron_anode import IronAnode\nfrom plant_sim.components.base import integrate_component",
         """\
@@ -201,7 +208,7 @@ $$\mathrm{CE} = \frac{I_\mathrm{Fe}}{I_\mathrm{Fe} + I_\mathrm{HER}}$$
 
 and falls when the ionic path to the back of a thick iron electrode exceeds
 front-surface HER. Vertical channels are a bubble-egress path ([0056]).
-Evaluated at $\qty{303}{\kelvin}$ in $\qty{6}{\molar}$ KOH.
+Evaluated at $303\,\mathrm{K}$ in $6\,\mathrm{M}$ KOH.
 """,
         "from plant_sim.components.her import HydrogenEvolution\nfrom plant_sim.components.base import integrate_component",
         """\
@@ -243,7 +250,7 @@ Modes: floating, vertical natural-air-breathing, inverse, tubular, stacked
 submerged with depth-equalized pressure drop, wavy/rippled, bifunctional
 (IA-SYS-009, IA-SYS-012; US Claims 1, 4, 7-12).
 One face to electrolyte/channels, opposing face to air (EP Claim 1). PTFE/GDE parameterizable.
-Current density in $\unit{\ampere\per\metre\squared}$; $p_{\mathrm{O_2}}$ in $\unit{\atm}$.
+Current density in $\mathrm{A\,m^{-2}}$; $p_{\mathrm{O_2}}$ in $\mathrm{atm}$.
 """,
         "from plant_sim.components.orr import OxygenReduction, ORR_MODES, stacked_orr_flows\nfrom plant_sim.components.base import integrate_component",
         """\
@@ -299,7 +306,7 @@ Layouts: planar, submerged, interdigitated trunk-and-projection, corrugated,
 serpentine, discrete arrays, spiral bifilar, pleated
 (EP Claims 1, 3, 12, 32, 38, 70, 77). Default porous metal mesh + OER catalyst (Claim 11).
 OER sits closer to iron than ORR on charge and is electrically isolatable (US FIGS. 5A-5B).
-Overpotential in $\unit{\volt}$; gas inventories in $\unit{\mole}$.
+Overpotential in $\mathrm{V}$; gas inventories in $\mathrm{mol}$.
 """,
         "from plant_sim.components.oer import OxygenEvolution, OER_LAYOUTS, LAYOUT_AREA_FACTOR\nfrom plant_sim.components.base import integrate_component",
         """\
@@ -355,7 +362,7 @@ $$D_\mathrm{eff} = D_\mathrm{gas}\,\varepsilon^{1.5}(1-s)^{3}$$
 
 Flooding ($s \to 1$) kills gas diffusivity. Hydraulic head on vertical ORR drives
 liquid; OER bubbles on a horizontal electrode can dry the TPB (US FIGS. 8-9B).
-pO2 $\qtyrange{0.01}{100}{\atm}$ discharge, $\qtyrange{0.001}{100}{\atm}$ charge.
+pO2 $0.01$–$100\,\mathrm{atm}$ discharge, $0.001$–$100\,\mathrm{atm}$ charge.
 """,
         "from plant_sim.components.gdl import GasDiffusionLayer\nfrom plant_sim.components.base import integrate_component",
         """\
@@ -390,12 +397,12 @@ fig.subplots_adjust(bottom=0.22)
         "06 Electrolyte (IA-ELY-001)",
         "IA-ELY-001",
         r"""
-Default $\qty{6}{\molar}$ aqueous KOH. Carbonation
+Default $6\,\mathrm{M}$ aqueous KOH. Carbonation
 
 $$\mathrm{CO_2} + 2\,\mathrm{OH^-} \to \mathrm{CO_3^{2-}} + \mathrm{H_2O}$$
 
 consumes $\mathrm{OH^-}$ and may clog pores (US). Alternate recipes from IA-SYS-021
-(LiOH blends, NaOH, high hydroxide $\ge\qty{7}{\molar}$ as a CE lever, EP).
+(LiOH blends, NaOH, high hydroxide $\ge 7\,\mathrm{M}$ as a CE lever, EP).
 Conductivity from `ironair.properties`.
 """,
         "from plant_sim.components.electrolyte import Electrolyte\nfrom plant_sim.components.base import integrate_component",
@@ -418,7 +425,7 @@ sns.lineplot(data=plot_long, x="t", y="value", hue="quantity", ax=ax, linewidth=
 ax.set_xlabel("t (min)")
 ax.set_ylabel("mixed SI")
 ax.set_title("KOH, carbonate, T, wetting")
-ax.text(0.0, -0.22, "6 M KOH @ 303 K (Unicode SI on axes; siunitx in Markdown)", transform=ax.transAxes, fontsize=8, va="top")
+ax.text(0.0, -0.22, "6 M KOH @ 303 K (Unicode SI on axes)", transform=ax.transAxes, fontsize=8, va="top")
 fig.tight_layout()
 fig.subplots_adjust(bottom=0.22)
 print("recipes", P.with_recipe("7M_KOH").c_KOH_mol_m3)
@@ -435,7 +442,7 @@ $$R_\mathrm{ionic} = \frac{L\,\tau}{\sigma A \varepsilon s^{1.5}}$$
 
 Separator blocks dissolved $\mathrm{O_2}$ and bubbles from iron without a large
 ionic penalty, remaining hydrophilic/macroporous (US FIG. 4A; EP Claim 2, [0048]).
-Wrapped stacked-core pores $\qty{1}{\micro\metre}$ to $\qty{1}{\centi\metre}$ (US FIG. 36A).
+Wrapped stacked-core pores $1\,\mathrm{\mu m}$ to $1\,\mathrm{cm}$ (US FIG. 36A).
 """,
         "from plant_sim.components.separator import Separator\nfrom plant_sim.components.base import integrate_component",
         """\
@@ -474,7 +481,7 @@ $$V_\mathrm{ohm} = I\,R(T,\mathrm{degradation})$$
 No fake lag on resistance.
 Anode branch-plus-primary, ORR dual-face tabs, Ni-coated-steel + EPDM (US FIGS. 4B-4C),
 SS mesh in iron ribs (EP), can-negative housing (US Claim 5).
-Ohmic drop in $\unit{\volt}$ for current in $\unit{\ampere}$; $R$ in $\unit{\ohm}$.
+Ohmic drop in $\mathrm{V}$ for current in $\mathrm{A}$; $R$ in $\mathrm{\Omega}$.
 """,
         "from plant_sim.components.current_collector import CurrentCollector\nfrom plant_sim.components.base import integrate_component",
         """\
@@ -508,7 +515,7 @@ fig.subplots_adjust(bottom=0.22)
         "IA-THM-001",
         r"""
 Lumped energy balance on electrode, electrolyte, vessel wall, lid, and cavity coolant
-(US FIGS. 1E-1F, 9A), with $T$ in $\unit{\kelvin}$ and heat rates in $\unit{\watt}$:
+(US FIGS. 1E-1F, 9A), with $T$ in $\mathrm{K}$ and heat rates in $\mathrm{W}$:
 
 $$m c_p \frac{\mathrm{d}T}{\mathrm{d}t} = \sum q$$
 
@@ -557,10 +564,7 @@ for label, obj, uu in [
             md_cell(
                 "# 10 Negative electrode\n\nCouples **iron + HER + collector + local electrolyte** using the same RHS functions as 01, 02, 06, 08."
             ),
-            md_cell(SIUNITX_PREAMBLE.strip() + "\n"),
-            md_cell(
-                "## Governing equations\n\nSee the requirement UID and patent claims cited in the title cell. Default electrolyte $\\qty{6}{\\molar}$ KOH at $\\qty{303}{\\kelvin}$ and $\\qty{1}{\\atm}$. Currents in $\\unit{\\ampere}$, voltages in $\\unit{\\volt}$, power in $\\unit{\\watt}$. Chemistry remains $\\mathrm{...}$ (not mhchem).\n"
-            ),
+            md_cell("## Governing equations\n\n" + GOV_DEFAULT + "\n"),
             code_cell(IMPORTS),
             code_cell(SETUP),
             md_cell("## Simulation"),
@@ -594,10 +598,7 @@ print("states", res["y"].shape, "finite", np.all(np.isfinite(res["y"])))
             md_cell(
                 "# 11 Air cathode\n\nORR + OER + GDL + air (03+04+05+AIR). Discharge consumes O2 at ORR; charge can isolate OER."
             ),
-            md_cell(SIUNITX_PREAMBLE.strip() + "\n"),
-            md_cell(
-                "## Governing equations\n\nSee the requirement UID and patent claims cited in the title cell. Default electrolyte $\\qty{6}{\\molar}$ KOH at $\\qty{303}{\\kelvin}$ and $\\qty{1}{\\atm}$. Currents in $\\unit{\\ampere}$, voltages in $\\unit{\\volt}$, power in $\\unit{\\watt}$. Chemistry remains $\\mathrm{...}$ (not mhchem).\n"
-            ),
+            md_cell("## Governing equations\n\n" + GOV_DEFAULT + "\n"),
             code_cell(IMPORTS),
             code_cell(SETUP),
             md_cell("## Simulation"),
@@ -627,12 +628,9 @@ fig.subplots_adjust(bottom=0.22)
         "12_DualElectrodeCell.ipynb",
         [
             md_cell(
-                "# 12 Dual-electrode cell (US12308414B2)\n\nCharge: iron–OER–source. Discharge: iron–ORR–load (EP [0049]). Independent $L_\\mathrm{c}$ vs $L_\\mathrm{d}$ (US $\\qty{100}{\\hour}$ / $\\qty{300}{\\hour}$)."
+                "# 12 Dual-electrode cell (US12308414B2)\n\nCharge: iron–OER–source. Discharge: iron–ORR–load (EP [0049]). Independent $L_\\mathrm{c}$ vs $L_\\mathrm{d}$ (US $100\\,\\mathrm{h}$ / $300\\,\\mathrm{h}$)."
             ),
-            md_cell(SIUNITX_PREAMBLE.strip() + "\n"),
-            md_cell(
-                "## Governing equations\n\nSee the requirement UID and patent claims cited in the title cell. Default electrolyte $\\qty{6}{\\molar}$ KOH at $\\qty{303}{\\kelvin}$ and $\\qty{1}{\\atm}$. Currents in $\\unit{\\ampere}$, voltages in $\\unit{\\volt}$, power in $\\unit{\\watt}$. Chemistry remains $\\mathrm{...}$ (not mhchem).\n"
-            ),
+            md_cell("## Governing equations\n\n" + GOV_DEFAULT + "\n"),
             code_cell(IMPORTS),
             code_cell(SETUP),
             md_cell("## Simulation"),
@@ -681,10 +679,7 @@ fig.subplots_adjust(bottom=0.22)
             md_cell(
                 "# 20 Cell stack + stacked submerged ORR (US Claim 1)\n\nSeries current conservation; depth-varying pocket thickness equalizes air ΔP."
             ),
-            md_cell(SIUNITX_PREAMBLE.strip() + "\n"),
-            md_cell(
-                "## Governing equations\n\nSee the requirement UID and patent claims cited in the title cell. Default electrolyte $\\qty{6}{\\molar}$ KOH at $\\qty{303}{\\kelvin}$ and $\\qty{1}{\\atm}$. Currents in $\\unit{\\ampere}$, voltages in $\\unit{\\volt}$, power in $\\unit{\\watt}$. Chemistry remains $\\mathrm{...}$ (not mhchem).\n"
-            ),
+            md_cell("## Governing equations\n\n" + GOV_DEFAULT + "\n"),
             code_cell(IMPORTS),
             code_cell(SETUP),
             md_cell("## Simulation"),
@@ -718,12 +713,9 @@ print("stack finite", np.all(np.isfinite(res["y"])), "n_cells", res["n_cells"])
         "21_ChanneledElectrode.ipynb",
         [
             md_cell(
-                "# 21 Channeled / interdigitated / spiral bifilar / pleated (EP4602674A1)\n\nChannel $\\qtyrange{3}{50}{\\milli\\metre}$ × $\\qtyrange{1}{40}{\\milli\\metre}$, spacing $\\qtyrange{10}{50}{\\milli\\metre}$, Fe $\\qtyrange{1}{7}{\\gram\\per\\centi\\metre\\squared}$, VF $0.5$–$0.9$."
+                "# 21 Channeled / interdigitated / spiral bifilar / pleated (EP4602674A1)\n\nChannel $3$–$50\\,\\mathrm{mm}$ × $1$–$40\\,\\mathrm{mm}$, spacing $10$–$50\\,\\mathrm{mm}$, Fe $1$–$7\\,\\mathrm{g\\,cm^{-2}}$, VF $0.5$–$0.9$."
             ),
-            md_cell(SIUNITX_PREAMBLE.strip() + "\n"),
-            md_cell(
-                "## Governing equations\n\nSee the requirement UID and patent claims cited in the title cell. Default electrolyte $\\qty{6}{\\molar}$ KOH at $\\qty{303}{\\kelvin}$ and $\\qty{1}{\\atm}$. Currents in $\\unit{\\ampere}$, voltages in $\\unit{\\volt}$, power in $\\unit{\\watt}$. Chemistry remains $\\mathrm{...}$ (not mhchem).\n"
-            ),
+            md_cell("## Governing equations\n\n" + GOV_DEFAULT + "\n"),
             code_cell(IMPORTS),
             code_cell(SETUP),
             md_cell("## Simulation"),
@@ -756,10 +748,7 @@ print("finite", np.all(np.isfinite(res["y"])))
             md_cell(
                 "# 22 Vessel, lid, air delivery, inverse-air, DRI bed\n\nUS Claim 18 DRI pellets; FIG. 9A multi-function lid (air, vent, thermal, DC, sensing)."
             ),
-            md_cell(SIUNITX_PREAMBLE.strip() + "\n"),
-            md_cell(
-                "## Governing equations\n\nSee the requirement UID and patent claims cited in the title cell. Default electrolyte $\\qty{6}{\\molar}$ KOH at $\\qty{303}{\\kelvin}$ and $\\qty{1}{\\atm}$. Currents in $\\unit{\\ampere}$, voltages in $\\unit{\\volt}$, power in $\\unit{\\watt}$. Chemistry remains $\\mathrm{...}$ (not mhchem).\n"
-            ),
+            md_cell("## Governing equations\n\n" + GOV_DEFAULT + "\n"),
             code_cell(IMPORTS),
             code_cell(SETUP),
             md_cell("## Simulation"),
@@ -792,10 +781,7 @@ fig.subplots_adjust(bottom=0.22)
             md_cell(
                 "# 30 Module\n\nUS FIG. 13 stack of housings sharing lid air, venting, DC. Implemented as `PlantModel` with series/parallel counts."
             ),
-            md_cell(SIUNITX_PREAMBLE.strip() + "\n"),
-            md_cell(
-                "## Governing equations\n\nSee the requirement UID and patent claims cited in the title cell. Default electrolyte $\\qty{6}{\\molar}$ KOH at $\\qty{303}{\\kelvin}$ and $\\qty{1}{\\atm}$. Currents in $\\unit{\\ampere}$, voltages in $\\unit{\\volt}$, power in $\\unit{\\watt}$. Chemistry remains $\\mathrm{...}$ (not mhchem).\n"
-            ),
+            md_cell("## Governing equations\n\n" + GOV_DEFAULT + "\n"),
             code_cell(IMPORTS),
             code_cell(SETUP),
             md_cell("## Simulation"),
@@ -830,10 +816,7 @@ fig.subplots_adjust(bottom=0.22)
             md_cell(
                 "# 31 Electrolyte hydraulics BOP\n\nPump, valve, pipe delay, reservoir, circulation loop (IA-FLD-001-005)."
             ),
-            md_cell(SIUNITX_PREAMBLE.strip() + "\n"),
-            md_cell(
-                "## Governing equations\n\nSee the requirement UID and patent claims cited in the title cell. Default electrolyte $\\qty{6}{\\molar}$ KOH at $\\qty{303}{\\kelvin}$ and $\\qty{1}{\\atm}$. Currents in $\\unit{\\ampere}$, voltages in $\\unit{\\volt}$, power in $\\unit{\\watt}$. Chemistry remains $\\mathrm{...}$ (not mhchem).\n"
-            ),
+            md_cell("## Governing equations\n\n" + GOV_DEFAULT + "\n"),
             code_cell(IMPORTS),
             code_cell(SETUP),
             md_cell("## Simulation"),
@@ -864,10 +847,7 @@ fig.subplots_adjust(bottom=0.22)
         "32_AirHandling.ipynb",
         [
             md_cell("# 32 Air handling\n\nFan + manifold + stacked-ORR distribution (IA-AIR-001/002)."),
-            md_cell(SIUNITX_PREAMBLE.strip() + "\n"),
-            md_cell(
-                "## Governing equations\n\nSee the requirement UID and patent claims cited in the title cell. Default electrolyte $\\qty{6}{\\molar}$ KOH at $\\qty{303}{\\kelvin}$ and $\\qty{1}{\\atm}$. Currents in $\\unit{\\ampere}$, voltages in $\\unit{\\volt}$, power in $\\unit{\\watt}$. Chemistry remains $\\mathrm{...}$ (not mhchem).\n"
-            ),
+            md_cell("## Governing equations\n\n" + GOV_DEFAULT + "\n"),
             code_cell(IMPORTS),
             code_cell(SETUP),
             md_cell("## Simulation"),
@@ -900,10 +880,7 @@ fig.subplots_adjust(bottom=0.22)
             md_cell(
                 "# 33 Electrical balance\n\nTabs/stacking, DC bus, converter, inverter, transformer, grid (IA-DC/CNV/INV/TRF/GRD)."
             ),
-            md_cell(SIUNITX_PREAMBLE.strip() + "\n"),
-            md_cell(
-                "## Governing equations\n\nSee the requirement UID and patent claims cited in the title cell. Default electrolyte $\\qty{6}{\\molar}$ KOH at $\\qty{303}{\\kelvin}$ and $\\qty{1}{\\atm}$. Currents in $\\unit{\\ampere}$, voltages in $\\unit{\\volt}$, power in $\\unit{\\watt}$. Chemistry remains $\\mathrm{...}$ (not mhchem).\n"
-            ),
+            md_cell("## Governing equations\n\n" + GOV_DEFAULT + "\n"),
             code_cell(IMPORTS),
             code_cell(SETUP),
             md_cell("## Simulation"),
@@ -936,10 +913,7 @@ fig.subplots_adjust(bottom=0.22)
             md_cell(
                 "# 40 Full plant model\n\nOne `solve_ivp` over concatenated 01-09 states plus BOP. Scenarios 90-99 call **this same** `PlantModel.rhs`."
             ),
-            md_cell(SIUNITX_PREAMBLE.strip() + "\n"),
-            md_cell(
-                "## Governing equations\n\nSee the requirement UID and patent claims cited in the title cell. Default electrolyte $\\qty{6}{\\molar}$ KOH at $\\qty{303}{\\kelvin}$ and $\\qty{1}{\\atm}$. Currents in $\\unit{\\ampere}$, voltages in $\\unit{\\volt}$, power in $\\unit{\\watt}$. Chemistry remains $\\mathrm{...}$ (not mhchem).\n"
-            ),
+            md_cell("## Governing equations\n\n" + GOV_DEFAULT + "\n"),
             code_cell(IMPORTS),
             code_cell(SETUP),
             md_cell("## Simulation"),
@@ -978,23 +952,22 @@ print("nfev", res["nfev"])
             md_cell(
                 "# 90 Commissioning (flagship)\n\nKOH first fill, wetting, residual oxygen, formation, **grid power in**, rest, first charge, H2/O2, carbonation risk, temperature. Plot every engineer-relevant signal.\n\n**Requirements:** `IA-SYS-020`, `IA-SYS-021`, `IA-GRD-001`."
             ),
-            md_cell(SIUNITX_PREAMBLE.strip() + "\n"),
             md_cell(r"""## Sequence (verification-scaled seconds; engineering analog in hours)
 
 | $t$ | Action |
 | --- | --- |
-| $\qtyrange{0}{600}{\second}$ | Dry vessel, residual air $\mathrm{O_2}$, fans on |
-| $\qtyrange{600}{2400}{\second}$ | $\qty{6}{\molar}$ KOH make-up fill into anode pores |
-| $\qtyrange{2400}{3600}{\second}$ | Rest / wetting / residual $\mathrm{O_2}$ |
-| $\qtyrange{3600}{7200}{\second}$ | First charge from grid, OER + HER, $T$ rise |
+| $0$–$600\,\mathrm{s}$ | Dry vessel, residual air $\mathrm{O_2}$, fans on |
+| $600$–$2400\,\mathrm{s}$ | $6\,\mathrm{M}$ KOH make-up fill into anode pores |
+| $2400$–$3600\,\mathrm{s}$ | Rest / wetting / residual $\mathrm{O_2}$ |
+| $3600$–$7200\,\mathrm{s}$ | First charge from grid, OER + HER, $T$ rise |
 
 Chemistry: IA-SYS-020/021. Grid: IA-GRD-001. Same `PlantModel` as decade 40.
 """),
             md_cell(r"""## Governing equations
 
 Fill, wetting, residual oxygen, then first charge through OER with parasitic HER.
-Default $\qty{6}{\molar}$ KOH. Temperatures in $\unit{\kelvin}$, power in $\unit{\watt}$,
-current in $\unit{\ampere}$, voltage in $\unit{\volt}$.
+Default $6\,\mathrm{M}$ KOH. Temperatures in $\mathrm{K}$, power in $\mathrm{W}$,
+current in $\mathrm{A}$, voltage in $\mathrm{V}$.
 """),
             code_cell(IMPORTS),
             code_cell(SETUP),
@@ -1103,7 +1076,7 @@ print("finite", np.all(np.isfinite(y)), "nfev", res["nfev"])
         (
             "91_ChargeDischarge.ipynb",
             "91 Charge / discharge LODES",
-            r"$\qty{8}{\hour}$ / $\qty{100}{\hour}$ / $\qty{300}{\hour}$ thickness; asymmetric $L_\mathrm{c}$ vs $L_\mathrm{d}$.",
+            r"$8\,\mathrm{h}$ / $100\,\mathrm{h}$ / $300\,\mathrm{h}$ thickness; asymmetric $L_\mathrm{c}$ vs $L_\mathrm{d}$.",
             """\
 from plant_sim.plant import PlantModel
 from plant_sim.scenarios.mission import charge_discharge_inputs
@@ -1293,7 +1266,7 @@ print("std dP compensated", float(np.std(eq["dP_Pa"])), "naive", float(np.std(nq
         (
             "97_ChannelGeometryEP.ipynb",
             "97 EP channel geometry window",
-            r"Channel $\qtyrange{3}{50}{\milli\metre}$ × $\qtyrange{1}{40}{\milli\metre}$, spacing $\qtyrange{10}{50}{\milli\metre}$, Fe $\qtyrange{1}{7}{\gram\per\centi\metre\squared}$, VF $0.5$–$0.9$.",
+            r"Channel $3$–$50\,\mathrm{mm}$ × $1$–$40\,\mathrm{mm}$, spacing $10$–$50\,\mathrm{mm}$, Fe $1$–$7\,\mathrm{g\,cm^{-2}}$, VF $0.5$–$0.9$.",
             """\
 from plant_sim.substructures.channeled_electrode import ChanneledElectrode, assert_channel_window
 assert_channel_window(P.channel_length_m, P.channel_width_m, P.channel_spacing_m, P)
@@ -1319,7 +1292,7 @@ print("loading", P.loading_g_cm2, "VF", P.vf_electrolyte_charged, "chan", P.chan
         (
             "98_DegradationCE.ipynb",
             "98 Degradation CE / ASR (EP FIGS. 19-27 analog)",
-            r"$\qty{6}{\molar}$ KOH, $\qty{303}{\kelvin}$, isolation protects ORR.",
+            r"$6\,\mathrm{M}$ KOH, $303\,\mathrm{K}$, isolation protects ORR.",
             """\
 from plant_sim.components.degradation import Degradation
 from plant_sim.components.base import integrate_component
@@ -1382,11 +1355,7 @@ print("finite", np.all(np.isfinite(r["y"])))
             fname,
             title,
             blurb,
-            r"""
-Quantities in this scenario use siunitx ($\qty$, $\unit$, $\qtyrange$).
-Default electrolyte $\qty{6}{\molar}$ KOH at $\qty{303}{\kelvin}$ unless noted.
-Patents: US12308414B2, EP4602674A1.
-""",
+            GOV_SCENARIO,
             code,
             "print('finite trajectories and patent-window parameters: see printed checks above')",
         )
