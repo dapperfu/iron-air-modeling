@@ -7,8 +7,14 @@ First-principles continuous-time Simulink library for an aqueous alkaline **iron
 ```powershell
 python -m venv .venv
 .\.venv\Scripts\pip install strictdoc
-matlab -batch "addpath(genpath('.')); lib_IronAir_init; build_lib_IronAir; build_demo_models; results=runtests('tests'); disp(results)"
+matlab -batch "cd('C:/projects/iron-air-modeling'); addpath_IronAir; lib_IronAir_init; build_lib_IronAir; build_demo_models; results=runtests('tests'); disp(results)"
 make strictdoc-generate
+```
+
+Optional local `startup.m` (not in this repo):
+
+```matlab
+run('C:/projects/iron-air-modeling/addpath_IronAir.m');
 ```
 
 ## Layout
