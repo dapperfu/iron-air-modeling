@@ -10,13 +10,14 @@ PRECOMMIT := $(VENV)/bin/pre-commit
 PIP_AUDIT := $(VENV)/bin/pip-audit
 STRICTDOC_STAGING := .strictdoc_build
 STRICTDOC_PAGES := docs
+PAGES_PORT := 8000
 
 .PHONY: help venv install test test-phase-1 test-phase-2 test-coverage lint typecheck \
 	strictdoc-validate strictdoc-generate strictdoc-export strictdoc-serve strictdoc-tree \
-	strictdoc-help strictdoc-init pre-commit-install pre-commit security
+	strictdoc-help strictdoc-init pre-commit-install pre-commit security serve
 
 help:
-	@echo "IRONAIR targets: venv install test lint typecheck strictdoc-generate"
+	@echo "IRONAIR targets: venv install test lint typecheck strictdoc-generate serve"
 
 venv:
 	python3 -m venv $(VENV)
@@ -60,6 +61,9 @@ strictdoc-generate: strictdoc-validate
 	touch $(STRICTDOC_PAGES)/.nojekyll
 
 strictdoc-export: strictdoc-generate
+
+serve:
+	$(PYTHON) -m http.server --directory $(STRICTDOC_PAGES) $(PAGES_PORT)
 
 strictdoc-serve:
 	$(STRICTDOC) server reqs --port 5111
