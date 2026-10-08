@@ -156,7 +156,9 @@ toggle-switch stuck states, and stacked-vessel series-contact opens
 (US12308414B2 Claims 3, 5, 16).
 <<<
 COMMENT: >>>
-Each listed scenario has a unique IA-SCN-ELC-* ID, Python scenario function, and notebook.
+Changed because ironair.scenarios is empty. Electrical BOP ODEs are demonstrated in
+plant_sim/33_ElectricalBalance.ipynb. Dedicated ELC fault notebooks remain design
+allocations.
 <<<
 
 [REQUIREMENT]
