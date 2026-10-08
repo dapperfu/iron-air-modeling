@@ -452,13 +452,21 @@ UID: IA-FLD-002
 STATUS: Active
 TITLE: Pump ODE
 STATEMENT: >>>
-Module ironair.components.pump SHALL provide class Pump.
+Module plant_sim.components.hydraulics SHALL provide class Pump
+(notebook plant_sim/31_Hydraulics.ipynb).
 
 The component SHALL model motor and hydraulic response, electrical input, and mechanical losses.
 <<<
 COMMENT: >>>
 Shaft speed is dynamic. Hydraulic power is less than electrical input by documented efficiency.
+
+Changed because ironair.components.pump does not exist.
+plant_sim.components.hydraulics.Pump implements shaft-speed dynamics with documented
+electrical-to-hydraulic efficiency.
 <<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-021
 
 [REQUIREMENT]
 UID: IA-FLD-003

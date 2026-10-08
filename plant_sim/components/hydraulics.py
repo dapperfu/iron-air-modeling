@@ -1,6 +1,7 @@
 """Electrolyte hydraulics (IA-FLD-001 through IA-FLD-005).
 
 @relation(IA-FLD-001, scope=module)
+@relation(IA-FLD-002, scope=module)
 """
 
 from __future__ import annotations
@@ -86,11 +87,20 @@ class ElectrolyteFlow(RHSComponent):
 
 
 class Pump(RHSComponent):
+    """IA-FLD-002 electrolyte pump.
+
+    @relation(IA-FLD-002, scope=class)
+    """
+
     def __init__(self, p: PlantParams | None = None) -> None:
         p = p or default_params()
         y0 = np.array([20.0], dtype=np.float64)
 
         def rhs(t, y, inputs, context):  # type: ignore[no-untyped-def]
+            """Pump shaft-speed RHS.
+
+            @relation(IA-FLD-002, scope=function)
+            """
             omega = y[0]
             I = float(inputs.get("I_pump_A", 0.0))
             tau = 0.12 * I - 0.004 * omega
