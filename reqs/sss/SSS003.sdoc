@@ -63,7 +63,9 @@ US12308414B2 duration versus anode thickness; EP4602674A1 dual-electrode dischar
 to Fe(OH)2 / Fe3O4.
 <<<
 COMMENT: >>>
-Each listed scenario has a unique IA-SCN-DCH-* ID, Python scenario function, and notebook.
+Changed because ironair.scenarios is empty. Executable discharge coverage is
+plant_sim/91_ChargeDischarge.ipynb (including 100 h duration) and
+charge_discharge_inputs. Remaining DCH IDs are design allocations.
 <<<
 
 [REQUIREMENT]

@@ -1,6 +1,7 @@
 """Time-varying plant inputs for commissioning through multi-day mission.
 
 @relation(IA-NBK-007, scope=module)
+@relation(IA-NBK-008, scope=module)
 """
 
 from __future__ import annotations
@@ -40,6 +41,7 @@ def charge_discharge_inputs(t_chg_s: float, t_dch_s: float, p: PlantParams | Non
     """Charge then discharge current/power profile.
 
     @relation(IA-NBK-007, scope=function)
+    @relation(IA-NBK-008, scope=function)
     """
     p = p or default_params()
     I = p.I_discharge_100h_A
