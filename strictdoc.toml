@@ -1,6 +1,0 @@
-[project]
-title = "iron-air-modeling"
-html_assets_strategy = "copy"
-
-[features]
-# HTML export target: docs/ (see Makefile strictdoc-generate) for GitHub Pages.
