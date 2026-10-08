@@ -1,9 +1,41 @@
 [DOCUMENT]
 TITLE: System Requirements Specification - IRONAIR
 UID: DOC-SRS001
-VERSION: 1.0.0
+VERSION: 1.1.0
 OPTIONS:
   MARKUP: Text
+
+[[SECTION]]
+UID: SEC-SRS-PURPOSE
+TITLE: Purpose, sources, and software boundary
+
+[TEXT]
+STATEMENT: >>>
+This System Requirements Specification (SRS) defines the iron-air-modeling plant
+that the ironair Python package SHALL simulate. Physical architecture, chemistry,
+electrolyte, air-electrode, iron-electrode, vessel, and grid-storage operating
+envelopes are derived from two Form Energy disclosures:
+
+- US12308414B2, Device architectures for metal-air batteries (granted 2025-05-20;
+  Appl. 16/913,877; published family WO2020264344A1 / EP3991234A1 / CN114207915A).
+- EP4602674A1, Electrode configurations for iron-air electrochemical systems
+  (published 2025-08-20; Appl. EP23878232.0; WO2024081792A1; priority US 63/379,223).
+
+The patents overlap as a dual-electrode iron-air family: separate oxygen reduction
+reaction (ORR) and oxygen evolution reaction (OER) positives, an iron-containing
+negative, and alkaline aqueous electrolyte. US12308414B2 emphasizes vessel,
+submerged/stacked ORR, air delivery, and DRI-pellet anodes. EP4602674A1 emphasizes
+channeled/interdigitated iron and OER electrodes for thick, high-areal-capacity
+anodes. Where they differ, both configurations SHALL be modelable.
+<<<
+
+[TEXT]
+STATEMENT: >>>
+The software is an installable Python package that reconstructs the patented plant
+as coupled ODE/DAE components. Passing tests verifies the software against this
+SRS; it does not constitute experimental hardware validation of US12308414B2 or
+EP4602674A1.
+<<<
 
 [REQUIREMENT]
 UID: IA-SYS-001
@@ -29,8 +61,9 @@ The project SHALL provide editable installation using:
   pip install -e ".[dev,notebooks]"
 <<<
 RATIONALE: >>>
-A single installable package is the integration boundary for notebooks, tests, and coupled simulation.
-The SDRS src/ layout takes precedence over the generic no-src-directory Cursor rule for this project.
+A single installable package is the integration boundary for notebooks, tests, and
+coupled simulation of the patented iron-air plant. The SDRS src/ layout takes
+precedence over the generic no-src-directory Cursor rule for this project.
 <<<
 COMMENT: >>>
 Package ironair installs in a virtual environment. The listed imports succeed after
@@ -38,31 +71,713 @@ pip install -e ".[dev,notebooks]" or the equivalent uv installation.
 <<<
 
 [REQUIREMENT]
+UID: IA-SYS-006
+STATUS: Active
+TITLE: Patent-grounded plant of record
+STATEMENT: >>>
+The simulated plant of record SHALL be a rechargeable aqueous alkaline iron-air
+battery with a dual-electrode air side (distinct ORR discharge cathode and OER
+charge cathode), an iron-containing metal electrode, and a liquid electrolyte that
+separates the air-side electrodes from the metal electrode.
+
+The plant SHALL be consistent with US12308414B2 Claim 1 (ORR, OER, metal electrode,
+and electrolyte) and with EP4602674A1 Claim 1 (iron electrode, ORR electrode with
+air-facing surface, interdigitated OER, and contacting electrolyte).
+
+Primary-only (ORR-only air electrode) operation MAY be enabled as a documented
+reduced-order mode but SHALL be identified as non-rechargeable relative to the
+secondary dual-electrode plant.
+<<<
+RATIONALE: >>>
+US12308414B2 Summary and FIG. 1A define metal-air cells with anode, cathode,
+electrolyte, and optional gaseous headspace. EP4602674A1 [0048]-[0049] and FIG. 1
+define dual-electrode iron-air cells with switchable charge (OER) and discharge
+(ORR) paths.
+<<<
+COMMENT: >>>
+Family note: US12308414B2 is the granted US member of WO2020264344. EP4602674A1 is
+the EP publication of WO2024081792 and is not a literal equivalent of US12308414B2;
+it is a later electrode-geometry disclosure in the same iron-air product family.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-002
+
+[[/SECTION]]
+
+[[SECTION]]
+UID: SEC-SRS-MISSION
+TITLE: Mission, duration, and grid context
+
+[TEXT]
+STATEMENT: >>>
+Both patents frame iron-air cells as long-duration and ultra-long-duration energy
+storage (LODES) for electric power grids. US12308414B2 Background states that
+existing storage covers milliseconds to hours and that systems of at least 8 h are
+needed. The detailed description defines long/ultra-long duration as 8 h or longer,
+including 8-20 h, 20-24 h, a week, and seasonal (days to months to a year) storage
+of surplus solar generation. EP4602674A1 [0002] restates the greater-than-8 h need.
+<<<
+
+[REQUIREMENT]
+UID: IA-SYS-007
+STATUS: Active
+TITLE: Long-duration energy storage mission
+STATEMENT: >>>
+The system SHALL model grid-connected LODES operation with energy storage durations
+of 8 hours or longer, including 8 h, 8-20 h, 20 h, 20-24 h, 24 h, week-scale, and
+seasonal (multi-day to multi-month) windows as defined in US12308414B2 (long
+duration / ultra-long duration; LODES).
+
+Anode thickness and independent charge versus discharge length scales SHALL be
+parameterizable so that example durations disclosed in US12308414B2 can be
+represented: about 3-5 cm anode thickness for about 100 h; about 4-6 cm for about
+300 h; and an asymmetric example of about 100 h charge with about 300 h discharge
+for a 5 cm by 5 cm square anode cross-section.
+<<<
+RATIONALE: >>>
+US12308414B2 Definitions and Detailed Description (anode thickness versus duration;
+symmetric versus asymmetric duration). EP4602674A1 [0002] and [0045] motivate thick
+high-areal-capacity iron electrodes to amortize air-electrode cost.
+<<<
+COMMENT: >>>
+Default demonstration discharge of 100 h (3.6e5 s) is the short end of the patented
+LODES range, not a claim that hardware has been validated at that duration.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-002
+
+[REQUIREMENT]
 UID: IA-SYS-002
 STATUS: Active
 TITLE: Integrated physics simulation
 STATEMENT: >>>
-The software SHALL model the complete iron-air battery as a coupled multiphysics system.
+The software SHALL model the complete iron-air battery as a coupled multiphysics
+system corresponding to the patented plant.
 
 The model SHALL include metallic iron electrode, iron hydroxide and oxide phases,
-oxygen reduction electrode, oxygen evolution electrode, hydrogen evolution, alkaline
-electrolyte, electrolyte transport, separator, gas diffusion layer, current collectors,
-cell assembly, thermal system, air intake, fan/blower, gas manifolds, ventilation,
-electrolyte reservoir, circulation pump, piping, valves, heat exchanger, battery stack,
-battery module, battery enclosure, DC electrical distribution, DC/DC conversion, grid
-inverter, transformer, grid interface, measurement sensors, battery management,
-supervisory control, fault management, state estimation, and degradation and aging.
+oxygen reduction electrode, oxygen evolution electrode, hydrogen evolution,
+alkaline electrolyte, electrolyte transport, separator, gas diffusion layer,
+current collectors, cell assembly, thermal system, air intake, fan/blower, gas
+manifolds, ventilation, electrolyte reservoir, circulation pump, piping, valves,
+heat exchanger, battery stack, battery module, battery enclosure, DC electrical
+distribution, DC/DC conversion, grid inverter, transformer, grid interface,
+measurement sensors, battery management, supervisory control, fault management,
+state estimation, and degradation and aging.
 
 These components SHALL interact through shared physical quantities and conserved
 material, charge, and energy flows.
+
+Vessel, lid, and air-delivery functions disclosed in US12308414B2 (electrolyte
+containment, secondary containment, thermal management cavity, air distribution,
+process-gas venting, current collection, sensing, DC connections) SHALL map onto
+the enclosure, air-system, thermal, collector, and control components listed
+above.
 <<<
 RATIONALE: >>>
-Balance-of-plant and grid interfaces determine operating envelopes of the electrochemical cell.
+Balance-of-plant and grid interfaces determine operating envelopes of the
+electrochemical cell. US12308414B2 FIGS. 1E-1F, 9A, and 94-102 describe
+multi-function vessels, lids, and bulk energy storage systems. EP4602674A1 FIG. 1
+adds the dual-electrode switch between power source (charge) and load (discharge).
 <<<
 COMMENT: >>>
-Every listed component has a DynamicComponent implementation that can be assembled into
-ironair.simulation.CoupledSystem and exchanges named physical flows.
+Every listed component has a DynamicComponent implementation that can be assembled
+into ironair.simulation.CoupledSystem and exchanges named physical flows.
 <<<
+
+[REQUIREMENT]
+UID: IA-SYS-008
+STATUS: Active
+TITLE: Dual-electrode charge and discharge paths
+STATEMENT: >>>
+During charge the model SHALL electrically connect the iron electrode to the OER
+electrode and a power source so that iron species are reduced toward metallic
+Fe(0).
+
+During discharge the model SHALL electrically connect the iron electrode to the
+ORR electrode and a load so that metallic iron is oxidized toward higher-valence
+species including Fe(OH)2 and Fe3O4.
+
+A mode switch SHALL select charge versus discharge electrical paths as in
+EP4602674A1 [0049] switch 116 and US12308414B2 FIGS. 5A-5B toggle switch 550.
+
+OER and ORR electrodes SHALL be allowed to be electrically separated so that the
+ORR electrode is not exposed to high OER operating potentials that can damage or
+oxidize the ORR electrode (US12308414B2 FIGS. 5A-5B).
+<<<
+RATIONALE: >>>
+EP4602674A1 [0048]-[0049] and US12308414B2 dual-cathode architecture. Independent
+OER/ORR materials and geometries are separately optimized (US12308414B2).
+<<<
+COMMENT: >>>
+The supervisory controller implements the switch as a discrete operating mode, not
+as a hidden mutation of plant parameters.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-002
+
+[[/SECTION]]
+
+[[SECTION]]
+UID: SEC-SRS-US-ARCH
+TITLE: US12308414B2 device architecture (granted claims)
+
+[TEXT]
+STATEMENT: >>>
+US12308414B2 Claim 1 is the granted independent claim: a battery with ORR electrode,
+OER electrode, metal electrode, and electrolyte separating the air-side electrodes
+from the metal electrode, wherein the ORR electrode is submerged, comprises a
+series of discrete ORR sections stacked vertically below the electrolyte surface,
+each section geometry varies with depth, and pressure drop across each stacked
+section is the same in the depth direction. Claims 2-18 add dual electrodes,
+stackable vessels, wavy/rippled ORR, can-negative housing, inverse-air frames and
+boxes, supplied air, curved/tube ORR, movable metal electrode, airflow ramps,
+airflow-flex electrical separation, porous ORR separator, and DRI pellet beds.
+<<<
+
+[REQUIREMENT]
+UID: IA-SYS-009
+STATUS: Active
+TITLE: Submerged stacked ORR with depth-equalized pressure drop
+STATEMENT: >>>
+The system SHALL support a submerged ORR electrode comprising a series of discrete
+ORR electrode sections arranged vertically in a stack below the electrolyte
+surface.
+
+Each discrete ORR section SHALL have geometry that can vary with depth below the
+electrolyte surface.
+
+The air-path model SHALL be able to impose equal pressure drop across each stacked
+ORR section in the depth direction.
+
+This configuration SHALL be the default representation of US12308414B2 Claim 1.
+<<<
+RATIONALE: >>>
+US12308414B2 Claim 1. Detailed description FIGS. 25A-36B, 57-58, and 35A-35C
+describe stacked-core / distillation-column ORR layers with depth-dependent bubble
+thickness, baffles, and cascading air.
+<<<
+COMMENT: >>>
+Equal pressure drop is an algebraic hydraulic constitutive law, not an artificial
+dynamic lag (IA-SYS-003).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-002
+
+[REQUIREMENT]
+UID: IA-SYS-010
+STATUS: Active
+TITLE: Separate ORR and OER electrodes
+STATEMENT: >>>
+The system SHALL model ORR and OER as separate electrodes (US12308414B2 Claim 2)
+and SHALL also support a documented bifunctional single air electrode in which ORR
+and OER are portions of the same electrode (US12308414B2 Summary).
+
+When separate, both electrodes MAY be submerged (Claim 6).
+<<<
+RATIONALE: >>>
+US12308414B2 Claims 2 and 6; Summary dual-electrode versus bifunctional options.
+EP4602674A1 uses the dual-electrode configuration as the baseline plant (FIG. 1).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-008
+
+[REQUIREMENT]
+UID: IA-SYS-011
+STATUS: Active
+TITLE: Stackable vessel and secondary containment
+STATEMENT: >>>
+The enclosure model SHALL represent a stackable vessel that supports ORR, OER,
+metal electrode, and electrolyte and is configured to self-stack on other vessels
+(US12308414B2 Claim 3).
+
+The vessel SHALL be modelable as a double-walled container with an inner wall
+(primary electrolyte vessel), outer wall (secondary containment), and cavity used
+for thermal-management fluid, electrical isolation, thermal mass, or temporary
+electrolyte hold during maintenance (US12308414B2 FIGS. 1E-1F).
+
+A bag-in-box vessel (structural box plus electrolyte bag) SHALL be an allowed
+reduced-order containment option.
+<<<
+RATIONALE: >>>
+US12308414B2 Claim 3 and vessel description. Self-stacking increases plant power
+density (MW/acre). Conductive contact points allow stacked cells in series.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-002
+
+[REQUIREMENT]
+UID: IA-SYS-012
+STATUS: Active
+TITLE: ORR geometry and inverse air-breathing options
+STATEMENT: >>>
+The ORR component SHALL support the following patented geometries as selectable
+configurations, each identified in metadata:
+
+- wavy or rippled ORR to increase triple-phase boundary at a given footprint
+  (US12308414B2 Claim 4; FIGS. 10A-10C);
+- frame that displaces electrolyte to create a gas volume at depth (Claim 7);
+- box configuration filled with air (Claim 8; FIGS. 14-16 inverse air-breathing);
+- supplied-air ORR (Claim 9);
+- curved ORR (Claim 10);
+- frame trapping supplied air in an air chamber bounded by the ORR surface
+  (Claim 11);
+- tube-shaped ORR, including circular, oval, teardrop, or polygonal tubes
+  (Claim 12; FIGS. 20A-23, 59-62);
+- floating ORR at the electrolyte free surface with submerged OER (Summary;
+  FIGS. 1B-3);
+- vertical natural-air-breathing ORR (FIGS. 4A-8);
+- convex oxygen-pocket submerged ORR (FIGS. 17-19B);
+- open-bottom inverse air-breathing ORR (FIG. 24);
+- helical/auger ORR (FIG. 44);
+- rectilinear parallel-plate ORR stacks (FIGS. 45-47B);
+- coaxial cylindrical ORR core with hexagonal anode/OER tube (FIGS. 27-34).
+<<<
+RATIONALE: >>>
+US12308414B2 Claims 4 and 7-12 plus detailed-description architectures. Inverse
+air-breathing submerges ORR so leaks remain internal to the cell.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-002
+
+[REQUIREMENT]
+UID: IA-SYS-013
+STATUS: Active
+TITLE: Can-negative housing and DRI pellet anode
+STATEMENT: >>>
+The metal electrode SHALL be modelable as a bed of direct reduced iron (DRI)
+pellets or marbles (US12308414B2 Claim 18; FIG. 3 packed bed).
+
+A housing-as-current-conductor (can-negative) configuration SHALL be supported in
+which the vessel conducts anode current (Claim 5; FIG. 11). Housing materials
+SHALL include polymers (polyethylene, HDPE, UHMW, polypropylene) and metals
+(nickel, steel, anodized aluminum, nickel-coated steel or aluminum) as parameters.
+
+The metal electrode position relative to ORR and OER SHALL be changeable
+(Claim 13; FIG. 52 movable anode).
+<<<
+RATIONALE: >>>
+US12308414B2 Claims 5, 13, and 18. DRI beds provide low-cost iron inventory for
+LODES. Can-negative stacked housings enable gravity-driven series connections.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-002
+
+[REQUIREMENT]
+UID: IA-SYS-014
+STATUS: Active
+TITLE: Airflow regulation and ORR separator
+STATEMENT: >>>
+The air system SHALL include airflow regulation structures (US12308414B2 Claim 14),
+including arrays of ramps configured with holes (Claim 15).
+
+The ORR electrode SHALL optionally include a porous separator (Claim 17), with
+pore sizes in the 1 micrometer to 1 centimeter range when wrapping stacked-core
+ORR columns (FIG. 36A-36B) to retain gas and limit anode contact with oxygen.
+
+OER and ORR SHALL be electrically separable by presence or absence of airflow that
+flexes and displaces the ORR electrode (Claim 16).
+<<<
+RATIONALE: >>>
+US12308414B2 Claims 14-17. Porous wrap prevents horizontal bubble escape and
+oxygen-induced self-discharge of adjacent metal anodes.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-002
+
+[[/SECTION]]
+
+[[SECTION]]
+UID: SEC-SRS-EP-ARCH
+TITLE: EP4602674A1 electrode configurations (published claims)
+
+[TEXT]
+STATEMENT: >>>
+EP4602674A1 addresses thick iron electrodes whose ionic path length otherwise
+degrades coulombic and voltage efficiency. Independent claims 1, 20, 38, 55, 70,
+and 77 cover channeled iron with interdigitated OER, discrete anode arrays,
+discrete cathode arrays, spiral bifilar iron/OER, and pleated iron/OER. Claim 86
+covers a method of forming the Claim 1-19 assembly. The disclosure is pending at
+the EPO and is treated as design intent for the model, not as a granted US claim
+set.
+<<<
+
+[REQUIREMENT]
+UID: IA-SYS-015
+STATUS: Active
+TITLE: Channeled iron electrode with interdigitated OER
+STATEMENT: >>>
+The system SHALL model an iron electrode in contact with an anode current collector
+and comprising a plurality of channels; an ORR electrode with a first surface
+facing the channels and an opposing second surface in contact with air; an OER
+electrode interdigitated with the channels, with at least a portion of the OER
+disposed within the channels in a direction perpendicular to the ORR plane; and
+electrolyte in contact with the iron electrode, the ORR first surface, the
+channels, and the OER electrode.
+
+This configuration SHALL be the default representation of EP4602674A1 Claim 1
+(FIG. 2).
+<<<
+RATIONALE: >>>
+EP4602674A1 Claim 1 and [0051]-[0058]. Channels carry ionic current while denser
+ribs carry electronic current, decoupling porosity trade-offs ([0050]).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-002
+
+[REQUIREMENT]
+UID: IA-SYS-016
+STATUS: Active
+TITLE: Channel and OER projection geometry
+STATEMENT: >>>
+Channel and OER geometry parameters SHALL include the ranges disclosed in
+EP4602674A1:
+
+- channel average length 3 mm to 50 mm perpendicular to the ORR plane, with
+  nested examples 15-35 mm, 15-30 mm, and 15-25 mm (Claim 7; [0053]);
+- channel average width 1 mm to 40 mm parallel to the ORR plane, with nested
+  examples 2-30 mm, 2-20 mm, and 2-15 mm (Claims 7-8; [0054]);
+- adjacent-channel center spacing 10 mm to 50 mm, with nested examples 10-30 mm
+  and 10-20 mm (Claim 9; [0055]);
+- channel shapes independently rectangular prism, cylindrical, pyramidal, or
+  trapezoidal prism (Claim 10);
+- sloped channels whose width nearest the ORR is 1 percent to 500 percent greater
+  than the width farthest from the ORR (Claim 61; FIG. 5);
+- OER cathode projections of average length 3 mm to 50 mm from a trunk, with
+  nested examples 5-35 mm and 10-30 mm, and width 0.1-20 mm or 0.5-15 mm
+  (Claims 3-4; [0064]-[0065]);
+- greater than 25 percent of channels occupied by OER, with optional greater than
+  40, 50, or 60 percent (Claim 5; [0066]);
+- channel fraction about 0.1 to 0.5, example 0.2 to 0.45, defined as
+  CW/(CW + RW); example ChanFrac 0.4 with w_rib 5 mm ([0247], FIGS. 25-26);
+- iron-to-OER gap 0.1 mm to 5 mm, example 1-4 mm ([0260]).
+<<<
+RATIONALE: >>>
+EP4602674A1 Claims 3-10 and 61 and paragraphs [0053]-[0066], [0247], [0260].
+Simulations in FIGS. 19-26 use 6 M KOH at 303 K, initial rib porosity 0.6, and
+loading 4 g Fe/cm2 when comparing planar, channeled, and interdigitated cells.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-015
+
+[REQUIREMENT]
+UID: IA-SYS-017
+STATUS: Active
+TITLE: Discrete anodes, discrete OER cathodes, spiral, and pleated layouts
+STATEMENT: >>>
+The system SHALL support these additional EP4602674A1 independent architectures as
+named configurations:
+
+- plurality of anodes separated by channels, electrically communicating, with
+  interdigitated OER (Claim 20; FIG. 12);
+- plurality of OER cathodes interdigitated with the anode array and electrically
+  communicating with each other (Claim 38);
+- iron electrode with channels and a plurality of OER cathodes in the channels
+  (Claim 55);
+- spiral iron electrode and anode current collector with spiral OER at least
+  partially bifilar, ORR facing the spiral axis (Claim 70);
+- pleated iron electrode and pleated OER with channels between pleats (Claim 77;
+  FIG. 17), optionally with OER on both faces of the iron electrode (Claim 80).
+
+Double-sided cells across a shared current collector (Claim 18; FIGS. 6-8) and
+paired cells sharing an air channel between ORR backsides (Claim 19; FIGS. 9-11)
+SHALL be supported.
+<<<
+RATIONALE: >>>
+EP4602674A1 independent Claims 20, 38, 55, 70, 77 and dependent Claims 18-19.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-015
+
+[REQUIREMENT]
+UID: IA-SYS-018
+STATUS: Active
+TITLE: Iron loading, electrolyte volume fraction, and spine/rib porosity
+STATEMENT: >>>
+Iron electrode areal loading SHALL be parameterizable from 1 g Fe/cm2 to 7 g Fe/cm2
+relative to the direction perpendicular to the ORR electrode (EP4602674A1 Claims 16,
+36, 52, 68, 75, 84).
+
+Electrolyte volume fraction in the iron electrode SHALL be parameterizable from
+0.5 to 0.9 based on total electrode volume when fully charged (Claims 17, 37, 53,
+69, 76, 85), measurable in hardware by mercury porosimetry.
+
+Spine portions connecting ribs MAY have electrolyte volume fraction 2-20 vol%
+(example 5-15 vol%) lower than ribs, spine thickness 10-50% of rib thickness, and
+spine porosity at least 5 vol% lower than ribs, or alternatively spine and rib
+porosity within plus or minus 5% ([0059]-[0061]).
+<<<
+RATIONALE: >>>
+EP4602674A1 Claims 16-17 and [0059]-[0061]. Higher loading amortizes air-electrode
+cost ([0045]) but planar electrodes lose coulombic efficiency as thickness grows
+([0046]-[0047], FIGS. 23-24).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-002
+
+[REQUIREMENT]
+UID: IA-SYS-019
+STATUS: Active
+TITLE: Electrode assembly manufacturing sequence
+STATEMENT: >>>
+A documented assembly scenario SHALL form iron negative material onto an anode
+current collector to create channels, dispose OER into one or more channels, and
+assemble ORR with its first surface facing the iron electrode and second surface
+in contact with air (EP4602674A1 Claim 86).
+
+Forming MAY include compressing the iron material onto the current collector
+(Claim 87) and sintering (Claim 88), followed by adding electrolyte (Claim 89).
+DRI pellet beds MAY alternatively be compressed into an anode-current-collector
+assembly using passive mechanical locking or threaded rods (US12308414B2
+FIGS. 92-93).
+<<<
+RATIONALE: >>>
+EP4602674A1 Claims 86-89; US12308414B2 FIGS. 92-93. These steps define initial
+porosity, contact resistance, and channel geometry states.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-015
+
+[[/SECTION]]
+
+[[SECTION]]
+UID: SEC-SRS-CHEM
+TITLE: Chemistry, electrolyte, and operating conditions
+
+[TEXT]
+STATEMENT: >>>
+Discharge of the iron electrode in alkaline electrolyte follows Fe + 2OH- <->
+Fe(OH)2 + 2e- then further oxidation to magnetite Fe3O4. EP4602674A1 [0042]-[0043]
+gives theoretical capacities of 960 mAh/g-Fe for the first step and 320 mAh/g-Fe
+for the second, with net volume increase taken up in anode porosity. US12308414B2
+states the four-electron air reaction O2 + 2H2O + 4e- -> 4OH- at the ORR triple
+phase boundary. Charge reverses iron reduction and evolves oxygen at the OER.
+Hydrogen evolution 2H2O + 2e- -> H2 + 2OH- competes with recharge.
+<<<
+
+[REQUIREMENT]
+UID: IA-SYS-020
+STATUS: Active
+TITLE: Iron-air reaction set
+STATEMENT: >>>
+The shared chemistry module SHALL implement:
+
+- Fe + 2OH- <-> Fe(OH)2 + 2e- with 960 mAh/g-Fe theoretical first-step capacity
+  (EP4602674A1 [0042]-[0043] Equation 1);
+- subsequent oxidation of iron hydroxide to magnetite Fe3O4 with 320 mAh/g-Fe
+  theoretical second-step capacity (Equation 2);
+- ORR O2 + 2H2O + 4e- -> 4OH- (US12308414B2 detailed description);
+- OER 4OH- -> O2 + 2H2O + 4e- as the independent reverse oxygen couple;
+- HER 2H2O + 2e- -> H2 + 2OH- as the parasitic charge side reaction
+  (EP4602674A1 [0044], [0047]).
+
+Discharge volume increase SHALL be taken up in anode porosity rather than by
+inventing extra inventory.
+<<<
+RATIONALE: >>>
+EP4602674A1 [0042]-[0047]; US12308414B2 air-electrode half-reaction and triple-phase
+boundary discussion. Interdigitated OER reduces ionic path length so charge current
+is less likely to divert to HER at the electrode front ([0050], FIGS. 19-21).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-002
+
+[REQUIREMENT]
+UID: IA-SYS-021
+STATUS: Active
+TITLE: Electrolyte composition and pH domain
+STATEMENT: >>>
+The default liquid electrolyte SHALL be an aqueous alkaline hydroxide solution.
+
+The model SHALL accept compositions disclosed in the patents, including:
+
+- 6 M KOH (US12308414B2; EP4602674A1 simulation electrolyte at 303 K);
+- 5.5 M KOH + 0.5 M LiOH;
+- 6 M NaOH;
+- 5 M NaOH + 1 M KOH;
+- about 4 M KOH + 2 M NaOH + 0.05 M LiOH, or 4 M NaOH + 2 M KOH + 0.05 M LiOH;
+- high hydroxide at or above 5 M, including 5-6 M, 6-7 M, 7-11 M, 7-10 M,
+  7.5-9.5 M, and 7 M or greater (EP4602674A1 electrolyte section).
+
+pH SHALL be modelable as acidic (pH < 4), near-neutral (4 < pH < 10), or alkaline
+(pH > 10), with alkaline pH greater than 10 or greater than 12 as preferred
+operating points (US12308414B2 electrolyte paragraph).
+
+Electrolyte type MAY also be solid oxide, solid polymer, molten salt, non-aqueous,
+gel, or combinations (EP4602674A1 Claims 14-15), but aqueous alkali hydroxide is
+the verified modeling default.
+<<<
+RATIONALE: >>>
+US12308414B2 liquid electrolyte examples; EP4602674A1 Claims 14-15 and [0231]-[0241].
+High hydroxide is disclosed to increase capacity, improve coulombic efficiency, and
+decrease overpotential.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-002
+
+[REQUIREMENT]
+UID: IA-SYS-022
+STATUS: Active
+TITLE: Temperature, pressure, and oxygen partial pressure
+STATEMENT: >>>
+Unless a scenario states otherwise, property evaluations SHALL use room temperature
+25 C and standard ambient pressure 1 atm as defined in US12308414B2
+("room temperature is 25 C"; "standard temperature and pressure is 25 C and
+1 atmosphere"). The term "about" SHALL mean a variance of plus or minus 10 percent
+or the larger of instrument error, per that patent.
+
+Gas-phase oxygen partial pressure SHALL be parameterizable from 0.01 atm to 100 atm
+on discharge and from 0.001 atm to 100 atm on charge, and MAY be raised on
+discharge and lowered on charge to increase thermodynamic driving force
+(US12308414B2 pressurized-gas paragraph).
+
+EP4602674A1 simulation reference of 6 M KOH at 303 K SHALL be an available
+property-model operating point.
+<<<
+RATIONALE: >>>
+US12308414B2 definitions and pO2 operating window; EP4602674A1 FIGS. 19-26
+simulation conditions.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-002
+
+[REQUIREMENT]
+UID: IA-SYS-023
+STATUS: Active
+TITLE: Water, carbonation, and hydrogen management
+STATEMENT: >>>
+The plant SHALL track water inventory changes from ORR/OER, evaporation, and HER.
+
+Carbon dioxide in inlet air SHALL be allowed to carbonate alkaline electrolyte,
+changing pH and ionic conductivity and precipitating carbonate that can clog pores
+(US12308414B2 CO2 paragraph). A filter/scrubber path MAY circulate electrolyte to
+remove CO2 or carbonate.
+
+Floating inert polymer spheres (polypropylene or HDPE, density below the
+electrolyte) MAY cover the free electrolyte surface to reduce evaporation and
+alkaline misting.
+
+HER and OER bubbles SHALL have egress paths: vertical channels (EP4602674A1
+[0056]), separator ribbing ([0048]), 0.1-5 mm iron-OER gaps, and enclosure
+ventilation (US12308414B2 lid vent 903).
+<<<
+RATIONALE: >>>
+US12308414B2 water, misting-sphere, CO2, and lid-vent disclosures; EP4602674A1
+bubble-egress design of channels and separators.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-002
+
+[[/SECTION]]
+
+[[SECTION]]
+UID: SEC-SRS-MAT
+TITLE: Materials, collectors, separators, and safety
+
+[REQUIREMENT]
+UID: IA-SYS-024
+STATUS: Active
+TITLE: Electrode and catalyst materials
+STATEMENT: >>>
+The metal electrode SHALL be selectable as Li, Na, K, Mg, Ca, Si, Al, Zn, or Fe,
+or alloys substantially of those elements including FeAl, FeZn, and FeMg, with
+iron or iron alloy as the default LODES anode (US12308414B2 anode paragraph).
+
+Anode physical form SHALL include dense or porous solid, mesh, foam, particles,
+slurry, ink, suspension, paste, and DRI pellet beds.
+
+ORR gas-diffusion electrodes SHALL support hydrophobic layers with embedded
+conductive carbon, PTFE microporous layers, and carbon-fiber layers. Example
+loadings include an MPL of about 23 wt% PTFE and 77 wt% carbon black and a first
+portion of about 33 wt% PTFE (US12308414B2 cathode construction).
+
+OER electrodes SHALL support porous metal mesh plus oxygen-evolution catalyst
+including nickel, Ni-Fe alloys, manganese oxide, iron, NiOx, nickel oxyhydroxide,
+iron oxide, and iron oxyhydroxide (EP4602674A1 Claim 11 and catalyst list).
+<<<
+RATIONALE: >>>
+US12308414B2 anode/cathode materials; EP4602674A1 Claim 11 and OER catalyst
+paragraph. Dual electrodes allow independent material optimization.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-010
+
+[REQUIREMENT]
+UID: IA-SYS-025
+STATUS: Active
+TITLE: Current collectors, separators, and seals
+STATEMENT: >>>
+Anode current collectors SHALL support branch collectors parallel to channels plus
+a primary collector or bus bar parallel to the ORR first surface, including bus
+bars outside the active-area plane (EP4602674A1 Claims 13, 30-31, 47-48).
+
+Branch collectors SHALL be modelable as highly conductive wires or sheets
+(example stainless steel) inside ribs, or as mesh/cage compressing each rib or
+anode.
+
+ORR tab current collectors MAY be placed on both faces of the ORR electrode.
+ORR seals MAY sandwich a compliant EPDM gasket between a rigid electrode and a
+Ni-coated-steel current collector under compressive load (US12308414B2 FIGS. 4B-4C).
+
+Separators SHALL block dissolved oxygen and oxygen bubbles from the anode without
+unduly raising ionic resistance, remaining hydrophilic and macroporous
+(US12308414B2 FIG. 4A). Separators MAY be compression frames, porous insulators,
+ribbed bubble-egress structures, or porous dielectric coatings (EP4602674A1
+[0048], Claim 2).
+<<<
+RATIONALE: >>>
+US12308414B2 FIGS. 4A-4C; EP4602674A1 Claims 2, 13, 30-31.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-002
+
+[REQUIREMENT]
+UID: IA-SYS-026
+STATUS: Active
+TITLE: Hazardous electrolyte containment and electrical isolation
+STATEMENT: >>>
+Alkaline electrolyte SHALL be treated as a hazardous liquid requiring primary
+containment and secondary containment (US12308414B2 vessel discussion).
+
+OER SHALL remain electrically insulated from the iron electrode and from the ORR
+electrode except through the intended electrochemical path.
+
+External housing surfaces used for can-negative stacking SHALL have sufficient
+insulation for personnel safety while still allowing intended cell-to-cell
+contacts (FIG. 11).
+<<<
+RATIONALE: >>>
+US12308414B2 containment and can-negative insulation requirements; EP4602674A1
+OER electrical isolation statement.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-002
+
+[[/SECTION]]
+
+[[SECTION]]
+UID: SEC-SRS-ODE
+TITLE: Dynamic modeling rules
 
 [REQUIREMENT]
 UID: IA-SYS-003
@@ -71,10 +786,11 @@ TITLE: ODE-based components
 STATEMENT: >>>
 Every physical component SHALL expose a dynamic ODE model.
 
-Each component SHALL explicitly define: state vector, state units, initial conditions,
-input variables, output variables, governing differential equations, algebraic constitutive
-relations, physical parameters, boundary conditions, conservation residuals, numerical
-constraints, and associated StrictDoc requirement IDs.
+Each component SHALL explicitly define: state vector, state units, initial
+conditions, input variables, output variables, governing differential equations,
+algebraic constitutive relations, physical parameters, boundary conditions,
+conservation residuals, numerical constraints, and associated StrictDoc
+requirement IDs.
 
 Every component SHALL provide a rhs() method returning state derivatives.
 
@@ -86,19 +802,24 @@ Where required:
 
   0 = g(t, x, algebraic_variables, inputs, parameters)
 
-Algebraic variables SHALL be solved consistently during RHS evaluation or through a
-supported DAE backend.
+Algebraic variables SHALL be solved consistently during RHS evaluation or through
+a supported DAE backend.
 
 An artificial time constant SHALL NOT be introduced solely to make an instantaneous
 physical relation appear dynamic.
 
 Passive structures, such as current collectors, SHALL possess actual dynamic states
-where justified, such as temperature. Their instantaneous electrical resistance SHALL
-remain an algebraic relation.
+where justified, such as temperature. Their instantaneous electrical resistance
+SHALL remain an algebraic relation.
+
+Patent-derived algebraic laws SHALL include Ohmic drop, hydraulic orifice and
+equalized stacked-ORR pressure drop, Nernst potential, and Faraday mapping of
+current to reaction rate.
 <<<
 COMMENT: >>>
-Every DynamicComponent publishes StateSpec metadata and a deterministic rhs(t, y, inputs, context).
-Algebraic electrical resistance is not converted into a fake lag state.
+Every DynamicComponent publishes StateSpec metadata and a deterministic
+rhs(t, y, inputs, context). Algebraic electrical resistance is not converted into
+a fake lag state.
 <<<
 
 [REQUIREMENT]
@@ -106,16 +827,23 @@ UID: IA-SYS-004
 STATUS: Active
 TITLE: Shared component models
 STATEMENT: >>>
-Individual component simulations and the integrated battery SHALL use the same implementation.
+Individual component simulations and the integrated battery SHALL use the same
+implementation.
 
-The system SHALL NOT contain separate, simplified physics solely for Jupyter examples.
+The system SHALL NOT contain separate, simplified physics solely for Jupyter
+examples.
 
-Reduced-order versions MAY be implemented, but SHALL be explicitly identified and tested
-against the corresponding higher-fidelity models.
+Reduced-order versions MAY be implemented, but SHALL be explicitly identified and
+tested against the corresponding higher-fidelity models.
+
+Patent architecture options (floating versus submerged ORR, planar versus
+interdigitated OER, bifunctional versus dual cathode) SHALL be selected by
+configuration flags on the shared components, not by forked governing equations.
 <<<
 COMMENT: >>>
-Notebooks import ironair and do not define replacement governing equations for production physics.
-Reduced-order models are named with a reduced_order flag or class name and have comparison tests.
+Notebooks import ironair and do not define replacement governing equations for
+production physics. Reduced-order models are named with a reduced_order flag or
+class name and have comparison tests.
 <<<
 
 [REQUIREMENT]
@@ -129,8 +857,15 @@ integrated system simulations.
 
 Spatially distributed PDE formulations SHALL be discretized using finite-volume or
 finite-difference methods to produce systems of ODEs or DAEs.
+
+Through-plane ionic gradients in thick iron electrodes and oxygen profiles in GDL
+and stacked ORR columns SHALL be representable by spatial discretization when
+high-fidelity mode is selected (EP4602674A1 [0046]-[0047]; US12308414B2 stacked
+ORR).
 <<<
 COMMENT: >>>
-CoupledSystem accepts lumped and spatially discretized components. Spatial components
-document their discretization method and node count.
+CoupledSystem accepts lumped and spatially discretized components. Spatial
+components document their discretization method and node count.
 <<<
+
+[[/SECTION]]
