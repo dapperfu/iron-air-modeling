@@ -270,7 +270,8 @@ UID: IA-COL-001
 STATUS: Active
 TITLE: Current collector ODE
 STATEMENT: >>>
-Module ironair.components.current_collector SHALL provide class CurrentCollector.
+Module plant_sim.components.current_collector SHALL provide class CurrentCollector
+(notebook plant_sim/08_CurrentCollector.ipynb).
 
 The model SHALL include thermal dynamics and configurable long-term contact or
 resistance degradation.
@@ -287,6 +288,10 @@ US12308414B2 Claims 5 and 17 and FIGS. 4B-4C; EP4602674A1 Claims 13, 30-31.
 <<<
 COMMENT: >>>
 No fake lag state for resistance. V_ohm = I * R(T, degradation_state).
+
+Changed because ironair.components.current_collector does not exist.
+plant_sim.components.current_collector.CurrentCollector implements algebraic Ohmic
+drop with thermal and degradation states used by the plant stack.
 <<<
 RELATIONS:
 - TYPE: Parent

@@ -1,5 +1,7 @@
 """Current collector ODE (IA-COL-001).
 
+@relation(IA-COL-001, scope=module)
+
 V_ohm = I * R(T, degradation). No fake lag state for resistance.
 Collectors: anode branch-plus-primary, ORR dual-face tabs, Ni-coated-steel with
 EPDM compression (US FIGS. 4B-4C), SS mesh in iron ribs (EP), can-negative (US Claim 5).
@@ -43,6 +45,10 @@ def collector_rhs(
     u: Mapping[str, float],
     p: PlantParams,
 ) -> NDArray[np.float64]:
+    """Collector thermal and contact-degradation RHS.
+
+    @relation(IA-COL-001, scope=function)
+    """
     T, deg = y
     I_A = float(u.get("I_cell_A", 0.0))
     T_amb = float(u.get("T_amb_K", p.T_ep_sim_K))
@@ -75,6 +81,11 @@ def collector_outputs(
 
 
 class CurrentCollector(RHSComponent):
+    """IA-COL-001 current collector.
+
+    @relation(IA-COL-001, scope=class)
+    """
+
     def __init__(self, p: PlantParams | None = None, y0: NDArray[np.float64] | None = None, name: str = "collector") -> None:
         p = p or default_params()
         y0 = default_y0(p) if y0 is None else y0
