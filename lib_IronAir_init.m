@@ -42,6 +42,13 @@ IronAir.Metal.alpha_a = 0.5;
 IronAir.Metal.alpha_c = 0.5;
 IronAir.Metal.Q_max = 3.6e6 * 20 / A; % ~20 Ah/m^2 scaled
 IronAir.Metal.u_init = 1.0;
+IronAir.Metal.gamma_OH = 0.25;
+IronAir.Metal.soc_activity_mode = 1; % 0=unity, 1=sqrt, 2=power-law
+IronAir.Metal.soc_activity_min = 1e-4;
+IronAir.Metal.soc_activity_exp = 0.5;
+IronAir.Metal.bv_max_iter = 40;
+IronAir.Metal.bv_tol = 1e-10;
+IronAir.Metal.exp_arg_max = 80;
 
 IronAir.ORR.Nx = Nx;
 IronAir.ORR.L = 0.001;
