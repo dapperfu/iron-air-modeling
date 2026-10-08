@@ -2,6 +2,7 @@
 
 @relation(IA-FLD-001, scope=module)
 @relation(IA-FLD-002, scope=module)
+@relation(IA-FLD-003, scope=module)
 """
 
 from __future__ import annotations
@@ -127,6 +128,11 @@ class Pump(RHSComponent):
 
 
 class Reservoir(RHSComponent):
+    """IA-FLD-003 electrolyte reservoir.
+
+    @relation(IA-FLD-003, scope=class)
+    """
+
     def __init__(self, p: PlantParams | None = None, filled: bool = True) -> None:
         p = p or default_params()
         dens = koh_density_kg_m3(p.T_ep_sim_K, p.c_KOH_mol_m3)
@@ -135,6 +141,10 @@ class Reservoir(RHSComponent):
         y0 = np.array([M, n_OH, p.T_ep_sim_K], dtype=np.float64)
 
         def rhs(t, y, inputs, context):  # type: ignore[no-untyped-def]
+            """Reservoir mass, OH, and temperature RHS.
+
+            @relation(IA-FLD-003, scope=function)
+            """
             M, n_OH, T = y
             m_in = float(inputs.get("mdot_in_kg_s", 0.0))
             m_out = float(inputs.get("mdot_out_kg_s", 0.0))

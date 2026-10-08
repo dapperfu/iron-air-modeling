@@ -473,7 +473,8 @@ UID: IA-FLD-003
 STATUS: Active
 TITLE: Reservoir ODE
 STATEMENT: >>>
-Module ironair.components.reservoir SHALL provide class Reservoir.
+Module plant_sim.components.hydraulics SHALL provide class Reservoir
+(notebook plant_sim/31_Hydraulics.ipynb).
 
 The component SHALL model liquid inventory, chemical species inventories, temperature,
 and boundary flows.
@@ -482,7 +483,14 @@ COMMENT: >>>
 Mass balance: dM/dt equals inlet minus outlet minus leak.
 The vessel cavity MAY hold drained electrolyte during maintenance
 (US12308414B2 FIGS. 1E-1F) without requiring off-site storage volume.
+
+Changed because ironair.components.reservoir does not exist.
+plant_sim.components.hydraulics.Reservoir implements mass, OH inventory, leak path,
+and fill used by commissioning and hydraulics BOP.
 <<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-021
 
 [REQUIREMENT]
 UID: IA-FLD-004
