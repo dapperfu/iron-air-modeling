@@ -90,12 +90,15 @@ UID: IA-TD-005
 STATUS: Active
 TITLE: RHS determinism test
 STATEMENT: >>>
-Evaluate rhs twice with identical arguments for every DynamicComponent, including
-IronElectrode in DRI-bed and channeled modes, OxygenReduction in stacked submerged
+Evaluate rhs twice with identical arguments for every plant_sim RHSComponent, including
+IronAnode in DRI-bed and channeled modes, OxygenReduction in stacked submerged
 mode, and OxygenEvolution in interdigitated mode.
 <<<
 COMMENT: >>>
 Arrays compare equal. Component parameter values are unchanged.
+
+Changed because IronElectrode / ironair.components DynamicComponent instances do not
+exist. plant_sim RHSComponent classes are the implemented ODE objects.
 <<<
 RELATIONS:
 - TYPE: Parent
