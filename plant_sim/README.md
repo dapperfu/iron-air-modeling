@@ -27,16 +27,42 @@ python plant_sim/verify_components.py
 ```
 
 This integrates every component RHS with SciPy BDF/Radau-class stiff solvers,
-assembles the plant, runs scenarios 90-99, and writes seaborn figures to
-`plant_sim/figures/`.
+assembles the plant, runs scenarios 90-99, and writes PNG figures to
+`plant_sim/figures/` for review outside a notebook. That export lives in
+`plant_sim/plotting.py`, not in `ironair`.
 
-Notebooks in this directory import the same Python objects. Open them from the
-repo root so `plant_sim` and `ironair` import cleanly, or run the first
-bootstrap cell.
+Notebooks in this directory import the same physics objects, build a pandas
+DataFrame, and call seaborn in the cell. The figure is notebook output. Open
+them from the repo root so `plant_sim` and `ironair` import cleanly, or run
+the first bootstrap cell.
+
+Regenerate decade notebooks from this package after editing the generator:
+
+```bash
+python plant_sim/_build_notebooks.py
+make format
+```
+
+## Units (siunitx in Markdown, Unicode on axes)
+
+Jupyter does not load the real LaTeX `siunitx` package. Every notebook includes
+the MathJax preamble from `plant_sim/siunitx_nb.py` (`$$\newcommand{...}$$`) so
+narrative math can use siunitx v3 syntax:
+
+- `$\qty{960}{\milli\ampere\hour\per\gram}$`
+- `$\qty{6}{\molar}$`, `$\qty{25}{\celsius}$`, `$\qty{1}{\atm}$`
+- `$\qtyrange{1}{7}{\gram\per\centi\metre\squared}$`
+
+Chemistry stays `\mathrm{Fe(OH)_2}` (not mhchem). Do not use `\begin{align}`,
+`\begin{equation}`, or `\(...\)`.
+
+Seaborn/matplotlib labels use Unicode SI (`mA h g⁻¹`, `g cm⁻²`, `mol m⁻³`,
+`ΔP (Pa)`). Matplotlib mathtext does not expand `\qty`; keep siunitx in
+Markdown only. PNG exports from `plotting.py` follow the same Unicode convention.
 
 ## How an engineer verifies against the patents
 
-1. **960 / 320 mAh/g Fe** — Faraday capacities in `params.py` must match
+1. **960 / 320 mA h g⁻¹ Fe** — Faraday capacities in `params.py` must match
    EP4602674A1 [0042]-[0043]. `00_verification_constants.png` bars expected vs
    simulated.
 2. **6 M KOH @ 303 K** — default electrolyte and EP FIGS. 19-26 reference;
