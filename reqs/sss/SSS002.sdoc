@@ -95,7 +95,8 @@ UID: IA-ORR-001
 STATUS: Active
 TITLE: Oxygen reduction ODE
 STATEMENT: >>>
-Module ironair.components.oxygen_reduction SHALL provide class OxygenReduction.
+Module plant_sim.components.orr SHALL provide class OxygenReduction
+(notebook plant_sim/03_ORR.ipynb).
 
 States SHALL include interfacial charge storage and oxygen availability where applicable.
 
@@ -117,6 +118,10 @@ air-facing second surface.
 COMMENT: >>>
 ORR current is negative (cathodic) for eta < 0 versus the ORR Nernst potential.
 Oxygen consumption matches Faraday's law for four-electron ORR.
+
+Changed because ironair.components.oxygen_reduction does not exist.
+plant_sim.components.orr.OxygenReduction implements stacked/floating/vertical ORR
+modes and US Claim 1 equal-dP geometry used by the plant stack.
 <<<
 RELATIONS:
 - TYPE: Parent

@@ -1,5 +1,7 @@
 """Oxygen reduction ODE (IA-ORR-001).
 
+@relation(IA-ORR-001, scope=module)
+
 ORR: O2 + 2 H2O + 4 e- -> 4 OH- (US12308414B2). Configurable as floating,
 vertical natural-air-breathing, inverse, tubular, stacked submerged with
 depth-equalized pressure drop, wavy/rippled, or bifunctional (IA-SYS-009/012).
@@ -86,6 +88,10 @@ def orr_rhs(
     u: Mapping[str, float],
     p: PlantParams,
 ) -> NDArray[np.float64]:
+    """Four-electron ORR Faraday and TPB oxygen RHS.
+
+    @relation(IA-ORR-001, scope=function)
+    """
     q_dl, c_tpb, util = y
     c_tpb = max(float(c_tpb), 0.0)
     util = max(float(util), 0.0)
@@ -140,6 +146,11 @@ def orr_outputs(
 
 
 class OxygenReduction(RHSComponent):
+    """IA-ORR-001 oxygen reduction.
+
+    @relation(IA-ORR-001, scope=class)
+    """
+
     def __init__(self, p: PlantParams | None = None, y0: NDArray[np.float64] | None = None, mode: str = "vertical") -> None:
         if mode not in ORR_MODES:
             raise ValueError(f"ORR mode {mode} not in {ORR_MODES}")
