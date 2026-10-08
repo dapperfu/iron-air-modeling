@@ -1,0 +1,189 @@
+[DOCUMENT]
+TITLE: System Requirements Specification - IRONAIR
+UID: DOC-SRS001
+VERSION: 1.0.0
+
+[GRAMMAR]
+ELEMENTS:
+- TAG: REQUIREMENT
+  FIELDS:
+  - TITLE: UID
+    TYPE: String
+    REQUIRED: True
+  - TITLE: STATUS
+    TYPE: String
+    REQUIRED: False
+  - TITLE: TITLE
+    TYPE: String
+    REQUIRED: True
+  - TITLE: STATEMENT
+    TYPE: String
+    REQUIRED: True
+  - TITLE: RATIONALE
+    TYPE: String
+    REQUIRED: False
+  - TITLE: ACCEPTANCE_CRITERIA
+    TYPE: String
+    REQUIRED: False
+  - TITLE: COMMENT
+    TYPE: String
+    REQUIRED: False
+  RELATIONS:
+  - TYPE: Parent
+  - TYPE: File
+  - TYPE: Test
+
+[REQUIREMENT]
+UID: IA-SYS-001
+STATUS: Active
+TITLE: Python package
+STATEMENT: >>>
+The software SHALL be implemented as an installable Python package named ironair.
+
+All public APIs SHALL be importable using:
+
+  import ironair
+  from ironair import constants
+  from ironair import chemistry
+  from ironair import components
+  from ironair import simulation
+  from ironair import scenarios
+  from ironair import plotting
+
+The implementation SHALL use a standard src/ package layout.
+
+The project SHALL provide editable installation using:
+
+  pip install -e ".[dev,notebooks]"
+<<<
+RATIONALE: >>>
+A single installable package is the integration boundary for notebooks, tests, and coupled simulation.
+The SDRS src/ layout takes precedence over the generic no-src-directory Cursor rule for this project.
+<<<
+ACCEPTANCE_CRITERIA: >>>
+Package ironair installs in a virtual environment. The listed imports succeed after
+pip install -e ".[dev,notebooks]" or the equivalent uv installation.
+<<<
+RELATIONS:
+- TYPE: File
+  VALUE: src/ironair/__init__.py
+- TYPE: File
+  VALUE: pyproject.toml
+- TYPE: Test
+  VALUE: tests/test_package_imports.py
+
+[REQUIREMENT]
+UID: IA-SYS-002
+STATUS: Active
+TITLE: Integrated physics simulation
+STATEMENT: >>>
+The software SHALL model the complete iron-air battery as a coupled multiphysics system.
+
+The model SHALL include metallic iron electrode, iron hydroxide and oxide phases,
+oxygen reduction electrode, oxygen evolution electrode, hydrogen evolution, alkaline
+electrolyte, electrolyte transport, separator, gas diffusion layer, current collectors,
+cell assembly, thermal system, air intake, fan/blower, gas manifolds, ventilation,
+electrolyte reservoir, circulation pump, piping, valves, heat exchanger, battery stack,
+battery module, battery enclosure, DC electrical distribution, DC/DC conversion, grid
+inverter, transformer, grid interface, measurement sensors, battery management,
+supervisory control, fault management, state estimation, and degradation and aging.
+
+These components SHALL interact through shared physical quantities and conserved
+material, charge, and energy flows.
+<<<
+RATIONALE: >>>
+Balance-of-plant and grid interfaces determine operating envelopes of the electrochemical cell.
+<<<
+ACCEPTANCE_CRITERIA: >>>
+Every listed component has a DynamicComponent implementation that can be assembled into
+ironair.simulation.CoupledSystem and exchanges named physical flows.
+<<<
+RELATIONS:
+- TYPE: File
+  VALUE: src/ironair/components/__init__.py
+- TYPE: Test
+  VALUE: tests/test_component_registry.py
+
+[REQUIREMENT]
+UID: IA-SYS-003
+STATUS: Active
+TITLE: ODE-based components
+STATEMENT: >>>
+Every physical component SHALL expose a dynamic ODE model.
+
+Each component SHALL explicitly define: state vector, state units, initial conditions,
+input variables, output variables, governing differential equations, algebraic constitutive
+relations, physical parameters, boundary conditions, conservation residuals, numerical
+constraints, and associated StrictDoc requirement IDs.
+
+Every component SHALL provide a rhs() method returning state derivatives.
+
+The generic mathematical representation SHALL be:
+
+  dx/dt = f(t, x, inputs, parameters)
+
+Where required:
+
+  0 = g(t, x, algebraic_variables, inputs, parameters)
+
+Algebraic variables SHALL be solved consistently during RHS evaluation or through a
+supported DAE backend.
+
+An artificial time constant SHALL NOT be introduced solely to make an instantaneous
+physical relation appear dynamic.
+
+Passive structures, such as current collectors, SHALL possess actual dynamic states
+where justified, such as temperature. Their instantaneous electrical resistance SHALL
+remain an algebraic relation.
+<<<
+ACCEPTANCE_CRITERIA: >>>
+Every DynamicComponent publishes StateSpec metadata and a deterministic rhs(t, y, inputs, context).
+Algebraic electrical resistance is not converted into a fake lag state.
+<<<
+RELATIONS:
+- TYPE: File
+  VALUE: src/ironair/ode/protocol.py
+- TYPE: Test
+  VALUE: tests/test_ode_protocol.py
+
+[REQUIREMENT]
+UID: IA-SYS-004
+STATUS: Active
+TITLE: Shared component models
+STATEMENT: >>>
+Individual component simulations and the integrated battery SHALL use the same implementation.
+
+The system SHALL NOT contain separate, simplified physics solely for Jupyter examples.
+
+Reduced-order versions MAY be implemented, but SHALL be explicitly identified and tested
+against the corresponding higher-fidelity models.
+<<<
+ACCEPTANCE_CRITERIA: >>>
+Notebooks import ironair and do not define replacement governing equations for production physics.
+Reduced-order models are named with a reduced_order flag or class name and have comparison tests.
+<<<
+RELATIONS:
+- TYPE: Test
+  VALUE: tests/test_notebook_no_inline_physics.py
+
+[REQUIREMENT]
+UID: IA-SYS-005
+STATUS: Active
+TITLE: Simulation fidelity
+STATEMENT: >>>
+The software SHALL support lumped ODE models, spatially discretized ODE models,
+coupled differential-algebraic models, reduced-order dynamic models, and fully
+integrated system simulations.
+
+Spatially distributed PDE formulations SHALL be discretized using finite-volume or
+finite-difference methods to produce systems of ODEs or DAEs.
+<<<
+ACCEPTANCE_CRITERIA: >>>
+CoupledSystem accepts lumped and spatially discretized components. Spatial components
+document their discretization method and node count.
+<<<
+RELATIONS:
+- TYPE: File
+  VALUE: src/ironair/simulation/coupled.py
+- TYPE: Test
+  VALUE: tests/test_simulation_coupled.py
