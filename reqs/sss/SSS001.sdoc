@@ -1,0 +1,841 @@
+[DOCUMENT]
+TITLE: Software Requirements Specification - Foundation, Chemistry, ODE, Notebooks, Verification
+UID: DOC-SSS001
+VERSION: 1.0.0
+
+[GRAMMAR]
+ELEMENTS:
+- TAG: REQUIREMENT
+  FIELDS:
+  - TITLE: UID
+    TYPE: String
+    REQUIRED: True
+  - TITLE: STATUS
+    TYPE: String
+    REQUIRED: False
+  - TITLE: TITLE
+    TYPE: String
+    REQUIRED: True
+  - TITLE: STATEMENT
+    TYPE: String
+    REQUIRED: True
+  - TITLE: RATIONALE
+    TYPE: String
+    REQUIRED: False
+  - TITLE: ACCEPTANCE_CRITERIA
+    TYPE: String
+    REQUIRED: False
+  - TITLE: COMMENT
+    TYPE: String
+    REQUIRED: False
+  RELATIONS:
+  - TYPE: Parent
+  - TYPE: File
+  - TYPE: Test
+
+[SECTION]
+TITLE: Requirements management
+
+[REQUIREMENT]
+UID: IA-REQ-001
+STATUS: Active
+TITLE: StrictDoc source of truth
+STATEMENT: >>>
+All requirements SHALL be maintained in StrictDoc .sdoc files.
+
+Markdown SHALL be used for supplementary explanatory design documents but SHALL NOT
+replace the authoritative requirements database.
+<<<
+ACCEPTANCE_CRITERIA: >>>
+Every IA-* UID exists in reqs/**/*.sdoc. CI fails if a source @relation UID is missing
+from the StrictDoc database.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-001
+- TYPE: Test
+  VALUE: tests/test_requirements_traceability.py
+
+[REQUIREMENT]
+UID: IA-REQ-002
+STATUS: Active
+TITLE: Requirement identifiers
+STATEMENT: >>>
+Each requirement SHALL possess a permanent unique ID.
+
+Required prefixes: IA-SYS, IA-REQ, IA-CON, IA-CHM, IA-FE, IA-HER, IA-ORR, IA-OER,
+IA-GDL, IA-ELY, IA-SEP, IA-COL, IA-CEL, IA-THM, IA-AIR, IA-FLD, IA-HEX, IA-STK,
+IA-MOD, IA-ENC, IA-DC, IA-CNV, IA-INV, IA-TRF, IA-GRD, IA-CTL, IA-EST, IA-DEG,
+IA-FLT, IA-ODE, IA-NBK, IA-PLT, IA-TST, IA-DOC.
+<<<
+ACCEPTANCE_CRITERIA: >>>
+UID uniqueness is verified by tests. All required prefixes appear in the requirements tree.
+<<<
+RELATIONS:
+- TYPE: Test
+  VALUE: tests/test_requirements_traceability.py
+
+[REQUIREMENT]
+UID: IA-REQ-003
+STATUS: Active
+TITLE: Function-level traceability
+STATEMENT: >>>
+Every public physics, control, solver, plotting, and scenario function SHALL contain a
+StrictDoc @relation marker.
+
+A function implementing several requirements SHALL contain separate relation markers
+for every applicable requirement.
+
+Internal helper functions SHALL be traceable to the applicable implementation requirements.
+
+The traceability system SHALL identify Requirement -> Python Function -> Test -> Notebook Scenario.
+<<<
+ACCEPTANCE_CRITERIA: >>>
+CI greps @relation(UID, scope=function) in src/ironair and maps each implementation
+requirement to at least one function.
+<<<
+RELATIONS:
+- TYPE: Test
+  VALUE: tests/test_requirements_traceability.py
+
+[REQUIREMENT]
+UID: IA-REQ-004
+STATUS: Active
+TITLE: Bidirectional traceability
+STATEMENT: >>>
+CI SHALL verify that every implementation requirement has an associated function,
+every required function exists, every required function is covered by tests,
+every documented scenario has a notebook, every required notebook executes successfully,
+all source-level requirement references resolve to valid StrictDoc UIDs, and every
+requirements-to-source reference identifies an existing Python source element.
+<<<
+ACCEPTANCE_CRITERIA: >>>
+tests/test_requirements_traceability.py fails the build on missing UIDs, missing
+functions, missing tests, or dangling file relations.
+<<<
+RELATIONS:
+- TYPE: Test
+  VALUE: tests/test_requirements_traceability.py
+
+[REQUIREMENT]
+UID: IA-REQ-005
+STATUS: Active
+TITLE: Requirement verification
+STATEMENT: >>>
+Every physical requirement SHALL specify acceptance criteria that can be objectively tested.
+
+Compliance SHALL be verified through unit tests, integration tests, conservation checks,
+numerical convergence tests, and documented model validation.
+
+Passing software tests SHALL NOT be represented as physical validation against experimental hardware.
+<<<
+ACCEPTANCE_CRITERIA: >>>
+Physical requirements include ACCEPTANCE_CRITERIA. Validation status is tracked separately
+from software verification in ironair.validation.
+<<<
+RELATIONS:
+- TYPE: File
+  VALUE: src/ironair/validation.py
+
+[SECTION]
+TITLE: Physical constants and parameters
+
+[REQUIREMENT]
+UID: IA-CON-001
+STATUS: Active
+TITLE: Constants module
+STATEMENT: >>>
+Implement src/ironair/constants.py providing F_C_MOL, R_J_MOL_K, T_REF_K, P_REF_PA,
+M_FE_KG_MOL, M_O2_KG_MOL, M_H2O_KG_MOL, and M_KOH_KG_MOL.
+
+Fundamental constants SHALL be immutable.
+<<<
+ACCEPTANCE_CRITERIA: >>>
+from ironair import constants succeeds. Named constants match CODATA/IUPAC values
+within documented precision. Assignment to module constants raises an error or is
+rejected by typing/runtime freeze.
+<<<
+RELATIONS:
+- TYPE: File
+  VALUE: src/ironair/constants.py
+- TYPE: Test
+  VALUE: tests/test_constants.py
+
+[REQUIREMENT]
+UID: IA-CON-002
+STATUS: Active
+TITLE: Parameter definitions
+STATEMENT: >>>
+Every component SHALL use explicit, typed parameter objects.
+
+Parameters SHALL include name, value, SI unit, physical meaning, valid range,
+source classification, literature reference when available, uncertainty when available,
+and calibration status.
+
+Parameter categories SHALL distinguish fundamental constant, literature value,
+experimental measurement, engineering design assumption, calibrated coefficient,
+and unverified placeholder.
+<<<
+ACCEPTANCE_CRITERIA: >>>
+PhysicalParameter dataclass enforces required fields and rejects out-of-range values.
+Unverified placeholders are queryable via calibration_status.
+<<<
+RELATIONS:
+- TYPE: File
+  VALUE: src/ironair/parameters.py
+- TYPE: Test
+  VALUE: tests/test_parameters.py
+
+[REQUIREMENT]
+UID: IA-CON-003
+STATUS: Active
+TITLE: Property models
+STATEMENT: >>>
+Implement concentration- and temperature-dependent properties for KOH conductivity,
+KOH density, KOH viscosity, KOH heat capacity, KOH water activity, dissolved oxygen
+solubility, oxygen diffusivity, gas-phase diffusivity, iron conductivity, thermal
+conductivity, reaction rate constants, and electrochemical exchange-current densities.
+
+Property models SHALL enforce their valid domains.
+<<<
+ACCEPTANCE_CRITERIA: >>>
+Property functions raise a domain error outside documented T and concentration ranges
+and return finite SI values inside the range.
+<<<
+RELATIONS:
+- TYPE: File
+  VALUE: src/ironair/properties.py
+- TYPE: Test
+  VALUE: tests/test_properties.py
+
+[SECTION]
+TITLE: Base electrochemistry
+
+[REQUIREMENT]
+UID: IA-CHM-001
+STATUS: Active
+TITLE: Stoichiometric reaction network
+STATEMENT: >>>
+Implement a common chemical reaction network.
+
+Mathematical model:
+
+  dn/dt = S @ r + B @ q
+
+Where S is the chemical stoichiometric matrix, r is the reaction-rate vector,
+B maps boundary flows to species inventories, and q is the boundary-flow vector.
+
+The reaction network SHALL enforce elemental conservation.
+<<<
+ACCEPTANCE_CRITERIA: >>>
+For every reaction column, elemental composition @ S[:, j] is numerically zero.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-002
+- TYPE: File
+  VALUE: src/ironair/chemistry/network.py
+- TYPE: Test
+  VALUE: tests/chemistry/test_network.py
+
+[REQUIREMENT]
+UID: IA-CHM-002
+STATUS: Active
+TITLE: Iron conversion
+STATEMENT: >>>
+Implement Fe + 2OH- <-> Fe(OH)2 + 2e-.
+
+Calculate reaction rates from electrode kinetics and Faraday's law.
+<<<
+ACCEPTANCE_CRITERIA: >>>
+Two electrons per iron atom. Faraday mapping r = i * A / (n * F) holds within solver tolerance.
+<<<
+RELATIONS:
+- TYPE: File
+  VALUE: src/ironair/chemistry/network.py
+- TYPE: Test
+  VALUE: tests/chemistry/test_iron_conversion.py
+
+[REQUIREMENT]
+UID: IA-CHM-003
+STATUS: Active
+TITLE: Magnetite formation
+STATEMENT: >>>
+Implement configurable conversion between iron hydroxide and magnetite, including
+electron transfer and correct stoichiometry.
+<<<
+ACCEPTANCE_CRITERIA: >>>
+Default electrochemical path conserves Fe, O, H, and charge. A Schikorr chemical path
+may be enabled without inventing extra electrons.
+<<<
+RELATIONS:
+- TYPE: File
+  VALUE: src/ironair/chemistry/network.py
+- TYPE: Test
+  VALUE: tests/chemistry/test_magnetite.py
+
+[REQUIREMENT]
+UID: IA-CHM-004
+STATUS: Active
+TITLE: Oxygen reduction reaction
+STATEMENT: >>>
+Implement O2 + 2H2O + 4e- -> 4OH-.
+<<<
+ACCEPTANCE_CRITERIA: >>>
+Four electrons per O2. OH- production matches Faraday's law.
+<<<
+RELATIONS:
+- TYPE: File
+  VALUE: src/ironair/chemistry/network.py
+- TYPE: Test
+  VALUE: tests/chemistry/test_orr_oer_her.py
+
+[REQUIREMENT]
+UID: IA-CHM-005
+STATUS: Active
+TITLE: Oxygen evolution reaction
+STATEMENT: >>>
+Implement 4OH- -> O2 + 2H2O + 4e-.
+<<<
+ACCEPTANCE_CRITERIA: >>>
+OER is the reverse four-electron oxygen couple of ORR with independent kinetics.
+<<<
+RELATIONS:
+- TYPE: File
+  VALUE: src/ironair/chemistry/network.py
+- TYPE: Test
+  VALUE: tests/chemistry/test_orr_oer_her.py
+
+[REQUIREMENT]
+UID: IA-CHM-006
+STATUS: Active
+TITLE: Hydrogen evolution reaction
+STATEMENT: >>>
+Implement 2H2O + 2e- -> H2 + 2OH-.
+<<<
+ACCEPTANCE_CRITERIA: >>>
+Two electrons per H2. Rate increases with more negative iron overpotential.
+<<<
+RELATIONS:
+- TYPE: File
+  VALUE: src/ironair/chemistry/network.py
+- TYPE: Test
+  VALUE: tests/chemistry/test_orr_oer_her.py
+
+[REQUIREMENT]
+UID: IA-CHM-007
+STATUS: Active
+TITLE: Butler-Volmer kinetics
+STATEMENT: >>>
+Implement nonlinear electrode kinetics with exchange-current density, transfer coefficients,
+local overpotential, temperature, species activities, electrode surface area, and
+reaction availability.
+<<<
+ACCEPTANCE_CRITERIA: >>>
+Zero overpotential yields zero net Faradaic current at unit activities. Current is
+odd in overpotential for symmetric coefficients.
+<<<
+RELATIONS:
+- TYPE: File
+  VALUE: src/ironair/chemistry/kinetics.py
+- TYPE: Test
+  VALUE: tests/chemistry/test_kinetics.py
+
+[REQUIREMENT]
+UID: IA-CHM-008
+STATUS: Active
+TITLE: Nernst potentials
+STATEMENT: >>>
+Calculate equilibrium potentials using thermodynamically consistent activities and
+standard electrode-potential references.
+<<<
+ACCEPTANCE_CRITERIA: >>>
+Nernst potentials shift (RT/nF) ln(activity quotient) relative to documented E0.
+<<<
+RELATIONS:
+- TYPE: File
+  VALUE: src/ironair/chemistry/nernst.py
+- TYPE: Test
+  VALUE: tests/chemistry/test_nernst.py
+
+[REQUIREMENT]
+UID: IA-CHM-009
+STATUS: Active
+TITLE: Reaction thermodynamics
+STATEMENT: >>>
+Calculate Gibbs free energy, reaction enthalpy, reaction entropy, equilibrium cell
+potential, reversible reaction heat, and irreversible reaction heat.
+<<<
+ACCEPTANCE_CRITERIA: >>>
+E_eq = -DeltaG / (n F). Irreversible heat is eta * i * A. Reversible heat uses T * DeltaS.
+<<<
+RELATIONS:
+- TYPE: File
+  VALUE: src/ironair/chemistry/thermodynamics.py
+- TYPE: Test
+  VALUE: tests/chemistry/test_thermodynamics.py
+
+[REQUIREMENT]
+UID: IA-CHM-010
+STATUS: Active
+TITLE: Chemistry conservation
+STATEMENT: >>>
+The central chemistry module SHALL check iron atom conservation, oxygen atom conservation,
+hydrogen atom conservation, potassium conservation, carbon conservation, charge balance,
+electron transfer, and reaction stoichiometry.
+<<<
+ACCEPTANCE_CRITERIA: >>>
+Elemental residual norms are below 1e-12 relative to characteristic inventory for
+closed-system reaction extents.
+<<<
+RELATIONS:
+- TYPE: File
+  VALUE: src/ironair/chemistry/conservation.py
+- TYPE: Test
+  VALUE: tests/chemistry/test_conservation.py
+
+[SECTION]
+TITLE: ODE component interface
+
+[REQUIREMENT]
+UID: IA-ODE-001
+STATUS: Active
+TITLE: Common component protocol
+STATEMENT: >>>
+Every dynamic component SHALL implement rhs(self, t, y, inputs, context).
+
+The RHS SHALL be deterministic for a fixed state, time, input, and parameter configuration.
+
+It SHALL NOT modify component state through hidden side effects.
+<<<
+ACCEPTANCE_CRITERIA: >>>
+Repeated rhs evaluations with identical arguments return identical arrays. Component
+parameter objects are unchanged after rhs.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-003
+- TYPE: File
+  VALUE: src/ironair/ode/protocol.py
+- TYPE: Test
+  VALUE: tests/test_ode_protocol.py
+
+[REQUIREMENT]
+UID: IA-ODE-002
+STATUS: Active
+TITLE: State definitions
+STATEMENT: >>>
+Each component SHALL publish named state metadata and a validated state vector layout.
+
+State arrays SHALL be NumPy arrays.
+<<<
+ACCEPTANCE_CRITERIA: >>>
+y0 size matches len(state_specs). Units and names are unique per component.
+<<<
+RELATIONS:
+- TYPE: File
+  VALUE: src/ironair/ode/state.py
+- TYPE: Test
+  VALUE: tests/test_ode_protocol.py
+
+[REQUIREMENT]
+UID: IA-ODE-003
+STATUS: Active
+TITLE: Coupled solver
+STATEMENT: >>>
+Implement ironair.simulation.CoupledSystem.
+
+The solver SHALL assemble component states into one global state vector, maintain a
+state-index map, resolve shared inputs and algebraic couplings, evaluate the coupled
+RHS, pass the assembled system to SciPy, detect numerical failures, and return state
+trajectories and diagnostics.
+<<<
+ACCEPTANCE_CRITERIA: >>>
+simulate() returns a SimulationResult with t, y, names, and solver diagnostics.
+Failure of solve_ivp is reported rather than silently truncated.
+<<<
+RELATIONS:
+- TYPE: File
+  VALUE: src/ironair/simulation/coupled.py
+- TYPE: Test
+  VALUE: tests/test_simulation_coupled.py
+
+[REQUIREMENT]
+UID: IA-ODE-004
+STATUS: Active
+TITLE: Stiff solvers
+STATEMENT: >>>
+The default integrated system SHALL use a stiff-capable solver, normally SciPy BDF or Radau.
+
+Nonstiff component demonstrations MAY use RK45 or DOP853.
+<<<
+ACCEPTANCE_CRITERIA: >>>
+CoupledSystem default method is BDF or Radau.
+<<<
+RELATIONS:
+- TYPE: File
+  VALUE: src/ironair/simulation/coupled.py
+- TYPE: Test
+  VALUE: tests/test_simulation_coupled.py
+
+[REQUIREMENT]
+UID: IA-ODE-005
+STATUS: Active
+TITLE: Numerical robustness
+STATEMENT: >>>
+The simulation SHALL include state-specific absolute tolerances, relative tolerances,
+Jacobian sparsity, event detection, hybrid mode transitions, nonnegative inventory
+checks, solver diagnostics, and energy and mass conservation residuals.
+<<<
+ACCEPTANCE_CRITERIA: >>>
+SimulationResult exposes atol vector, events, conservation residuals, and solver status.
+<<<
+RELATIONS:
+- TYPE: File
+  VALUE: src/ironair/simulation/diagnostics.py
+- TYPE: Test
+  VALUE: tests/test_simulation_diagnostics.py
+
+[REQUIREMENT]
+UID: IA-ODE-006
+STATUS: Active
+TITLE: Multiscale execution
+STATEMENT: >>>
+The system SHALL support millisecond, second, minute, hour, and multi-day simulation windows.
+
+Detailed electrochemical dynamics and long-duration grid dispatch SHALL be able to use
+different model fidelity settings while sharing the same physical parameter definitions.
+<<<
+ACCEPTANCE_CRITERIA: >>>
+The same ParameterSet can be passed to detailed and reduced-order components.
+t_span may be [0, 1e-3] or [0, 7*86400] without changing parameter objects.
+<<<
+RELATIONS:
+- TYPE: File
+  VALUE: src/ironair/simulation/coupled.py
+- TYPE: Test
+  VALUE: tests/test_simulation_coupled.py
+
+[SECTION]
+TITLE: Jupyter and plotting
+
+[REQUIREMENT]
+UID: IA-NBK-001
+STATUS: Active
+TITLE: Notebook development environment
+STATEMENT: >>>
+All notebooks SHALL be located in notebooks/.
+
+All notebooks SHALL import numerical models from the installed ironair package.
+
+No notebook SHALL contain a separate replacement implementation of a battery physics model.
+<<<
+ACCEPTANCE_CRITERIA: >>>
+Notebook AST/source scan finds no duplicate rhs or stoichiometric matrix definitions.
+<<<
+RELATIONS:
+- TYPE: Test
+  VALUE: tests/test_notebook_no_inline_physics.py
+
+[REQUIREMENT]
+UID: IA-NBK-002
+STATUS: Active
+TITLE: Seaborn visualization
+STATEMENT: >>>
+All scenario notebooks SHALL use seaborn for the principal plots.
+
+Matplotlib MAY be used for figure management, multi-axis plots, annotations, and
+specialized graphics.
+
+Plots SHALL include title, axis labels, physical units, legend where necessary,
+scenario identifier, and physical operating assumptions.
+<<<
+ACCEPTANCE_CRITERIA: >>>
+Principal plotting helpers call seaborn and require title, xlabel, ylabel, and scenario_id.
+<<<
+RELATIONS:
+- TYPE: File
+  VALUE: src/ironair/plotting/timeseries.py
+- TYPE: Test
+  VALUE: tests/test_plotting.py
+
+[REQUIREMENT]
+UID: IA-NBK-003
+STATUS: Active
+TITLE: Shared plotting API
+STATEMENT: >>>
+Implement reusable plotting functions under ironair.plotting.
+
+Plotting functions SHALL accept structured simulation results or pandas DataFrames.
+<<<
+ACCEPTANCE_CRITERIA: >>>
+from ironair import plotting succeeds and plot_states accepts SimulationResult or DataFrame.
+<<<
+RELATIONS:
+- TYPE: File
+  VALUE: src/ironair/plotting/__init__.py
+- TYPE: Test
+  VALUE: tests/test_plotting.py
+
+[REQUIREMENT]
+UID: IA-NBK-004
+STATUS: Active
+TITLE: Chemical model demonstrations
+STATEMENT: >>>
+Immediately after implementing the baseline chemistry, create notebooks demonstrating
+iron oxidation, iron reduction, iron phase inventories, Butler-Volmer kinetics,
+Nernst potential, ORR kinetics, OER kinetics, hydrogen evolution, oxygen limitation,
+KOH conductivity, electrolyte concentration, reaction heat, and mass and charge conservation.
+
+Each notebook SHALL call the actual associated Python component.
+<<<
+ACCEPTANCE_CRITERIA: >>>
+Required chemistry notebooks exist under notebooks/chemistry and import ironair.chemistry.
+<<<
+RELATIONS:
+- TYPE: Test
+  VALUE: tests/test_notebook_inventory.py
+
+[REQUIREMENT]
+UID: IA-NBK-005
+STATUS: Active
+TITLE: Component demonstrations
+STATEMENT: >>>
+Every component SHALL have a notebook or explicitly designated notebook section containing
+component configuration, initial conditions, input stimulus, simulation execution,
+time-domain plots, parameter sensitivity, conservation or physical validation results,
+and discussion of observed behavior.
+<<<
+ACCEPTANCE_CRITERIA: >>>
+tests/test_notebook_inventory.py maps each component class to a notebook path.
+<<<
+RELATIONS:
+- TYPE: Test
+  VALUE: tests/test_notebook_inventory.py
+
+[REQUIREMENT]
+UID: IA-NBK-006
+STATUS: Active
+TITLE: Full-system scenario demonstrations
+STATEMENT: >>>
+The notebook suite SHALL cover all required operating scenarios described in Section 9.
+<<<
+ACCEPTANCE_CRITERIA: >>>
+Every IA-NBK-007 through IA-NBK-016 scenario ID has a notebook and a Python scenario function.
+<<<
+RELATIONS:
+- TYPE: Test
+  VALUE: tests/test_notebook_inventory.py
+
+[REQUIREMENT]
+UID: IA-PLT-001
+STATUS: Active
+TITLE: Plot styling contract
+STATEMENT: >>>
+Shared plotting functions SHALL apply a consistent seaborn theme and include physical units
+on labeled axes.
+<<<
+ACCEPTANCE_CRITERIA: >>>
+plotting helpers reject empty axis labels.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-NBK-002
+- TYPE: File
+  VALUE: src/ironair/plotting/timeseries.py
+- TYPE: Test
+  VALUE: tests/test_plotting.py
+
+[SECTION]
+TITLE: Conservation and software verification
+
+[REQUIREMENT]
+UID: IA-TST-001
+STATUS: Active
+TITLE: Elemental conservation
+STATEMENT: >>>
+The stoichiometric network SHALL conserve chemical elements for every reaction.
+<<<
+ACCEPTANCE_CRITERIA: >>>
+max(abs(element_matrix @ S)) < 1e-12.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-CHM-010
+- TYPE: Test
+  VALUE: tests/chemistry/test_conservation.py
+
+[REQUIREMENT]
+UID: IA-TST-002
+STATUS: Active
+TITLE: Charge conservation
+STATEMENT: >>>
+Electrode currents, capacitive currents, and reaction rates SHALL obey conservation of charge.
+<<<
+ACCEPTANCE_CRITERIA: >>>
+Sum of Faradaic, capacitive, and terminal currents is below 1e-9 A relative residual.
+<<<
+RELATIONS:
+- TYPE: Test
+  VALUE: tests/test_charge_conservation.py
+
+[REQUIREMENT]
+UID: IA-TST-003
+STATUS: Active
+TITLE: Energy conservation
+STATEMENT: >>>
+The coupled system SHALL account for electrical, chemical, thermal, and material-flow energy.
+<<<
+ACCEPTANCE_CRITERIA: >>>
+Closed-system energy residual is reported and below documented tolerance for the adiabatic cell test.
+<<<
+RELATIONS:
+- TYPE: Test
+  VALUE: tests/test_energy_conservation.py
+
+[REQUIREMENT]
+UID: IA-TST-004
+STATUS: Active
+TITLE: Physical state validity
+STATEMENT: >>>
+The simulation SHALL reject or explicitly report invalid physical states including negative
+species inventory, nonphysical porosity, invalid electrolyte volume, nonphysical absolute
+temperature, invalid pressure, impossible oxygen consumption, and nonphysical cell voltage
+or current conditions.
+<<<
+ACCEPTANCE_CRITERIA: >>>
+ironair.exceptions.InvalidPhysicalState is raised or recorded on invalid states.
+<<<
+RELATIONS:
+- TYPE: File
+  VALUE: src/ironair/exceptions.py
+- TYPE: Test
+  VALUE: tests/test_state_validity.py
+
+[REQUIREMENT]
+UID: IA-TST-005
+STATUS: Active
+TITLE: Numerical convergence
+STATEMENT: >>>
+The system SHALL include solver tolerance refinement tests and, for spatial models,
+mesh refinement tests.
+<<<
+ACCEPTANCE_CRITERIA: >>>
+Halving rtol reduces trajectory error against a tight-tolerance reference.
+<<<
+RELATIONS:
+- TYPE: Test
+  VALUE: tests/test_numerical_convergence.py
+
+[REQUIREMENT]
+UID: IA-TST-006
+STATUS: Active
+TITLE: Model validation tracking
+STATEMENT: >>>
+Software verification SHALL be distinguished from model validation.
+
+Experimental calibration and independent physical validation SHALL be separately tracked.
+<<<
+ACCEPTANCE_CRITERIA: >>>
+Parameter source_class and validation.ValidationRecord never treat unit-test pass as
+hardware validation.
+<<<
+RELATIONS:
+- TYPE: File
+  VALUE: src/ironair/validation.py
+- TYPE: Test
+  VALUE: tests/test_validation_records.py
+
+[REQUIREMENT]
+UID: IA-TST-007
+STATUS: Active
+TITLE: Automated unit tests
+STATEMENT: >>>
+Every exported physical calculation and dynamic component SHALL have automated pytest coverage.
+<<<
+ACCEPTANCE_CRITERIA: >>>
+pytest coverage for src/ironair is at least 80 percent.
+<<<
+RELATIONS:
+- TYPE: Test
+  VALUE: tests/test_package_imports.py
+
+[REQUIREMENT]
+UID: IA-TST-008
+STATUS: Active
+TITLE: Component integration tests
+STATEMENT: >>>
+Every coupled component interface SHALL have integration tests verifying dimensions,
+units, and conservation.
+<<<
+ACCEPTANCE_CRITERIA: >>>
+CoupledSystem with a cell plus thermal node conserves charge and reports unit-consistent outputs.
+<<<
+RELATIONS:
+- TYPE: Test
+  VALUE: tests/test_component_integration.py
+
+[REQUIREMENT]
+UID: IA-TST-009
+STATUS: Active
+TITLE: Notebook execution tests
+STATEMENT: >>>
+Every mandatory notebook SHALL execute from a clean kernel without manual intervention.
+<<<
+ACCEPTANCE_CRITERIA: >>>
+pytest marker notebook executes required notebooks via nbclient.
+<<<
+RELATIONS:
+- TYPE: Test
+  VALUE: tests/test_notebook_execution.py
+
+[REQUIREMENT]
+UID: IA-TST-010
+STATUS: Active
+TITLE: Requirements coverage gate
+STATEMENT: >>>
+CI SHALL fail when a required UID is missing, a requirement has no implementation function,
+a required function is missing, a required equation is not tested, a notebook references
+an unavailable API, a mandatory notebook fails execution, or conservation acceptance
+criteria fail.
+<<<
+ACCEPTANCE_CRITERIA: >>>
+The traceability test enumerates these failure modes.
+<<<
+RELATIONS:
+- TYPE: Test
+  VALUE: tests/test_requirements_traceability.py
+
+[REQUIREMENT]
+UID: IA-TST-011
+STATUS: Active
+TITLE: Reproducibility
+STATEMENT: >>>
+The simulation SHALL support deterministic parameter sets, recorded software versions,
+and fixed random seeds.
+<<<
+ACCEPTANCE_CRITERIA: >>>
+SimulationResult.metadata includes ironair version and numpy seed. Sensor noise is
+seed-controlled.
+<<<
+RELATIONS:
+- TYPE: File
+  VALUE: src/ironair/simulation/coupled.py
+- TYPE: Test
+  VALUE: tests/test_reproducibility.py
+
+[REQUIREMENT]
+UID: IA-DOC-001
+STATUS: Active
+TITLE: Package documentation
+STATEMENT: >>>
+The project SHALL publish architecture, API documentation, model limitations,
+requirements coverage, and executable notebook demonstrations.
+<<<
+ACCEPTANCE_CRITERIA: >>>
+README documents install, architecture, limitations, and that passing tests are not
+hardware validation.
+<<<
+RELATIONS:
+- TYPE: File
+  VALUE: README.md
