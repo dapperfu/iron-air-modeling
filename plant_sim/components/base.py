@@ -98,7 +98,9 @@ def integrate_component(
     atol: float | NDArray[np.float64] = 1e-8,
 ) -> tuple[NDArray[np.float64], NDArray[np.float64]]:
     t_eval = np.linspace(t_span[0], t_span[1], n_eval)
-    sol = solve_ivp(rhs, t_span, np.asarray(y0, dtype=float), method=method, t_eval=t_eval, rtol=rtol, atol=atol, dense_output=False)
+    sol = solve_ivp(
+        rhs, t_span, np.asarray(y0, dtype=float), method=method, t_eval=t_eval, rtol=rtol, atol=atol, dense_output=False
+    )
     if not sol.success:
         raise RuntimeError(sol.message)
     y = np.asarray(sol.y, dtype=float)
