@@ -29,13 +29,42 @@ def commissioning_inputs(p: PlantParams | None = None):
 
     def u(t: float) -> dict[str, float]:
         if t < 600.0:
-            return {"mode": MODE_COMMISSION, "P_grid_W": 0.0, "fill_m3_s": 0.0, "I_fan_A": 0.4, "T_amb_K": p.T_ref_K, "valve_cmd": 0.0}
+            return {
+                "mode": MODE_COMMISSION,
+                "P_grid_W": 0.0,
+                "fill_m3_s": 0.0,
+                "I_fan_A": 0.4,
+                "T_amb_K": p.T_ref_K,
+                "valve_cmd": 0.0,
+            }
         if t < 2400.0:
-            return {"mode": MODE_COMMISSION, "P_grid_W": 0.0, "fill_m3_s": V_fill / 1800.0, "I_fan_A": 0.3, "T_amb_K": p.T_ref_K, "valve_cmd": 0.4}
+            return {
+                "mode": MODE_COMMISSION,
+                "P_grid_W": 0.0,
+                "fill_m3_s": V_fill / 1800.0,
+                "I_fan_A": 0.3,
+                "T_amb_K": p.T_ref_K,
+                "valve_cmd": 0.4,
+            }
         if t < 3600.0:
-            return {"mode": MODE_REST, "P_grid_W": 0.0, "fill_m3_s": 0.0, "I_fan_A": 0.2, "T_amb_K": p.T_ref_K, "valve_cmd": 0.5}
+            return {
+                "mode": MODE_REST,
+                "P_grid_W": 0.0,
+                "fill_m3_s": 0.0,
+                "I_fan_A": 0.2,
+                "T_amb_K": p.T_ref_K,
+                "valve_cmd": 0.5,
+            }
         P = 400.0 + 50.0 * (t - 3600.0) / 3600.0
-        return {"mode": MODE_CHARGE, "P_grid_W": P, "fill_m3_s": 0.0, "I_fan_A": 1.0, "T_amb_K": p.T_ref_K, "valve_cmd": 0.8, "I_pump_A": 1.8}
+        return {
+            "mode": MODE_CHARGE,
+            "P_grid_W": P,
+            "fill_m3_s": 0.0,
+            "I_fan_A": 1.0,
+            "T_amb_K": p.T_ref_K,
+            "valve_cmd": 0.8,
+            "I_pump_A": 1.8,
+        }
 
     return u
 
@@ -54,11 +83,23 @@ def charge_discharge_inputs(t_chg_s: float, t_dch_s: float, p: PlantParams | Non
 
     def u(t: float) -> dict[str, float]:
         if t < t_chg_s:
-            return {"mode": MODE_CHARGE, "P_grid_W": P_chg, "I_cell_A": -abs(I), "I_fan_A": 1.2, "T_amb_K": p.T_ep_sim_K}
+            return {
+                "mode": MODE_CHARGE,
+                "P_grid_W": P_chg,
+                "I_cell_A": -abs(I),
+                "I_fan_A": 1.2,
+                "T_amb_K": p.T_ep_sim_K,
+            }
         if t < t_chg_s + 600.0:
             return {"mode": MODE_REST, "P_grid_W": 0.0, "I_cell_A": 0.0, "I_fan_A": 0.2, "T_amb_K": p.T_ep_sim_K}
         if t < t_chg_s + 600.0 + t_dch_s:
-            return {"mode": MODE_DISCHARGE, "P_grid_W": P_dch, "I_cell_A": abs(I), "I_fan_A": 1.0, "T_amb_K": p.T_ep_sim_K}
+            return {
+                "mode": MODE_DISCHARGE,
+                "P_grid_W": P_dch,
+                "I_cell_A": abs(I),
+                "I_fan_A": 1.0,
+                "T_amb_K": p.T_ep_sim_K,
+            }
         return {"mode": MODE_REST, "P_grid_W": 0.0, "I_cell_A": 0.0, "I_fan_A": 0.15, "T_amb_K": p.T_ep_sim_K}
 
     return u
@@ -86,7 +127,13 @@ def grid_services_inputs(p: PlantParams | None = None):
         else:
             P = -200.0 - 400.0 * ((cycle - 3000.0) / 600.0)
             mode = MODE_DISCHARGE
-        return {"mode": mode, "P_grid_W": P, "I_fan_A": 0.8, "T_amb_K": p.T_ref_K, "Q_ref_var": 50.0 * (1 if cycle > 1800 else 0)}
+        return {
+            "mode": mode,
+            "P_grid_W": P,
+            "I_fan_A": 0.8,
+            "T_amb_K": p.T_ref_K,
+            "Q_ref_var": 50.0 * (1 if cycle > 1800 else 0),
+        }
 
     return u
 
@@ -100,7 +147,14 @@ def thermal_excursion_inputs(p: PlantParams | None = None):
 
     def u(t: float) -> dict[str, float]:
         T_amb = 298.15 + 25.0 * min(max((t - 300.0) / 900.0, 0.0), 1.0)
-        return {"mode": MODE_DISCHARGE, "P_grid_W": -500.0, "I_cell_A": p.I_discharge_100h_A * 2.0, "T_amb_K": T_amb, "mdot_coolant_kg_s": 0.01 if t < 1500 else 0.08, "I_fan_A": 0.5}
+        return {
+            "mode": MODE_DISCHARGE,
+            "P_grid_W": -500.0,
+            "I_cell_A": p.I_discharge_100h_A * 2.0,
+            "T_amb_K": T_amb,
+            "mdot_coolant_kg_s": 0.01 if t < 1500 else 0.08,
+            "I_fan_A": 0.5,
+        }
 
     return u
 
@@ -163,7 +217,13 @@ def equal_dp_inputs(p: PlantParams | None = None) -> Mapping[str, float]:
     @relation(IA-SCN-PAT-STACKORR, scope=function)
     """
     p = p or default_params()
-    return {"mode": MODE_DISCHARGE, "P_grid_W": -300.0, "I_cell_A": p.I_discharge_100h_A, "I_fan_A": 1.0, "T_amb_K": p.T_ep_sim_K}
+    return {
+        "mode": MODE_DISCHARGE,
+        "P_grid_W": -300.0,
+        "I_cell_A": p.I_discharge_100h_A,
+        "I_fan_A": 1.0,
+        "T_amb_K": p.T_ep_sim_K,
+    }
 
 
 def full_mission_inputs(p: PlantParams | None = None):
@@ -178,7 +238,14 @@ def full_mission_inputs(p: PlantParams | None = None):
         if t < 7200.0:
             return u_comm(t)
         if t < 7200.0 + 2400.0:
-            return {"mode": MODE_CHARGE, "P_grid_W": 600.0, "I_fan_A": 1.1, "T_amb_K": p.T_ref_K, "valve_cmd": 0.8, "I_pump_A": 1.6}
+            return {
+                "mode": MODE_CHARGE,
+                "P_grid_W": 600.0,
+                "I_fan_A": 1.1,
+                "T_amb_K": p.T_ref_K,
+                "valve_cmd": 0.8,
+                "I_pump_A": 1.6,
+            }
         if t < 7200.0 + 2400.0 + 1200.0:
             return {"mode": MODE_REST, "P_grid_W": 0.0, "I_fan_A": 0.2, "T_amb_K": p.T_ref_K}
         if t < 7200.0 + 2400.0 + 1200.0 + 2400.0:
