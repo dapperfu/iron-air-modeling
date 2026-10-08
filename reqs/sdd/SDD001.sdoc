@@ -1,0 +1,92 @@
+[DOCUMENT]
+TITLE: Software Design Document - IRONAIR Package Architecture
+UID: DOC-SDD001
+VERSION: 1.0.0
+OPTIONS:
+  MARKUP: Text
+
+[REQUIREMENT]
+UID: IA-SDD-001
+STATUS: Active
+TITLE: Source layout
+STATEMENT: >>>
+Package sources SHALL live under src/ironair as specified by IA-SYS-001.
+
+This SDRS src/ layout is the project-specific design and SHALL be used even though
+a generic Cursor rule discourages src/ layouts.
+<<<
+COMMENT: >>>
+pyproject.toml configures setuptools package discovery with where = ["src"].
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-001
+
+[REQUIREMENT]
+UID: IA-SDD-002
+STATUS: Active
+TITLE: Dynamic component base
+STATEMENT: >>>
+All physical components SHALL implement ironair.ode.protocol.DynamicComponentProtocol
+and MAY inherit ironair.ode.component.DynamicComponent for shared validation.
+
+rhs(t, y, inputs, context) SHALL be a pure function of its arguments for a fixed
+parameter configuration.
+<<<
+COMMENT: >>>
+Protocol checks and unit tests cover every registered component class.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-ODE-001
+
+[REQUIREMENT]
+UID: IA-SDD-003
+STATUS: Active
+TITLE: Shared chemistry ownership
+STATEMENT: >>>
+Electrode components SHALL obtain stoichiometric rates from ironair.chemistry rather
+than embedding a second reaction network.
+<<<
+COMMENT: >>>
+Iron, ORR, OER, and HER rate mapping uses ReactionNetwork.S and Faraday conversion.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-004
+
+[REQUIREMENT]
+UID: IA-SDD-004
+STATUS: Active
+TITLE: Algebraic versus dynamic states
+STATEMENT: >>>
+Instantaneous constitutive laws (Ohmic drop, hydraulic orifice flow at a fixed
+position, Nernst potential) SHALL be algebraic.
+
+Dynamic states SHALL represent stored mass, charge, thermal energy, momentum, or
+explicit controller memory.
+
+Artificial lag SHALL NOT be added to algebraic laws.
+<<<
+COMMENT: >>>
+CurrentCollector resistance is algebraic. CurrentCollector temperature is dynamic.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-003
+
+[REQUIREMENT]
+UID: IA-SDD-005
+STATUS: Active
+TITLE: Clean Python baseline
+STATEMENT: >>>
+This Python package is a new baseline. It SHALL NOT import, translate, or recover
+governing equations from prior MATLAB or Simulink implementations.
+<<<
+COMMENT: >>>
+Source tree contains no .m or .slx physics. Chemistry and component modules implement
+the SDRS reaction set and ODE protocol directly.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-001
