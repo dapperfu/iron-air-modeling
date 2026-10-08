@@ -658,13 +658,21 @@ UID: IA-DC-001
 STATUS: Active
 TITLE: DC bus ODE
 STATEMENT: >>>
-Module ironair.components.dc_bus SHALL provide class DCBus.
+Module plant_sim.components.electrical SHALL provide class DCBus
+(notebook plant_sim/33_ElectricalBalance.ipynb).
 
 The component SHALL model DC link capacitor voltage and stored energy.
 <<<
 COMMENT: >>>
 C * V * dV/dt equals net electrical power into the capacitor.
+
+Changed because ironair.components.dc_bus does not exist.
+plant_sim.components.electrical.DCBus implements capacitor voltage dynamics used by
+ElectricalBalance and PlantModel.
 <<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-007
 
 [REQUIREMENT]
 UID: IA-CNV-001

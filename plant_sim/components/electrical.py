@@ -1,4 +1,7 @@
-"""Electrical BOP: DC bus, converter, inverter, transformer, grid (IA-DC/CNV/INV/TRF/GRD)."""
+"""Electrical BOP: DC bus, converter, inverter, transformer, grid (IA-DC/CNV/INV/TRF/GRD).
+
+@relation(IA-DC-001, scope=module)
+"""
 
 from __future__ import annotations
 
@@ -31,12 +34,21 @@ TRF_SPECS = (
 
 
 class DCBus(RHSComponent):
+    """IA-DC-001 DC-link capacitor.
+
+    @relation(IA-DC-001, scope=class)
+    """
+
     def __init__(self, p: PlantParams | None = None) -> None:
         p = p or default_params()
         y0 = np.array([48.0 * p.n_cells_series / 12.0 * 12.0], dtype=np.float64)
         y0 = np.array([float(p.n_cells_series) * 1.2], dtype=np.float64)
 
         def rhs(t, y, inputs, context):  # type: ignore[no-untyped-def]
+            """DC-link capacitor energy RHS.
+
+            @relation(IA-DC-001, scope=function)
+            """
             V = max(float(y[0]), 1.0)
             P_net = float(inputs.get("P_net_W", 0.0))
             return np.array([P_net / (p.C_dc_F * V)], dtype=np.float64)
