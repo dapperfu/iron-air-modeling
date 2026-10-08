@@ -1,0 +1,4196 @@
+[DOCUMENT]
+TITLE: IRONAIR-MATLAB Equation Requirements
+UID: DOC-IRONAIR-EQUATIONS
+VERSION: 1.0.0
+
+[REQUIREMENT]
+UID: FE-001
+TITLE: Primary iron oxidation and reduction
+STATEMENT: >>>
+| Requirement: SRS003.1
+| 
+| Reaction:
+| 
+| '''text
+| Fe + 2OH_minus <-> FeOH2 + 2e_minus
+| '''
+| 
+| This is the primary reversible iron-storage reaction.
+| 
+| The reaction SHALL be represented in the central stoichiometric matrix.
+| 
+| Oxidation is positive in the discharge direction.
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS003.1
+- TYPE: File
+  VALUE: components/electrochemistry/ironair_metal_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_electrochemistry.m
+
+[REQUIREMENT]
+UID: FE-002
+TITLE: Iron electrode equilibrium potential
+STATEMENT: >>>
+| Requirements: SRS003.1, SRS019
+| 
+| '''matlab
+| e_Fe_eq = e_Fe_std + ...
+|     (R_J_molK .* T_Fe ./ (2 .* F_C_mol)) .* ...
+|     log(a_FeOH2 ./ (a_Fe .* a_OH.^2));
+| '''
+| 
+| For pure, coexisting Fe and FeOH2 solids, their activities MAY equal unity.
+| 
+| Activity conventions and standard potentials SHALL use consistent reference states.
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS003.1
+- TYPE: Parent
+  VALUE: SRS019
+- TYPE: File
+  VALUE: components/electrochemistry/ironair_metal_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_electrochemistry.m
+
+[REQUIREMENT]
+UID: FE-003
+TITLE: Iron Butler-Volmer kinetics
+STATEMENT: >>>
+| Requirement: SRS003.2
+| 
+| '''matlab
+| j_Fe = j_0_Fe .* ( ...
+|     exp(alpha_a_Fe .* 2 .* F_C_mol .* eta_Fe ./ ...
+|         (R_J_molK .* T_Fe)) ...
+|     - exp(-alpha_c_Fe .* 2 .* F_C_mol .* eta_Fe ./ ...
+|         (R_J_molK .* T_Fe)) ...
+| );
+| '''
+| 
+| The implementation SHALL support stable exponent evaluation.
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS003.2
+- TYPE: File
+  VALUE: components/electrochemistry/ironair_metal_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_electrochemistry.m
+
+[REQUIREMENT]
+UID: FE-004
+TITLE: Iron electrode overpotential
+STATEMENT: >>>
+| Requirement: SRS003.2
+| 
+| '''matlab
+| eta_Fe = phi_s_Fe - phi_l_Fe - e_Fe_eq;
+| '''
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS003.2
+- TYPE: File
+  VALUE: components/electrochemistry/ironair_metal_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_electrochemistry.m
+
+[REQUIREMENT]
+UID: FE-005
+TITLE: Iron Faradaic current
+STATEMENT: >>>
+| Requirement: SRS003.2
+| 
+| '''matlab
+| I_Fe = A_active_Fe .* j_Fe;
+| '''
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS003.2
+- TYPE: File
+  VALUE: components/electrochemistry/ironair_metal_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_electrochemistry.m
+
+[REQUIREMENT]
+UID: FE-006
+TITLE: Temperature-dependent exchange current
+STATEMENT: >>>
+| Requirement: SRS003.2
+| 
+| '''matlab
+| j_0_Fe_T = j_0_Fe_ref .* exp( ...
+|     -(E_a_Fe ./ R_J_molK) .* ...
+|     (1 ./ T_Fe - 1 ./ T_ref_K) ...
+| );
+| '''
+| 
+| Additional composition and phase-availability factors SHALL be included in the detailed kinetic model.
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS003.2
+- TYPE: File
+  VALUE: components/electrochemistry/ironair_metal_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_electrochemistry.m
+
+[REQUIREMENT]
+UID: FE-007
+TITLE: Metallic iron inventory derivative
+STATEMENT: >>>
+| Requirements: SRS003.3, SRS023
+| 
+| '''matlab
+| dn_Fe_dt = -I_Fe ./ (2 .* F_C_mol);
+| '''
+| 
+| This isolated-reaction equation SHALL be extended with all other iron-producing or iron-consuming pathways.
+<<<
+COMMENT: Classification: conservation law
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS003.3
+- TYPE: Parent
+  VALUE: SRS023
+- TYPE: File
+  VALUE: components/electrochemistry/ironair_metal_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_electrochemistry.m
+
+[REQUIREMENT]
+UID: FE-008
+TITLE: Ferrous hydroxide inventory derivative
+STATEMENT: >>>
+| Requirements: SRS003.3, SRS023
+| 
+| '''matlab
+| dn_FeOH2_dt = I_Fe ./ (2 .* F_C_mol);
+| '''
+<<<
+COMMENT: Classification: conservation law
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS003.3
+- TYPE: Parent
+  VALUE: SRS023
+- TYPE: File
+  VALUE: components/electrochemistry/ironair_metal_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_electrochemistry.m
+
+[REQUIREMENT]
+UID: FE-009
+TITLE: Iron utilization
+STATEMENT: >>>
+| Requirement: SRS003.3
+| 
+| '''matlab
+| U_Fe = 1 - n_Fe ./ n_Fe_initial;
+| '''
+| 
+| Valid for a defined initially metallic iron reference inventory.
+<<<
+COMMENT: Classification: conservation law
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS003.3
+- TYPE: File
+  VALUE: components/electrochemistry/ironair_metal_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_electrochemistry.m
+
+[REQUIREMENT]
+UID: FE-010
+TITLE: Electrode porosity
+STATEMENT: >>>
+| Requirement: SRS003.3
+| 
+| '''matlab
+| epsilon_Fe = 1 - ...
+|     sum(n_solid .* V_molar_solid) ./ V_electrode;
+| '''
+| 
+| All solid constituents, including inert structure where applicable, SHALL be accounted for.
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS003.3
+- TYPE: File
+  VALUE: components/electrochemistry/ironair_metal_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_electrochemistry.m
+
+[REQUIREMENT]
+UID: FE-011
+TITLE: Effective active surface area
+STATEMENT: >>>
+| Requirement: SRS003.3
+| 
+| '''matlab
+| A_active_Fe = A_geometric_Fe .* a_s_Fe .* ...
+|     f_wet_Fe .* f_pass_Fe .* f_availability_Fe;
+| '''
+| 
+| 'a_s_Fe' SHALL be a dimensionless area multiplier in this expression. If using specific surface area in m2/m3, the expression SHALL be reformulated dimensionally.
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS003.3
+- TYPE: File
+  VALUE: components/electrochemistry/ironair_metal_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_electrochemistry.m
+
+[REQUIREMENT]
+UID: FE-012
+TITLE: Passivation layer dynamics
+STATEMENT: >>>
+| Requirements: SRS003.3, SRS016
+| 
+| '''matlab
+| ddelta_pass_dt = ...
+|     k_pass_growth .* abs(j_Fe).^m_pass ...
+|     - k_pass_removal .* g_pass_removal;
+| '''
+| 
+| This is an empirical model requiring calibration.
+| 
+| The function 'g_pass_removal' SHALL depend on relevant electrode potential, temperature, and electrolyte conditions.
+<<<
+COMMENT: Classification: empirical approximation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS003.3
+- TYPE: Parent
+  VALUE: SRS016
+- TYPE: File
+  VALUE: components/electrochemistry/ironair_metal_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_electrochemistry.m
+
+[REQUIREMENT]
+UID: FE-013
+TITLE: Passivation resistance
+STATEMENT: >>>
+| Requirements: SRS003.3, SRS016
+| 
+| '''matlab
+| R_pass = delta_pass ./ ...
+|     (sigma_pass .* A_effective_pass);
+| '''
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS003.3
+- TYPE: Parent
+  VALUE: SRS016
+- TYPE: File
+  VALUE: components/electrochemistry/ironair_metal_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_electrochemistry.m
+
+[REQUIREMENT]
+UID: FE-014
+TITLE: Magnetite formation reaction
+STATEMENT: >>>
+| Requirements: SRS003.1, SRS003.3
+| 
+| '''text
+| 3FeOH2 + 2OH_minus <-> Fe3O4 + 4H2O + 2e_minus
+| '''
+| 
+| This reaction SHALL be optional and separately parameterized.
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS003.1
+- TYPE: Parent
+  VALUE: SRS003.3
+- TYPE: File
+  VALUE: components/electrochemistry/ironair_metal_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_electrochemistry.m
+
+[REQUIREMENT]
+UID: FE-015
+TITLE: Magnetite production rate
+STATEMENT: >>>
+| Requirement: SRS003.3
+| 
+| '''matlab
+| dn_Fe3O4_dt = I_mag ./ (2 .* F_C_mol);
+| '''
+<<<
+COMMENT: Classification: conservation law
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS003.3
+- TYPE: File
+  VALUE: components/electrochemistry/ironair_metal_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_electrochemistry.m
+
+[REQUIREMENT]
+UID: FE-016
+TITLE: Ferrous hydroxide consumption by magnetite formation
+STATEMENT: >>>
+| Requirement: SRS003.3
+| 
+| '''matlab
+| dn_FeOH2_dt_mag = ...
+|     -3 .* I_mag ./ (2 .* F_C_mol);
+| '''
+| 
+| The complete iron phase derivatives SHALL be assembled from all relevant reaction contributions.
+| 
+| ---
+| 
+| # SECTION 2: HYDROGEN EVOLUTION
+| 
+| MATLAB file:
+| 'components/electrochemistry/ironair_HER_model.m'
+| 
+| Related requirements:
+| SRS003.4, SRS005.4, SRS009, SRS023.
+<<<
+COMMENT: Classification: conservation law
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS003.3
+- TYPE: Parent
+  VALUE: SRS003.4
+- TYPE: Parent
+  VALUE: SRS005.4
+- TYPE: Parent
+  VALUE: SRS009
+- TYPE: Parent
+  VALUE: SRS023
+- TYPE: File
+  VALUE: components/electrochemistry/ironair_metal_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_electrochemistry.m
+
+[REQUIREMENT]
+UID: HER-001
+TITLE: Hydrogen evolution reaction
+STATEMENT: >>>
+| Requirement: SRS003.4
+| 
+| '''text
+| 2H2O + 2e_minus -> H2 + 2OH_minus
+| '''
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS003.4
+- TYPE: File
+  VALUE: components/electrochemistry/ironair_HER_model.m
+- TYPE: File
+  VALUE: tests/test_equations_electrochemistry.m
+
+[REQUIREMENT]
+UID: HER-002
+TITLE: Hydrogen evolution kinetics
+STATEMENT: >>>
+| Requirement: SRS003.4
+| 
+| '''matlab
+| j_HER = j_0_HER .* ( ...
+|     exp(alpha_a_HER .* F_C_mol .* eta_HER ./ ...
+|         (R_J_molK .* T_Fe)) ...
+|     - exp(-alpha_c_HER .* F_C_mol .* eta_HER ./ ...
+|         (R_J_molK .* T_Fe)) ...
+| );
+| '''
+| 
+| This is an effective one-electron-transfer kinetic parameterization. The two-electron stoichiometry SHALL still be used for H2 inventory.
+<<<
+COMMENT: Classification: conservation law
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS003.4
+- TYPE: File
+  VALUE: components/electrochemistry/ironair_HER_model.m
+- TYPE: File
+  VALUE: tests/test_equations_electrochemistry.m
+
+[REQUIREMENT]
+UID: HER-003
+TITLE: Hydrogen generation
+STATEMENT: >>>
+| Requirement: SRS003.4
+| 
+| '''matlab
+| dn_H2_generation_dt = ...
+|     -I_HER ./ (2 .* F_C_mol);
+| '''
+| 
+| Applies to the cathodic HER branch where 'I_HER <= 0'.
+<<<
+COMMENT: Classification: conservation law
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS003.4
+- TYPE: File
+  VALUE: components/electrochemistry/ironair_HER_model.m
+- TYPE: File
+  VALUE: tests/test_equations_electrochemistry.m
+
+[REQUIREMENT]
+UID: HER-004
+TITLE: Charging Faradaic efficiency
+STATEMENT: >>>
+| Requirement: SRS003.4
+| 
+| '''matlab
+| eta_F_charge = ...
+|     abs(I_Fe_reduction) ./ ...
+|     (abs(I_Fe_reduction) + abs(I_HER));
+| '''
+| 
+| Include additional charging parasitic currents when enabled.
+| 
+| The implementation SHALL avoid division by zero during idle operation.
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS003.4
+- TYPE: File
+  VALUE: components/electrochemistry/ironair_HER_model.m
+- TYPE: File
+  VALUE: tests/test_equations_electrochemistry.m
+
+[REQUIREMENT]
+UID: HER-005
+TITLE: Hydrogen gas inventory
+STATEMENT: >>>
+| Requirements: SRS003.4, SRS009
+| 
+| '''matlab
+| dn_H2_gas_dt = ...
+|     dn_H2_generation_dt ...
+|     - n_dot_H2_vent ...
+|     - n_dot_H2_dissolution;
+| '''
+| 
+| ---
+| 
+| # SECTION 3: AIR ELECTRODE
+| 
+| MATLAB file:
+| 'components/electrochemistry/ironair_air_electrode_ode.m'
+| 
+| Related requirements:
+| SRS004, SRS004.1, SRS004.2, SRS004.3, SRS004.4.
+<<<
+COMMENT: Classification: conservation law
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS003.4
+- TYPE: Parent
+  VALUE: SRS009
+- TYPE: Parent
+  VALUE: SRS004
+- TYPE: Parent
+  VALUE: SRS004.1
+- TYPE: Parent
+  VALUE: SRS004.2
+- TYPE: Parent
+  VALUE: SRS004.3
+- TYPE: Parent
+  VALUE: SRS004.4
+- TYPE: File
+  VALUE: components/electrochemistry/ironair_HER_model.m
+- TYPE: File
+  VALUE: tests/test_equations_electrochemistry.m
+
+[REQUIREMENT]
+UID: AIR-001
+TITLE: Oxygen reduction reaction
+STATEMENT: >>>
+| Requirement: SRS004.1
+| 
+| '''text
+| O2 + 2H2O + 4e_minus -> 4OH_minus
+| '''
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS004.1
+- TYPE: File
+  VALUE: components/electrochemistry/ironair_air_electrode_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_electrochemistry.m
+
+[REQUIREMENT]
+UID: AIR-002
+TITLE: Oxygen evolution reaction
+STATEMENT: >>>
+| Requirement: SRS004.2
+| 
+| '''text
+| 4OH_minus -> O2 + 2H2O + 4e_minus
+| '''
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS004.2
+- TYPE: File
+  VALUE: components/electrochemistry/ironair_air_electrode_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_electrochemistry.m
+
+[REQUIREMENT]
+UID: AIR-003
+TITLE: Air electrode equilibrium potential
+STATEMENT: >>>
+| Requirements: SRS004.1, SRS004.2, SRS019
+| 
+| '''matlab
+| e_O2_eq = e_O2_std + ...
+|     (R_J_molK .* T_air ./ (4 .* F_C_mol)) .* ...
+|     log((a_O2 .* a_H2O.^2) ./ a_OH.^4);
+| '''
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS004.1
+- TYPE: Parent
+  VALUE: SRS004.2
+- TYPE: Parent
+  VALUE: SRS019
+- TYPE: File
+  VALUE: components/electrochemistry/ironair_air_electrode_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_electrochemistry.m
+
+[REQUIREMENT]
+UID: AIR-004
+TITLE: Oxygen reduction kinetics
+STATEMENT: >>>
+| Requirement: SRS004.1
+| 
+| '''matlab
+| j_ORR = j_0_ORR .* ( ...
+|     exp(alpha_a_ORR .* n_eff_ORR .* F_C_mol .* ...
+|         eta_ORR ./ (R_J_molK .* T_air)) ...
+|     - exp(-alpha_c_ORR .* n_eff_ORR .* F_C_mol .* ...
+|         eta_ORR ./ (R_J_molK .* T_air)) ...
+| );
+| '''
+| 
+| The physical implementation SHALL isolate the cathodic ORR partial current, rather than count an anodic branch as ORR when a separate OER model is enabled.
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS004.1
+- TYPE: File
+  VALUE: components/electrochemistry/ironair_air_electrode_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_electrochemistry.m
+
+[REQUIREMENT]
+UID: AIR-005
+TITLE: Oxygen evolution kinetics
+STATEMENT: >>>
+| Requirement: SRS004.2
+| 
+| '''matlab
+| j_OER = j_0_OER .* ( ...
+|     exp(alpha_a_OER .* n_eff_OER .* F_C_mol .* ...
+|         eta_OER ./ (R_J_molK .* T_air)) ...
+|     - exp(-alpha_c_OER .* n_eff_OER .* F_C_mol .* ...
+|         eta_OER ./ (R_J_molK .* T_air)) ...
+| );
+| '''
+| 
+| ORR and OER SHALL have independently configurable kinetic parameters.
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS004.2
+- TYPE: File
+  VALUE: components/electrochemistry/ironair_air_electrode_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_electrochemistry.m
+
+[REQUIREMENT]
+UID: AIR-006
+TITLE: Oxygen reduction consumption
+STATEMENT: >>>
+| Requirement: SRS004.1
+| 
+| '''matlab
+| n_dot_O2_ORR = ...
+|     -I_ORR ./ (4 .* F_C_mol);
+| '''
+| 
+| Defined as a positive consumption rate when 'I_ORR < 0'.
+<<<
+COMMENT: Classification: conservation law
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS004.1
+- TYPE: File
+  VALUE: components/electrochemistry/ironair_air_electrode_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_electrochemistry.m
+
+[REQUIREMENT]
+UID: AIR-007
+TITLE: Oxygen evolution production
+STATEMENT: >>>
+| Requirement: SRS004.2
+| 
+| '''matlab
+| n_dot_O2_OER = ...
+|     I_OER ./ (4 .* F_C_mol);
+| '''
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS004.2
+- TYPE: File
+  VALUE: components/electrochemistry/ironair_air_electrode_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_electrochemistry.m
+
+[REQUIREMENT]
+UID: AIR-008
+TITLE: Oxygen diffusion limiting current density
+STATEMENT: >>>
+| Requirement: SRS004.4
+| 
+| '''matlab
+| j_lim_O2 = ...
+|     4 .* F_C_mol .* D_O2_eff .* ...
+|     c_O2_bulk ./ delta_diffusion;
+| '''
+| 
+| 'j_lim_O2' is the positive magnitude of the limiting current density.
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS004.4
+- TYPE: File
+  VALUE: components/electrochemistry/ironair_air_electrode_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_electrochemistry.m
+
+[REQUIREMENT]
+UID: AIR-009
+TITLE: Concentration polarization
+STATEMENT: >>>
+| Requirement: SRS004.4
+| 
+| '''matlab
+| eta_conc_ORR_abs = ...
+|     -(R_J_molK .* T_air ./ (4 .* F_C_mol)) .* ...
+|     log(1 - abs(j_ORR) ./ j_lim_O2);
+| '''
+| 
+| This reduced-order expression SHALL only be evaluated inside its physical domain.
+| 
+| The detailed model SHALL preferably derive concentration polarization from resolved local oxygen activity.
+| 
+| ---
+| 
+| # SECTION 4: GAS DIFFUSION LAYER
+| 
+| MATLAB file:
+| 'components/air/ironair_gas_diffusion_layer.m'
+| 
+| Related requirements:
+| SRS004.4, SRS006.
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS004.4
+- TYPE: Parent
+  VALUE: SRS006
+- TYPE: File
+  VALUE: components/electrochemistry/ironair_air_electrode_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_electrochemistry.m
+
+[REQUIREMENT]
+UID: GDL-001
+TITLE: Fickian oxygen diffusion
+STATEMENT: >>>
+| Requirement: SRS006
+| 
+| '''matlab
+| N_O2 = -D_O2_eff .* grad_c_O2;
+| '''
+| 
+| 'grad_c_O2' represents the spatial concentration gradient.
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS006
+- TYPE: File
+  VALUE: components/air/ironair_gas_diffusion_layer.m
+- TYPE: File
+  VALUE: tests/test_equations_electrochemistry.m
+
+[REQUIREMENT]
+UID: GDL-002
+TITLE: Effective oxygen diffusivity
+STATEMENT: >>>
+| Requirement: SRS006
+| 
+| '''matlab
+| D_O2_eff = ...
+|     D_O2_bulk .* epsilon_g ./ tau_g;
+| '''
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS006
+- TYPE: File
+  VALUE: components/air/ironair_gas_diffusion_layer.m
+- TYPE: File
+  VALUE: tests/test_equations_electrochemistry.m
+
+[REQUIREMENT]
+UID: GDL-003
+TITLE: Transient oxygen concentration
+STATEMENT: >>>
+| Requirement: SRS006
+| 
+| '''matlab
+| dc_O2_dt = ...
+|     divergence_D_grad_c_O2 - R_O2;
+| '''
+| 
+| Where:
+| 
+| '''matlab
+| divergence_D_grad_c_O2 = ...
+|     div(D_O2_eff .* grad_c_O2);
+| '''
+| 
+| 'div' is conceptual notation here. Cursor SHALL implement the spatial divergence using a base-MATLAB finite-volume or finite-difference operator, not assume a built-in 'div' function provides the required discretized transport solver.
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS006
+- TYPE: File
+  VALUE: components/air/ironair_gas_diffusion_layer.m
+- TYPE: File
+  VALUE: tests/test_equations_electrochemistry.m
+
+[REQUIREMENT]
+UID: GDL-004
+TITLE: Gas-liquid capillary pressure
+STATEMENT: >>>
+| Requirement: SRS006
+| 
+| '''matlab
+| p_capillary = p_gas - p_liquid;
+| '''
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS006
+- TYPE: File
+  VALUE: components/air/ironair_gas_diffusion_layer.m
+- TYPE: File
+  VALUE: tests/test_equations_electrochemistry.m
+
+[REQUIREMENT]
+UID: GDL-005
+TITLE: Representative pore capillary pressure
+STATEMENT: >>>
+| Requirement: SRS006
+| 
+| '''matlab
+| p_capillary = ...
+|     2 .* gamma_surface .* cos(theta_contact) ./ r_pore;
+| '''
+| 
+| Wetting and curvature sign conventions SHALL be explicitly documented.
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS006
+- TYPE: File
+  VALUE: components/air/ironair_gas_diffusion_layer.m
+- TYPE: File
+  VALUE: tests/test_equations_electrochemistry.m
+
+[REQUIREMENT]
+UID: GDL-006
+TITLE: Saturation-dependent diffusivity
+STATEMENT: >>>
+| Requirement: SRS006
+| 
+| '''matlab
+| D_O2_eff = ...
+|     D_O2_bulk .* epsilon_g_S ./ tau_g_S;
+| '''
+| 
+| Both porosity and tortuosity SHALL depend on liquid saturation when the flooding model is enabled.
+| 
+| ---
+| 
+| # SECTION 5: ELECTROLYTE
+| 
+| MATLAB file:
+| 'components/electrolyte/ironair_electrolyte_ode.m'
+| 
+| Related requirements:
+| SRS005, SRS005.1, SRS005.2, SRS005.3, SRS005.4.
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS006
+- TYPE: Parent
+  VALUE: SRS005
+- TYPE: Parent
+  VALUE: SRS005.1
+- TYPE: Parent
+  VALUE: SRS005.2
+- TYPE: Parent
+  VALUE: SRS005.3
+- TYPE: Parent
+  VALUE: SRS005.4
+- TYPE: File
+  VALUE: components/air/ironair_gas_diffusion_layer.m
+- TYPE: File
+  VALUE: tests/test_equations_electrochemistry.m
+
+[REQUIREMENT]
+UID: ELY-001
+TITLE: Nernst-Planck species flux
+STATEMENT: >>>
+| Requirement: SRS005.1
+| 
+| '''matlab
+| N_i = ...
+|     -D_i .* grad_c_i ...
+|     -z_i .* D_i .* F_C_mol ./ ...
+|         (R_J_molK .* T_electrolyte) .* ...
+|         c_i .* grad_phi_l ...
+|     +c_i .* v_electrolyte;
+| '''
+| 
+| This dilute-solution form SHALL only be used within its assumed validity. Concentrated KOH requires a suitable concentrated-solution transport model.
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS005.1
+- TYPE: File
+  VALUE: components/electrolyte/ironair_electrolyte_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_electrochemistry.m
+
+[REQUIREMENT]
+UID: ELY-002
+TITLE: Species conservation
+STATEMENT: >>>
+| Requirement: SRS005.1
+| 
+| '''matlab
+| dc_i_dt = -div_N_i + R_i;
+| '''
+| 
+| 'div_N_i' SHALL be calculated by an explicitly implemented spatial discretization.
+<<<
+COMMENT: Classification: conservation law
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS005.1
+- TYPE: File
+  VALUE: components/electrolyte/ironair_electrolyte_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_electrochemistry.m
+
+[REQUIREMENT]
+UID: ELY-003
+TITLE: Electroneutrality
+STATEMENT: >>>
+| Requirement: SRS005.1
+| 
+| '''matlab
+| e_electroneutrality = sum(z_i .* c_i);
+| '''
+| 
+| Constraint:
+| 
+| '''matlab
+| e_electroneutrality = 0;
+| '''
+| 
+| The actual implementation SHALL enforce this constraint using an appropriate algebraic formulation.
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS005.1
+- TYPE: File
+  VALUE: components/electrolyte/ironair_electrolyte_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_electrochemistry.m
+
+[REQUIREMENT]
+UID: ELY-004
+TITLE: Ionic current density
+STATEMENT: >>>
+| Requirement: SRS005.1
+| 
+| '''matlab
+| i_electrolyte = ...
+|     F_C_mol .* sum(z_i .* N_i);
+| '''
+| 
+| For vector fluxes, the summation SHALL operate over species, preserving spatial vector components.
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS005.1
+- TYPE: File
+  VALUE: components/electrolyte/ironair_electrolyte_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_electrochemistry.m
+
+[REQUIREMENT]
+UID: ELY-005
+TITLE: Ionic charge conservation
+STATEMENT: >>>
+| Requirement: SRS005.1
+| 
+| '''matlab
+| div_i_electrolyte = a_s .* j_F;
+| '''
+<<<
+COMMENT: Classification: conservation law
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS005.1
+- TYPE: File
+  VALUE: components/electrolyte/ironair_electrolyte_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_electrochemistry.m
+
+[REQUIREMENT]
+UID: ELY-006
+TITLE: KOH conductivity
+STATEMENT: >>>
+| Requirement: SRS005.3
+| 
+| '''matlab
+| kappa_KOH = ironair_KOH_conductivity( ...
+|     c_KOH, T_electrolyte, p);
+| '''
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS005.3
+- TYPE: File
+  VALUE: components/electrolyte/ironair_electrolyte_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_electrochemistry.m
+
+[REQUIREMENT]
+UID: ELY-007
+TITLE: Electrolyte resistance
+STATEMENT: >>>
+| Requirement: SRS005.3
+| 
+| '''matlab
+| R_electrolyte = ...
+|     L_electrolyte ./ ...
+|     (kappa_KOH_eff .* A_electrolyte);
+| '''
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS005.3
+- TYPE: File
+  VALUE: components/electrolyte/ironair_electrolyte_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_electrochemistry.m
+
+[REQUIREMENT]
+UID: ELY-008
+TITLE: Potassium inventory
+STATEMENT: >>>
+| Requirement: SRS005.1
+| 
+| '''matlab
+| dn_K_dt = ...
+|     n_dot_K_in - n_dot_K_out;
+| '''
+| 
+| The full system SHALL include potassium in every participating species inventory.
+<<<
+COMMENT: Classification: conservation law
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS005.1
+- TYPE: File
+  VALUE: components/electrolyte/ironair_electrolyte_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_electrochemistry.m
+
+[REQUIREMENT]
+UID: ELY-009
+TITLE: Carbonation reaction
+STATEMENT: >>>
+| Requirement: SRS005.2
+| 
+| '''text
+| CO2 + 2OH_minus -> CO3_2minus + H2O
+| '''
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS005.2
+- TYPE: File
+  VALUE: components/electrolyte/ironair_electrolyte_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_electrochemistry.m
+
+[REQUIREMENT]
+UID: ELY-010
+TITLE: Carbonation reaction rate
+STATEMENT: >>>
+| Requirement: SRS005.2
+| 
+| '''matlab
+| r_carbonation = ...
+|     k_carbonation .* c_CO2 .* c_OH.^m_carbonation;
+| '''
+| 
+| This is an empirical kinetic approximation requiring experimental or literature-based calibration.
+<<<
+COMMENT: Classification: empirical approximation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS005.2
+- TYPE: File
+  VALUE: components/electrolyte/ironair_electrolyte_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_electrochemistry.m
+
+[REQUIREMENT]
+UID: ELY-011
+TITLE: Water inventory
+STATEMENT: >>>
+| Requirement: SRS005.4
+| 
+| '''matlab
+| dn_H2O_dt = ...
+|     sum(nu_H2O .* r_reactions) ...
+|     + n_dot_H2O_in ...
+|     - n_dot_H2O_out;
+| '''
+<<<
+COMMENT: Classification: conservation law
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS005.4
+- TYPE: File
+  VALUE: components/electrolyte/ironair_electrolyte_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_electrochemistry.m
+
+[REQUIREMENT]
+UID: ELY-012
+TITLE: Electrolyte density
+STATEMENT: >>>
+| Requirement: SRS005.3
+| 
+| '''matlab
+| rho_KOH = ironair_KOH_density( ...
+|     c_KOH, T_electrolyte, p);
+| '''
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS005.3
+- TYPE: File
+  VALUE: components/electrolyte/ironair_electrolyte_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_electrochemistry.m
+
+[REQUIREMENT]
+UID: ELY-013
+TITLE: Electrolyte viscosity
+STATEMENT: >>>
+| Requirement: SRS005.3
+| 
+| '''matlab
+| mu_KOH = ironair_KOH_viscosity( ...
+|     c_KOH, T_electrolyte, p);
+| '''
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS005.3
+- TYPE: File
+  VALUE: components/electrolyte/ironair_electrolyte_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_electrochemistry.m
+
+[REQUIREMENT]
+UID: ELY-014
+TITLE: Dissolved oxygen equilibrium concentration
+STATEMENT: >>>
+| Requirement: SRS005.3
+| 
+| '''matlab
+| c_O2_eq = ...
+|     H_O2_solubility .* p_O2;
+| '''
+| 
+| 'H_O2_solubility' SHALL use mol/(m3 Pa).
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS005.3
+- TYPE: File
+  VALUE: components/electrolyte/ironair_electrolyte_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_electrochemistry.m
+
+[REQUIREMENT]
+UID: ELY-015
+TITLE: Gas-liquid oxygen mass transfer
+STATEMENT: >>>
+| Requirement: SRS005.1
+| 
+| '''matlab
+| n_dot_O2_transfer = ...
+|     k_L_a .* V_electrolyte .* ...
+|     (c_O2_eq - c_O2);
+| '''
+| 
+| ---
+| 
+| # SECTION 6: SEPARATOR
+| 
+| MATLAB file:
+| 'components/separator/ironair_separator_model.m'
+| 
+| Related requirements:
+| SRS006, SRS007.
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS005.1
+- TYPE: Parent
+  VALUE: SRS006
+- TYPE: Parent
+  VALUE: SRS007
+- TYPE: File
+  VALUE: components/electrolyte/ironair_electrolyte_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_electrochemistry.m
+
+[REQUIREMENT]
+UID: SEP-001
+TITLE: Separator ionic resistance
+STATEMENT: >>>
+| Requirement: SRS006
+| 
+| '''matlab
+| R_separator = ...
+|     L_separator ./ ...
+|     (kappa_separator_eff .* A_separator);
+| '''
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS006
+- TYPE: File
+  VALUE: components/separator/ironair_separator_model.m
+- TYPE: File
+  VALUE: tests/test_equations_electrochemistry.m
+
+[REQUIREMENT]
+UID: SEP-002
+TITLE: Effective separator conductivity
+STATEMENT: >>>
+| Requirement: SRS006
+| 
+| '''matlab
+| kappa_separator_eff = ...
+|     kappa_electrolyte .* ...
+|     epsilon_separator ./ tau_separator;
+| '''
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS006
+- TYPE: File
+  VALUE: components/separator/ironair_separator_model.m
+- TYPE: File
+  VALUE: tests/test_equations_electrochemistry.m
+
+[REQUIREMENT]
+UID: SEP-003
+TITLE: Separator diffusion crossover
+STATEMENT: >>>
+| Requirement: SRS006
+| 
+| '''matlab
+| J_i_separator = ...
+|     -D_i_separator_eff .* ...
+|     (c_i_side2 - c_i_side1) ./ ...
+|     L_separator;
+| '''
+| 
+| Charged-species migration SHALL be added where significant.
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS006
+- TYPE: File
+  VALUE: components/separator/ironair_separator_model.m
+- TYPE: File
+  VALUE: tests/test_equations_electrochemistry.m
+
+[REQUIREMENT]
+UID: SEP-004
+TITLE: Separator thermal conduction
+STATEMENT: >>>
+| Requirement: SRS006
+| 
+| '''matlab
+| Q_dot_separator = ...
+|     k_separator .* A_separator ./ ...
+|     L_separator .* (T_side1 - T_side2);
+| '''
+| 
+| ---
+| 
+| # SECTION 7: ELECTRICAL CURRENT COLLECTORS
+| 
+| MATLAB file:
+| 'components/electrical/ironair_current_collector.m'
+| 
+| Related requirements:
+| SRS007, SRS011, SRS012.
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS006
+- TYPE: Parent
+  VALUE: SRS007
+- TYPE: Parent
+  VALUE: SRS011
+- TYPE: Parent
+  VALUE: SRS012
+- TYPE: File
+  VALUE: components/separator/ironair_separator_model.m
+- TYPE: File
+  VALUE: tests/test_equations_electrochemistry.m
+
+[REQUIREMENT]
+UID: COL-001
+TITLE: Current collector resistance
+STATEMENT: >>>
+| Requirement: SRS007
+| 
+| '''matlab
+| R_collector = ...
+|     rho_e_collector .* L_collector ./ A_collector;
+| '''
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS007
+- TYPE: File
+  VALUE: components/electrical/ironair_current_collector.m
+- TYPE: File
+  VALUE: tests/test_equations_electrochemistry.m
+
+[REQUIREMENT]
+UID: COL-002
+TITLE: Current collector voltage drop
+STATEMENT: >>>
+| Requirement: SRS007
+| 
+| '''matlab
+| V_drop_collector = ...
+|     I_collector .* R_collector;
+| '''
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS007
+- TYPE: File
+  VALUE: components/electrical/ironair_current_collector.m
+- TYPE: File
+  VALUE: tests/test_equations_electrochemistry.m
+
+[REQUIREMENT]
+UID: COL-003
+TITLE: Current collector Joule heating
+STATEMENT: >>>
+| Requirements: SRS007, SRS008
+| 
+| '''matlab
+| Q_dot_collector = ...
+|     I_collector.^2 .* R_collector;
+| '''
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS007
+- TYPE: Parent
+  VALUE: SRS008
+- TYPE: File
+  VALUE: components/electrical/ironair_current_collector.m
+- TYPE: File
+  VALUE: tests/test_equations_electrochemistry.m
+
+[REQUIREMENT]
+UID: COL-004
+TITLE: Temperature-dependent resistance
+STATEMENT: >>>
+| Requirement: SRS007
+| 
+| '''matlab
+| R_collector_T = ...
+|     R_collector_ref .* ...
+|     (1 + alpha_R .* ...
+|     (T_collector - T_ref_K));
+| '''
+| 
+| This is a first-order local material-property approximation.
+| 
+| ---
+| 
+| # SECTION 8: COMPLETE ELECTROCHEMICAL CELL
+| 
+| MATLAB file:
+| 'components/cell/ironair_cell_model.m'
+| 
+| Related requirements:
+| SRS007, SRS007.1, SRS007.2, SRS007.3, SRS007.4.
+<<<
+COMMENT: Classification: empirical approximation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS007
+- TYPE: Parent
+  VALUE: SRS007.1
+- TYPE: Parent
+  VALUE: SRS007.2
+- TYPE: Parent
+  VALUE: SRS007.3
+- TYPE: Parent
+  VALUE: SRS007.4
+- TYPE: File
+  VALUE: components/electrical/ironair_current_collector.m
+- TYPE: File
+  VALUE: tests/test_equations_electrochemistry.m
+
+[REQUIREMENT]
+UID: CELL-001
+TITLE: Equilibrium cell voltage
+STATEMENT: >>>
+| Requirement: SRS007.1
+| 
+| '''matlab
+| e_cell_eq = e_air_eq - e_Fe_eq;
+| '''
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS007.1
+- TYPE: File
+  VALUE: components/cell/ironair_cell_model.m
+- TYPE: File
+  VALUE: tests/test_equations_electrochemistry.m
+
+[REQUIREMENT]
+UID: CELL-002
+TITLE: Cell terminal voltage
+STATEMENT: >>>
+| Requirement: SRS007.1
+| 
+| '''matlab
+| V_cell = ...
+|     e_cell_eq ...
+|     - eta_loss_kin ...
+|     - eta_loss_conc ...
+|     - I_cell .* R_ohmic;
+| '''
+| 
+| 'eta_loss_kin' and 'eta_loss_conc' SHALL be signed consistently with discharge-positive current.
+| 
+| The detailed implementation SHALL calculate voltage from electrode solid-phase potentials and electrical contact losses.
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS007.1
+- TYPE: File
+  VALUE: components/cell/ironair_cell_model.m
+- TYPE: File
+  VALUE: tests/test_equations_electrochemistry.m
+
+[REQUIREMENT]
+UID: CELL-003
+TITLE: Cell electrical power
+STATEMENT: >>>
+| Requirement: SRS007.1
+| 
+| '''matlab
+| P_cell = V_cell .* I_cell;
+| '''
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS007.1
+- TYPE: File
+  VALUE: components/cell/ironair_cell_model.m
+- TYPE: File
+  VALUE: tests/test_equations_electrochemistry.m
+
+[REQUIREMENT]
+UID: CELL-004
+TITLE: Absolute charge throughput
+STATEMENT: >>>
+| Requirement: SRS007.2
+| 
+| '''matlab
+| dQ_throughput_dt = abs(I_cell);
+| '''
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS007.2
+- TYPE: File
+  VALUE: components/cell/ironair_cell_model.m
+- TYPE: File
+  VALUE: tests/test_equations_electrochemistry.m
+
+[REQUIREMENT]
+UID: CELL-005
+TITLE: Iron theoretical capacity
+STATEMENT: >>>
+| Requirement: SRS007.2
+| 
+| '''matlab
+| Q_Fe_theoretical_C = ...
+|     2 .* F_C_mol .* n_Fe_total;
+| 
+| Q_Fe_theoretical_Ah = ...
+|     Q_Fe_theoretical_C ./ 3600;
+| '''
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS007.2
+- TYPE: File
+  VALUE: components/cell/ironair_cell_model.m
+- TYPE: File
+  VALUE: tests/test_equations_electrochemistry.m
+
+[REQUIREMENT]
+UID: CELL-006
+TITLE: Chemical-inventory SOC
+STATEMENT: >>>
+| Requirement: SRS007.2
+| 
+| '''matlab
+| SOC = ...
+|     n_Fe_available ./ n_Fe_usable_total;
+| '''
+| 
+| This simplified formula applies to the primary Fe/FeOH2 conversion model.
+<<<
+COMMENT: Classification: conservation law
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS007.2
+- TYPE: File
+  VALUE: components/cell/ironair_cell_model.m
+- TYPE: File
+  VALUE: tests/test_equations_electrochemistry.m
+
+[REQUIREMENT]
+UID: CELL-007
+TITLE: Coulombic efficiency
+STATEMENT: >>>
+| Requirement: SRS007.2
+| 
+| '''matlab
+| eta_C = ...
+|     Q_discharge_C ./ Q_charge_C;
+| '''
+| 
+| The charge totals SHALL correspond to a defined matched cycle.
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS007.2
+- TYPE: File
+  VALUE: components/cell/ironair_cell_model.m
+- TYPE: File
+  VALUE: tests/test_equations_electrochemistry.m
+
+[REQUIREMENT]
+UID: CELL-008
+TITLE: Energy efficiency
+STATEMENT: >>>
+| Requirement: SRS007.2
+| 
+| '''matlab
+| eta_E = ...
+|     E_discharge_J ./ E_charge_J;
+| '''
+| 
+| Where:
+| 
+| '''matlab
+| E_discharge_J = ...
+|     trapz(t_discharge, P_discharge_positive);
+| 
+| E_charge_J = ...
+|     trapz(t_charge, P_charge_positive);
+| '''
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS007.2
+- TYPE: File
+  VALUE: components/cell/ironair_cell_model.m
+- TYPE: File
+  VALUE: tests/test_equations_electrochemistry.m
+
+[REQUIREMENT]
+UID: CELL-009
+TITLE: Double-layer capacitance dynamics
+STATEMENT: >>>
+| Requirement: SRS007.4
+| 
+| '''matlab
+| deta_dl_dt = ...
+|     (I_interface - I_Faradaic) ./ C_dl;
+| '''
+| 
+| This expression applies directly only under fixed equilibrium potential or the corresponding transformed state convention.
+| 
+| When equilibrium potential varies:
+| 
+| '''matlab
+| deta_dl_dt = ...
+|     dphi_interface_dt - de_eq_dt;
+| '''
+| 
+| The complete implementation SHALL account for changing equilibrium potential.
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS007.4
+- TYPE: File
+  VALUE: components/cell/ironair_cell_model.m
+- TYPE: File
+  VALUE: tests/test_equations_electrochemistry.m
+
+[REQUIREMENT]
+UID: CELL-010
+TITLE: Total ohmic resistance
+STATEMENT: >>>
+| Requirement: SRS007.1
+| 
+| '''matlab
+| R_ohmic = ...
+|     R_iron ...
+|     + R_electrolyte ...
+|     + R_separator ...
+|     + R_collectors ...
+|     + R_contacts;
+| '''
+| 
+| ---
+| 
+| # SECTION 9: THERMAL SUBSYSTEM
+| 
+| MATLAB file:
+| 'components/thermal/ironair_thermal_ode.m'
+| 
+| Related requirements:
+| SRS008, SRS019, SRS023.
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS007.1
+- TYPE: Parent
+  VALUE: SRS008
+- TYPE: Parent
+  VALUE: SRS019
+- TYPE: Parent
+  VALUE: SRS023
+- TYPE: File
+  VALUE: components/cell/ironair_cell_model.m
+- TYPE: File
+  VALUE: tests/test_equations_electrochemistry.m
+
+[REQUIREMENT]
+UID: THM-001
+TITLE: Lumped thermal balance
+STATEMENT: >>>
+| Requirement: SRS008
+| 
+| '''matlab
+| dT_dt = ...
+|     (Q_dot_generation ...
+|     + Q_dot_in ...
+|     - Q_dot_out) ./ ...
+|     (m_thermal .* cp_thermal);
+| '''
+<<<
+COMMENT: Classification: conservation law
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS008
+- TYPE: File
+  VALUE: components/thermal/ironair_thermal_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_balance_of_plant.m
+
+[REQUIREMENT]
+UID: THM-002
+TITLE: Ohmic heating
+STATEMENT: >>>
+| Requirement: SRS008
+| 
+| '''matlab
+| Q_dot_ohmic = ...
+|     I_cell.^2 .* R_ohmic;
+| '''
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS008
+- TYPE: File
+  VALUE: components/thermal/ironair_thermal_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_balance_of_plant.m
+
+[REQUIREMENT]
+UID: THM-003
+TITLE: Irreversible activation heating
+STATEMENT: >>>
+| Requirement: SRS008
+| 
+| '''matlab
+| Q_dot_activation = ...
+|     sum(A_reaction .* j_reaction .* eta_reaction);
+| '''
+| 
+| Use consistent reaction-current and overpotential signs.
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS008
+- TYPE: File
+  VALUE: components/thermal/ironair_thermal_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_balance_of_plant.m
+
+[REQUIREMENT]
+UID: THM-004
+TITLE: Reversible electrochemical heat
+STATEMENT: >>>
+| Requirements: SRS008, SRS019
+| 
+| '''matlab
+| Q_dot_reversible = ...
+|     -I_cell .* T_cell .* de_cell_eq_dT;
+| '''
+| 
+| The derivative SHALL be evaluated with the selected thermodynamic constraints.
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS008
+- TYPE: Parent
+  VALUE: SRS019
+- TYPE: File
+  VALUE: components/thermal/ironair_thermal_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_balance_of_plant.m
+
+[REQUIREMENT]
+UID: THM-005
+TITLE: Conductive heat transfer
+STATEMENT: >>>
+| Requirement: SRS008
+| 
+| '''matlab
+| Q_dot_conduction = ...
+|     k_thermal .* A_thermal ./ L_thermal .* ...
+|     (T_node1 - T_node2);
+| '''
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS008
+- TYPE: File
+  VALUE: components/thermal/ironair_thermal_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_balance_of_plant.m
+
+[REQUIREMENT]
+UID: THM-006
+TITLE: Convective heat transfer
+STATEMENT: >>>
+| Requirement: SRS008
+| 
+| '''matlab
+| Q_dot_convection = ...
+|     h_conv .* A_surface .* ...
+|     (T_surface - T_fluid);
+| '''
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS008
+- TYPE: File
+  VALUE: components/thermal/ironair_thermal_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_balance_of_plant.m
+
+[REQUIREMENT]
+UID: THM-007
+TITLE: Radiative heat transfer
+STATEMENT: >>>
+| Requirement: SRS008
+| 
+| '''matlab
+| Q_dot_radiation = ...
+|     epsilon_radiation .* sigma_SB .* ...
+|     A_radiation .* ...
+|     (T_surface.^4 - T_surroundings.^4);
+| '''
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS008
+- TYPE: File
+  VALUE: components/thermal/ironair_thermal_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_balance_of_plant.m
+
+[REQUIREMENT]
+UID: THM-008
+TITLE: Coolant heat removal
+STATEMENT: >>>
+| Requirement: SRS008
+| 
+| '''matlab
+| Q_dot_coolant = ...
+|     m_dot_coolant .* cp_coolant .* ...
+|     (T_coolant_out - T_coolant_in);
+| '''
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS008
+- TYPE: File
+  VALUE: components/thermal/ironair_thermal_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_balance_of_plant.m
+
+[REQUIREMENT]
+UID: THM-009
+TITLE: Multinode thermal network
+STATEMENT: >>>
+| Requirement: SRS008
+| 
+| For thermal node 'i':
+| 
+| '''matlab
+| dT_node_i_dt = ...
+|     (Q_dot_generation_i ...
+|     + sum(G_thermal_ij .* ...
+|         (T_node_j - T_node_i)) ...
+|     + Q_dot_flow_i) ./ C_thermal_i;
+| '''
+| 
+| ---
+| 
+| # SECTION 10: AIR MANAGEMENT SYSTEM
+| 
+| MATLAB file:
+| 'components/air/ironair_air_system_ode.m'
+| 
+| Related requirements:
+| SRS009, SRS004.4, SRS008.
+<<<
+COMMENT: Classification: conservation law
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS008
+- TYPE: Parent
+  VALUE: SRS009
+- TYPE: Parent
+  VALUE: SRS004.4
+- TYPE: File
+  VALUE: components/thermal/ironair_thermal_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_balance_of_plant.m
+
+[REQUIREMENT]
+UID: AIRSYS-001
+TITLE: Ideal gas law
+STATEMENT: >>>
+| Requirement: SRS009
+| 
+| '''matlab
+| p_gas .* V_gas = ...
+|     n_gas .* R_J_molK .* T_gas;
+| '''
+| 
+| Implementation SHALL use this as a constitutive or algebraic relationship rather than an assignment to an expression.
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS009
+- TYPE: File
+  VALUE: components/air/ironair_air_system_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_balance_of_plant.m
+
+[REQUIREMENT]
+UID: AIRSYS-002
+TITLE: Oxygen partial pressure
+STATEMENT: >>>
+| Requirement: SRS009
+| 
+| '''matlab
+| p_dry_air = p_total - p_H2O;
+| 
+| p_O2 = x_O2_dry .* p_dry_air;
+| '''
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS009
+- TYPE: File
+  VALUE: components/air/ironair_air_system_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_balance_of_plant.m
+
+[REQUIREMENT]
+UID: AIRSYS-003
+TITLE: Oxygen molar inflow
+STATEMENT: >>>
+| Requirement: SRS009
+| 
+| '''matlab
+| n_dot_O2_in = ...
+|     x_O2_in .* n_dot_dry_air_in;
+| '''
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS009
+- TYPE: File
+  VALUE: components/air/ironair_air_system_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_balance_of_plant.m
+
+[REQUIREMENT]
+UID: AIRSYS-004
+TITLE: Gas phase oxygen inventory
+STATEMENT: >>>
+| Requirement: SRS009
+| 
+| '''matlab
+| dn_O2_gas_dt = ...
+|     n_dot_O2_in ...
+|     - n_dot_O2_out ...
+|     - n_dot_O2_ORR ...
+|     + n_dot_O2_OER;
+| '''
+| 
+| Gas-liquid oxygen transfer SHALL be included if the respective phases have separate inventories.
+<<<
+COMMENT: Classification: conservation law
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS009
+- TYPE: File
+  VALUE: components/air/ironair_air_system_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_balance_of_plant.m
+
+[REQUIREMENT]
+UID: AIRSYS-005
+TITLE: Fan shaft power
+STATEMENT: >>>
+| Requirement: SRS009
+| 
+| '''matlab
+| P_fan_shaft = ...
+|     delta_p_fan .* V_dot_air ./ eta_fan;
+| '''
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS009
+- TYPE: File
+  VALUE: components/air/ironair_air_system_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_balance_of_plant.m
+
+[REQUIREMENT]
+UID: AIRSYS-006
+TITLE: Fan electrical power
+STATEMENT: >>>
+| Requirement: SRS009
+| 
+| '''matlab
+| P_fan_electric = ...
+|     P_fan_shaft ./ eta_motor_fan;
+| '''
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS009
+- TYPE: File
+  VALUE: components/air/ironair_air_system_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_balance_of_plant.m
+
+[REQUIREMENT]
+UID: AIRSYS-007
+TITLE: Fan affinity relationships
+STATEMENT: >>>
+| Requirement: SRS009
+| 
+| '''matlab
+| V_dot_air_ratio = N_fan_ratio;
+| 
+| delta_p_fan_ratio = N_fan_ratio.^2;
+| 
+| P_fan_ratio = N_fan_ratio.^3;
+| '''
+| 
+| These are similarity approximations referenced to a compatible baseline fan condition.
+<<<
+COMMENT: Classification: empirical approximation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS009
+- TYPE: File
+  VALUE: components/air/ironair_air_system_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_balance_of_plant.m
+
+[REQUIREMENT]
+UID: AIRSYS-008
+TITLE: Air filter pressure loss
+STATEMENT: >>>
+| Requirement: SRS009
+| 
+| '''matlab
+| delta_p_filter = ...
+|     K_filter_1 .* V_dot_air ...
+|     + K_filter_2 .* V_dot_air.^2;
+| '''
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS009
+- TYPE: File
+  VALUE: components/air/ironair_air_system_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_balance_of_plant.m
+
+[REQUIREMENT]
+UID: AIRSYS-009
+TITLE: Oxygen supply ratio
+STATEMENT: >>>
+| Requirement: SRS009
+| 
+| '''matlab
+| lambda_O2 = ...
+|     n_dot_O2_supplied ./ n_dot_O2_consumed;
+| '''
+| 
+| This SHALL be evaluated only when oxygen consumption exceeds a defined nonzero threshold.
+<<<
+COMMENT: Classification: conservation law
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS009
+- TYPE: File
+  VALUE: components/air/ironair_air_system_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_balance_of_plant.m
+
+[REQUIREMENT]
+UID: AIRSYS-010
+TITLE: Fan dynamic response
+STATEMENT: >>>
+| Requirement: SRS009
+| 
+| '''matlab
+| dN_fan_dt = ...
+|     (N_fan_command - N_fan) ./ tau_fan;
+| '''
+| 
+| ---
+| 
+| # SECTION 11: ELECTROLYTE CIRCULATION
+| 
+| MATLAB file:
+| 'components/fluids/ironair_electrolyte_flow_ode.m'
+| 
+| Related requirements:
+| SRS010, SRS005, SRS008.
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS009
+- TYPE: Parent
+  VALUE: SRS010
+- TYPE: Parent
+  VALUE: SRS005
+- TYPE: Parent
+  VALUE: SRS008
+- TYPE: File
+  VALUE: components/air/ironair_air_system_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_balance_of_plant.m
+
+[REQUIREMENT]
+UID: FLD-001
+TITLE: Reservoir volume balance
+STATEMENT: >>>
+| Requirement: SRS010
+| 
+| '''matlab
+| dV_reservoir_dt = ...
+|     Q_flow_in ...
+|     - Q_flow_out ...
+|     + Q_makeup ...
+|     - Q_leak;
+| '''
+| 
+| Reaction, evaporation, and density-dependent contributions SHALL be added where applicable.
+<<<
+COMMENT: Classification: conservation law
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS010
+- TYPE: File
+  VALUE: components/fluids/ironair_electrolyte_flow_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_balance_of_plant.m
+
+[REQUIREMENT]
+UID: FLD-002
+TITLE: Pump hydraulic power
+STATEMENT: >>>
+| Requirement: SRS010
+| 
+| '''matlab
+| P_pump_hydraulic = ...
+|     delta_p_pump .* Q_pump;
+| '''
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS010
+- TYPE: File
+  VALUE: components/fluids/ironair_electrolyte_flow_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_balance_of_plant.m
+
+[REQUIREMENT]
+UID: FLD-003
+TITLE: Pump electrical power
+STATEMENT: >>>
+| Requirement: SRS010
+| 
+| '''matlab
+| P_pump_electric = ...
+|     delta_p_pump .* Q_pump ./ ...
+|     (eta_pump .* eta_motor_pump);
+| '''
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS010
+- TYPE: File
+  VALUE: components/fluids/ironair_electrolyte_flow_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_balance_of_plant.m
+
+[REQUIREMENT]
+UID: FLD-004
+TITLE: Reynolds number
+STATEMENT: >>>
+| Requirement: SRS010
+| 
+| '''matlab
+| Re_flow = ...
+|     rho_fluid .* v_fluid .* D_hydraulic ./ ...
+|     mu_fluid;
+| '''
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS010
+- TYPE: File
+  VALUE: components/fluids/ironair_electrolyte_flow_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_balance_of_plant.m
+
+[REQUIREMENT]
+UID: FLD-005
+TITLE: Darcy-Weisbach pressure drop
+STATEMENT: >>>
+| Requirement: SRS010
+| 
+| '''matlab
+| delta_p_pipe = ...
+|     f_Darcy .* L_pipe ./ D_hydraulic .* ...
+|     (rho_fluid .* v_fluid.^2 ./ 2);
+| '''
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS010
+- TYPE: File
+  VALUE: components/fluids/ironair_electrolyte_flow_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_balance_of_plant.m
+
+[REQUIREMENT]
+UID: FLD-006
+TITLE: Laminar friction factor
+STATEMENT: >>>
+| Requirement: SRS010
+| 
+| '''matlab
+| f_Darcy_laminar = 64 ./ Re_flow;
+| '''
+| 
+| Only applicable for developed laminar circular-pipe flow.
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS010
+- TYPE: File
+  VALUE: components/fluids/ironair_electrolyte_flow_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_balance_of_plant.m
+
+[REQUIREMENT]
+UID: FLD-007
+TITLE: Minor flow losses
+STATEMENT: >>>
+| Requirement: SRS010
+| 
+| '''matlab
+| delta_p_minor = ...
+|     sum(K_minor .* rho_fluid .* v_local.^2 ./ 2);
+| '''
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS010
+- TYPE: File
+  VALUE: components/fluids/ironair_electrolyte_flow_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_balance_of_plant.m
+
+[REQUIREMENT]
+UID: FLD-008
+TITLE: Reservoir species balance
+STATEMENT: >>>
+| Requirements: SRS010, SRS005.1
+| 
+| '''matlab
+| dVc_i_dt = ...
+|     Q_flow_in .* c_i_in ...
+|     - Q_flow_out .* c_i_tank ...
+|     + V_reservoir .* R_i;
+| '''
+| 
+| The implementation SHALL derive 'dc_i_tank_dt' using the product rule when tank volume varies.
+<<<
+COMMENT: Classification: conservation law
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS010
+- TYPE: Parent
+  VALUE: SRS005.1
+- TYPE: File
+  VALUE: components/fluids/ironair_electrolyte_flow_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_balance_of_plant.m
+
+[REQUIREMENT]
+UID: FLD-009
+TITLE: Pump rotational dynamics
+STATEMENT: >>>
+| Requirement: SRS010
+| 
+| '''matlab
+| domega_pump_dt = ...
+|     (tau_motor ...
+|     - tau_hydraulic ...
+|     - B_pump .* omega_pump) ./ J_pump;
+| '''
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS010
+- TYPE: File
+  VALUE: components/fluids/ironair_electrolyte_flow_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_balance_of_plant.m
+
+[REQUIREMENT]
+UID: FLD-010
+TITLE: Valve flow
+STATEMENT: >>>
+| Requirement: SRS010
+| 
+| '''matlab
+| Q_valve = ...
+|     C_discharge .* A_valve .* ...
+|     sqrt(2 .* abs(delta_p_valve) ./ rho_fluid) .* ...
+|     sign(delta_p_valve);
+| '''
+| 
+| ---
+| 
+| # SECTION 12: HEAT EXCHANGER
+| 
+| MATLAB file:
+| 'components/thermal/ironair_heat_exchanger.m'
+| 
+| Related requirements:
+| SRS008, SRS010.
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS010
+- TYPE: Parent
+  VALUE: SRS008
+- TYPE: File
+  VALUE: components/fluids/ironair_electrolyte_flow_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_balance_of_plant.m
+
+[REQUIREMENT]
+UID: HEX-001
+TITLE: Heat exchanger heat transfer
+STATEMENT: >>>
+| Requirement: SRS008
+| 
+| '''matlab
+| Q_dot_HX = ...
+|     U_HX .* A_HX .* delta_T_lm;
+| '''
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS008
+- TYPE: File
+  VALUE: components/thermal/ironair_heat_exchanger.m
+- TYPE: File
+  VALUE: tests/test_equations_balance_of_plant.m
+
+[REQUIREMENT]
+UID: HEX-002
+TITLE: Log mean temperature difference
+STATEMENT: >>>
+| Requirement: SRS008
+| 
+| '''matlab
+| delta_T_lm = ...
+|     (delta_T_1 - delta_T_2) ./ ...
+|     log(delta_T_1 ./ delta_T_2);
+| '''
+| 
+| The implementation SHALL use a numerically stable limiting expression when 'delta_T_1' approaches 'delta_T_2'.
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS008
+- TYPE: File
+  VALUE: components/thermal/ironair_heat_exchanger.m
+- TYPE: File
+  VALUE: tests/test_equations_balance_of_plant.m
+
+[REQUIREMENT]
+UID: HEX-003
+TITLE: Heat exchanger effectiveness
+STATEMENT: >>>
+| Requirement: SRS008
+| 
+| '''matlab
+| epsilon_HX = ...
+|     Q_dot_HX_actual ./ ...
+|     (C_min_HX .* (T_hot_in - T_cold_in));
+| '''
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS008
+- TYPE: File
+  VALUE: components/thermal/ironair_heat_exchanger.m
+- TYPE: File
+  VALUE: tests/test_equations_balance_of_plant.m
+
+[REQUIREMENT]
+UID: HEX-004
+TITLE: Number of transfer units
+STATEMENT: >>>
+| Requirement: SRS008
+| 
+| '''matlab
+| NTU_HX = ...
+|     U_HX .* A_HX ./ C_min_HX;
+| '''
+| 
+| ---
+| 
+| # SECTION 13: CELL STACK
+| 
+| MATLAB file:
+| 'components/stack/ironair_stack_model.m'
+| 
+| Related requirements:
+| SRS011, SRS007.
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS008
+- TYPE: Parent
+  VALUE: SRS011
+- TYPE: Parent
+  VALUE: SRS007
+- TYPE: File
+  VALUE: components/thermal/ironair_heat_exchanger.m
+- TYPE: File
+  VALUE: tests/test_equations_balance_of_plant.m
+
+[REQUIREMENT]
+UID: STK-001
+TITLE: Series cell voltage
+STATEMENT: >>>
+| Requirement: SRS011
+| 
+| '''matlab
+| V_stack = sum(V_cell_series);
+| '''
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS011
+- TYPE: File
+  VALUE: components/stack/ironair_stack_model.m
+- TYPE: File
+  VALUE: tests/test_equations_electrical.m
+
+[REQUIREMENT]
+UID: STK-002
+TITLE: Series current
+STATEMENT: >>>
+| Requirement: SRS011
+| 
+| '''matlab
+| I_cell_series = I_string;
+| '''
+| 
+| All cells in a series string SHALL carry the same terminal current in the absence of modeled shunt branches.
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS011
+- TYPE: File
+  VALUE: components/stack/ironair_stack_model.m
+- TYPE: File
+  VALUE: tests/test_equations_electrical.m
+
+[REQUIREMENT]
+UID: STK-003
+TITLE: Parallel string current
+STATEMENT: >>>
+| Requirement: SRS011
+| 
+| '''matlab
+| I_stack = sum(I_parallel_strings);
+| '''
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS011
+- TYPE: File
+  VALUE: components/stack/ironair_stack_model.m
+- TYPE: File
+  VALUE: tests/test_equations_electrical.m
+
+[REQUIREMENT]
+UID: STK-004
+TITLE: Nominal series voltage
+STATEMENT: >>>
+| Requirement: SRS011
+| 
+| '''matlab
+| V_stack_nominal = ...
+|     N_series .* V_cell_nominal;
+| '''
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS011
+- TYPE: File
+  VALUE: components/stack/ironair_stack_model.m
+- TYPE: File
+  VALUE: tests/test_equations_electrical.m
+
+[REQUIREMENT]
+UID: STK-005
+TITLE: Stack power
+STATEMENT: >>>
+| Requirement: SRS011
+| 
+| '''matlab
+| P_stack = V_stack .* I_stack;
+| '''
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS011
+- TYPE: File
+  VALUE: components/stack/ironair_stack_model.m
+- TYPE: File
+  VALUE: tests/test_equations_electrical.m
+
+[REQUIREMENT]
+UID: STK-006
+TITLE: Parallel current sharing
+STATEMENT: >>>
+| Requirement: SRS011
+| 
+| '''matlab
+| I_string_k = ...
+|     (e_string_k - V_bus) ./ R_string_k;
+| '''
+| 
+| This is a linear Thevenin approximation. Detailed simulations SHALL use nonlinear cell terminal-voltage models to determine branch currents.
+| 
+| ---
+| 
+| # SECTION 14: MODULE AND ENCLOSURE
+| 
+| MATLAB files:
+| 'components/module/ironair_module_model.m'
+| 'components/enclosure/ironair_enclosure_model.m'
+| 
+| Related requirements:
+| SRS011, SRS008, SRS009, SRS010.
+<<<
+COMMENT: Classification: empirical approximation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS011
+- TYPE: Parent
+  VALUE: SRS008
+- TYPE: Parent
+  VALUE: SRS009
+- TYPE: Parent
+  VALUE: SRS010
+- TYPE: File
+  VALUE: components/stack/ironair_stack_model.m
+- TYPE: File
+  VALUE: tests/test_equations_electrical.m
+
+[REQUIREMENT]
+UID: MOD-001
+TITLE: Module power
+STATEMENT: >>>
+| Requirement: SRS011
+| 
+| '''matlab
+| P_module = sum(P_stack_array);
+| '''
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS011
+- TYPE: File
+  VALUE: components/enclosure/ironair_enclosure_model.m
+- TYPE: File
+  VALUE: tests/test_equations_electrical.m
+
+[REQUIREMENT]
+UID: MOD-002
+TITLE: Net module power
+STATEMENT: >>>
+| Requirement: SRS011
+| 
+| '''matlab
+| P_module_net = ...
+|     P_module - P_aux_module;
+| '''
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS011
+- TYPE: File
+  VALUE: components/enclosure/ironair_enclosure_model.m
+- TYPE: File
+  VALUE: tests/test_equations_electrical.m
+
+[REQUIREMENT]
+UID: MOD-003
+TITLE: Enclosure thermal balance
+STATEMENT: >>>
+| Requirement: SRS011
+| 
+| '''matlab
+| dT_enclosure_dt = ...
+|     (Q_dot_internal ...
+|     - Q_dot_HVAC ...
+|     - Q_dot_ambient) ./ ...
+|     C_enclosure;
+| '''
+<<<
+COMMENT: Classification: conservation law
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS011
+- TYPE: File
+  VALUE: components/enclosure/ironair_enclosure_model.m
+- TYPE: File
+  VALUE: tests/test_equations_electrical.m
+
+[REQUIREMENT]
+UID: MOD-004
+TITLE: Auxiliary electrical power
+STATEMENT: >>>
+| Requirement: SRS011
+| 
+| '''matlab
+| P_aux = ...
+|     P_fan ...
+|     + P_pump ...
+|     + P_HVAC ...
+|     + P_controls ...
+|     + P_other;
+| '''
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS011
+- TYPE: File
+  VALUE: components/enclosure/ironair_enclosure_model.m
+- TYPE: File
+  VALUE: tests/test_equations_electrical.m
+
+[REQUIREMENT]
+UID: MOD-005
+TITLE: Aggregate stored energy
+STATEMENT: >>>
+| Requirement: SRS011
+| 
+| '''matlab
+| E_stored_total = ...
+|     sum(E_stored_components);
+| '''
+| 
+| Chemical energy accounting SHALL not be approximated solely by multiplying nominal voltage by nominal capacity.
+| 
+| ---
+| 
+| # SECTION 15: DC BUS
+| 
+| MATLAB file:
+| 'components/electrical/ironair_dc_bus_ode.m'
+| 
+| Related requirements:
+| SRS012, SRS007.
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS011
+- TYPE: Parent
+  VALUE: SRS012
+- TYPE: Parent
+  VALUE: SRS007
+- TYPE: File
+  VALUE: components/enclosure/ironair_enclosure_model.m
+- TYPE: File
+  VALUE: tests/test_equations_electrical.m
+
+[REQUIREMENT]
+UID: DC-001
+TITLE: DC capacitor voltage dynamics
+STATEMENT: >>>
+| Requirement: SRS012
+| 
+| '''matlab
+| dV_dc_dt = ...
+|     (I_source - I_load) ./ C_dc;
+| '''
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS012
+- TYPE: File
+  VALUE: components/electrical/ironair_dc_bus_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_electrical.m
+
+[REQUIREMENT]
+UID: DC-002
+TITLE: Capacitor stored energy
+STATEMENT: >>>
+| Requirement: SRS012
+| 
+| '''matlab
+| E_dc = ...
+|     0.5 .* C_dc .* V_dc.^2;
+| '''
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS012
+- TYPE: File
+  VALUE: components/electrical/ironair_dc_bus_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_electrical.m
+
+[REQUIREMENT]
+UID: DC-003
+TITLE: Capacitor energy derivative
+STATEMENT: >>>
+| Requirement: SRS012
+| 
+| '''matlab
+| dE_dc_dt = ...
+|     V_dc .* (I_source - I_load);
+| '''
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS012
+- TYPE: File
+  VALUE: components/electrical/ironair_dc_bus_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_electrical.m
+
+[REQUIREMENT]
+UID: DC-004
+TITLE: DC bus resistive losses
+STATEMENT: >>>
+| Requirement: SRS012
+| 
+| '''matlab
+| P_bus_loss = ...
+|     I_bus.^2 .* R_bus;
+| '''
+| 
+| ---
+| 
+| # SECTION 16: BIDIRECTIONAL DC/DC CONVERTER
+| 
+| MATLAB file:
+| 'components/electrical/ironair_dcdc_converter.m'
+| 
+| Related requirements:
+| SRS012, SRS018.
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS012
+- TYPE: Parent
+  VALUE: SRS018
+- TYPE: File
+  VALUE: components/electrical/ironair_dc_bus_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_electrical.m
+
+[REQUIREMENT]
+UID: CONV-001
+TITLE: Averaged buck inductor equation
+STATEMENT: >>>
+| Requirement: SRS012
+| 
+| '''matlab
+| di_L_dt = ...
+|     (d_duty .* V_in - V_out) ./ L_converter;
+| '''
+| 
+| This SHALL only represent a compatible averaged buck topology.
+| 
+| Bidirectional boost and other operating topologies SHALL use their corresponding state equations.
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS012
+- TYPE: File
+  VALUE: components/electrical/ironair_dcdc_converter.m
+- TYPE: File
+  VALUE: tests/test_equations_electrical.m
+
+[REQUIREMENT]
+UID: CONV-002
+TITLE: Converter output capacitor
+STATEMENT: >>>
+| Requirement: SRS012
+| 
+| '''matlab
+| dV_out_dt = ...
+|     (i_L - I_out) ./ C_out;
+| '''
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS012
+- TYPE: File
+  VALUE: components/electrical/ironair_dcdc_converter.m
+- TYPE: File
+  VALUE: tests/test_equations_electrical.m
+
+[REQUIREMENT]
+UID: CONV-003
+TITLE: Converter power balance
+STATEMENT: >>>
+| Requirement: SRS012
+| 
+| '''matlab
+| P_in = ...
+|     P_out ...
+|     + P_converter_loss ...
+|     + dE_converter_dt;
+| '''
+<<<
+COMMENT: Classification: conservation law
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS012
+- TYPE: File
+  VALUE: components/electrical/ironair_dcdc_converter.m
+- TYPE: File
+  VALUE: tests/test_equations_electrical.m
+
+[REQUIREMENT]
+UID: CONV-004
+TITLE: Conduction losses
+STATEMENT: >>>
+| Requirement: SRS012
+| 
+| '''matlab
+| P_conduction = ...
+|     I_RMS.^2 .* R_equivalent;
+| '''
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS012
+- TYPE: File
+  VALUE: components/electrical/ironair_dcdc_converter.m
+- TYPE: File
+  VALUE: tests/test_equations_electrical.m
+
+[REQUIREMENT]
+UID: CONV-005
+TITLE: Switching losses
+STATEMENT: >>>
+| Requirement: SRS012
+| 
+| '''matlab
+| P_switching = ...
+|     f_switching .* (E_on + E_off);
+| '''
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS012
+- TYPE: File
+  VALUE: components/electrical/ironair_dcdc_converter.m
+- TYPE: File
+  VALUE: tests/test_equations_electrical.m
+
+[REQUIREMENT]
+UID: CONV-006
+TITLE: Converter efficiency
+STATEMENT: >>>
+| Requirement: SRS012
+| 
+| '''matlab
+| eta_converter = ...
+|     P_out_positive ./ P_in_positive;
+| '''
+| 
+| Both powers SHALL represent positive magnitudes in the applicable power-flow direction.
+| 
+| ---
+| 
+| # SECTION 17: INVERTER
+| 
+| MATLAB file:
+| 'components/electrical/ironair_inverter.m'
+| 
+| Related requirements:
+| SRS012, SRS013, SRS014.
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS012
+- TYPE: Parent
+  VALUE: SRS013
+- TYPE: Parent
+  VALUE: SRS014
+- TYPE: File
+  VALUE: components/electrical/ironair_dcdc_converter.m
+- TYPE: File
+  VALUE: tests/test_equations_electrical.m
+
+[REQUIREMENT]
+UID: INV-001
+TITLE: Three-phase active power
+STATEMENT: >>>
+| Requirement: SRS012
+| 
+| '''matlab
+| P_AC = ...
+|     sqrt(3) .* V_LL .* I_line .* cos(phi_power);
+| '''
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS012
+- TYPE: File
+  VALUE: components/electrical/ironair_inverter.m
+- TYPE: File
+  VALUE: tests/test_equations_electrical.m
+
+[REQUIREMENT]
+UID: INV-002
+TITLE: Three-phase reactive power
+STATEMENT: >>>
+| Requirement: SRS012
+| 
+| '''matlab
+| Q_AC = ...
+|     sqrt(3) .* V_LL .* I_line .* sin(phi_power);
+| '''
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS012
+- TYPE: File
+  VALUE: components/electrical/ironair_inverter.m
+- TYPE: File
+  VALUE: tests/test_equations_electrical.m
+
+[REQUIREMENT]
+UID: INV-003
+TITLE: Apparent power
+STATEMENT: >>>
+| Requirement: SRS012
+| 
+| '''matlab
+| S_AC = sqrt(P_AC.^2 + Q_AC.^2);
+| '''
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS012
+- TYPE: File
+  VALUE: components/electrical/ironair_inverter.m
+- TYPE: File
+  VALUE: tests/test_equations_electrical.m
+
+[REQUIREMENT]
+UID: INV-004
+TITLE: Inverter power balance
+STATEMENT: >>>
+| Requirement: SRS012
+| 
+| '''matlab
+| P_DC = ...
+|     P_AC ...
+|     + P_inverter_loss ...
+|     + dE_inverter_dt;
+| '''
+<<<
+COMMENT: Classification: conservation law
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS012
+- TYPE: File
+  VALUE: components/electrical/ironair_inverter.m
+- TYPE: File
+  VALUE: tests/test_equations_electrical.m
+
+[REQUIREMENT]
+UID: INV-005
+TITLE: Active-power PI controller
+STATEMENT: >>>
+| Requirements: SRS012, SRS014
+| 
+| '''matlab
+| e_P = P_ref - P_measured;
+| 
+| u_P = ...
+|     Kp_P .* e_P ...
+|     + Ki_P .* integral_e_P;
+| '''
+| 
+| Controller integral state:
+| 
+| '''matlab
+| dintegral_e_P_dt = e_P;
+| '''
+| 
+| Saturation and anti-windup SHALL be implemented.
+<<<
+COMMENT: Classification: control law
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS012
+- TYPE: Parent
+  VALUE: SRS014
+- TYPE: File
+  VALUE: components/electrical/ironair_inverter.m
+- TYPE: File
+  VALUE: tests/test_equations_electrical.m
+
+[REQUIREMENT]
+UID: INV-006
+TITLE: Reactive-power PI controller
+STATEMENT: >>>
+| Requirements: SRS012, SRS014
+| 
+| '''matlab
+| e_Q = Q_ref - Q_measured;
+| 
+| u_Q = ...
+|     Kp_Q .* e_Q ...
+|     + Ki_Q .* integral_e_Q;
+| '''
+| 
+| Controller integral state:
+| 
+| '''matlab
+| dintegral_e_Q_dt = e_Q;
+| '''
+| 
+| This explicitly uses the requested 'e_Q' naming convention.
+<<<
+COMMENT: Classification: control law
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS012
+- TYPE: Parent
+  VALUE: SRS014
+- TYPE: File
+  VALUE: components/electrical/ironair_inverter.m
+- TYPE: File
+  VALUE: tests/test_equations_electrical.m
+
+[REQUIREMENT]
+UID: INV-007
+TITLE: Inverter apparent power constraint
+STATEMENT: >>>
+| Requirement: SRS012
+| 
+| '''matlab
+| S_AC.^2 <= S_rated.^2
+| '''
+| 
+| A physical implementation SHALL additionally enforce voltage, current, temperature, and converter modulation constraints.
+| 
+| ---
+| 
+| # SECTION 18: TRANSFORMER
+| 
+| MATLAB file:
+| 'components/electrical/ironair_transformer.m'
+| 
+| Related requirements:
+| SRS012, SRS008.
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS012
+- TYPE: Parent
+  VALUE: SRS008
+- TYPE: File
+  VALUE: components/electrical/ironair_inverter.m
+- TYPE: File
+  VALUE: tests/test_equations_electrical.m
+
+[REQUIREMENT]
+UID: TRF-001
+TITLE: Ideal turns ratio
+STATEMENT: >>>
+| Requirement: SRS012
+| 
+| '''matlab
+| V_primary ./ V_secondary = ...
+|     N_primary ./ N_secondary;
+| '''
+| 
+| This SHALL be implemented as an algebraic relationship or rearranged MATLAB assignment.
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS012
+- TYPE: File
+  VALUE: components/electrical/ironair_transformer.m
+- TYPE: File
+  VALUE: tests/test_equations_electrical.m
+
+[REQUIREMENT]
+UID: TRF-002
+TITLE: Transformer copper losses
+STATEMENT: >>>
+| Requirement: SRS012
+| 
+| '''matlab
+| P_copper = ...
+|     I_primary.^2 .* R_primary ...
+|     + I_secondary.^2 .* R_secondary;
+| '''
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS012
+- TYPE: File
+  VALUE: components/electrical/ironair_transformer.m
+- TYPE: File
+  VALUE: tests/test_equations_electrical.m
+
+[REQUIREMENT]
+UID: TRF-003
+TITLE: Transformer core losses
+STATEMENT: >>>
+| Requirement: SRS012
+| 
+| '''matlab
+| P_core = ...
+|     k_Steinmetz .* ...
+|     f_transformer.^alpha_Steinmetz .* ...
+|     B_peak.^beta_Steinmetz .* ...
+|     V_core;
+| '''
+<<<
+COMMENT: Classification: empirical approximation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS012
+- TYPE: File
+  VALUE: components/electrical/ironair_transformer.m
+- TYPE: File
+  VALUE: tests/test_equations_electrical.m
+
+[REQUIREMENT]
+UID: TRF-004
+TITLE: Transformer thermal dynamics
+STATEMENT: >>>
+| Requirement: SRS008
+| 
+| '''matlab
+| dT_transformer_dt = ...
+|     (P_core ...
+|     + P_copper ...
+|     - (T_transformer - T_ambient) ./ ...
+|       R_thermal_transformer) ./ ...
+|     C_thermal_transformer;
+| '''
+| 
+| ---
+| 
+| # SECTION 19: GRID INTERCONNECTION
+| 
+| MATLAB files:
+| 'components/grid/ironair_grid_model.m'
+| 'components/grid/ironair_der_ride_through.m'
+| 
+| Related requirements:
+| SRS013, SRS014.
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS008
+- TYPE: Parent
+  VALUE: SRS013
+- TYPE: Parent
+  VALUE: SRS014
+- TYPE: File
+  VALUE: components/electrical/ironair_transformer.m
+- TYPE: File
+  VALUE: tests/test_equations_electrical.m
+
+[REQUIREMENT]
+UID: GRID-001
+TITLE: Grid frequency deviation
+STATEMENT: >>>
+| Requirement: SRS013
+| 
+| '''matlab
+| delta_f_grid = ...
+|     f_grid - f_nominal;
+| '''
+<<<
+COMMENT: Classification: control law
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS013
+- TYPE: File
+  VALUE: components/grid/ironair_der_ride_through.m
+- TYPE: File
+  VALUE: tests/test_equations_controls.m
+
+[REQUIREMENT]
+UID: GRID-002
+TITLE: Frequency-watt droop
+STATEMENT: >>>
+| Requirement: SRS013
+| 
+| '''matlab
+| P_command = ...
+|     P_scheduled ...
+|     - K_frequency_droop .* delta_f_grid;
+| '''
+| 
+| The control sign and active operating region SHALL be explicitly configurable.
+<<<
+COMMENT: Classification: control law
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS013
+- TYPE: File
+  VALUE: components/grid/ironair_der_ride_through.m
+- TYPE: File
+  VALUE: tests/test_equations_controls.m
+
+[REQUIREMENT]
+UID: GRID-003
+TITLE: Volt-var response
+STATEMENT: >>>
+| Requirement: SRS013
+| 
+| '''matlab
+| Q_command = ...
+|     -K_voltage_droop .* ...
+|     (V_grid - V_grid_ref);
+| '''
+| 
+| Required deadbands and piecewise control functions SHALL be implemented through configurable characteristics.
+<<<
+COMMENT: Classification: control law
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS013
+- TYPE: File
+  VALUE: components/grid/ironair_der_ride_through.m
+- TYPE: File
+  VALUE: tests/test_equations_controls.m
+
+[REQUIREMENT]
+UID: GRID-004
+TITLE: Active-power ramp limits
+STATEMENT: >>>
+| Requirement: SRS013
+| 
+| '''matlab
+| dP_command_dt = min( ...
+|     max(dP_requested_dt, -ramp_down_limit), ...
+|     ramp_up_limit);
+| '''
+<<<
+COMMENT: Classification: control law
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS013
+- TYPE: File
+  VALUE: components/grid/ironair_der_ride_through.m
+- TYPE: File
+  VALUE: tests/test_equations_controls.m
+
+[REQUIREMENT]
+UID: GRID-005
+TITLE: Per-unit grid voltage
+STATEMENT: >>>
+| Requirement: SRS013
+| 
+| '''matlab
+| V_grid_pu = ...
+|     V_grid_measured ./ V_grid_base;
+| '''
+<<<
+COMMENT: Classification: control law
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS013
+- TYPE: File
+  VALUE: components/grid/ironair_der_ride_through.m
+- TYPE: File
+  VALUE: tests/test_equations_controls.m
+
+[REQUIREMENT]
+UID: GRID-006
+TITLE: Time-qualified grid fault
+STATEMENT: >>>
+| Requirement: SRS013
+| 
+| During an active, qualifying violation:
+| 
+| '''matlab
+| dt_violation_dt = 1;
+| '''
+| 
+| Otherwise the timer SHALL reset, hold, or recover according to the selected protection characteristic.
+| 
+| Trip condition:
+| 
+| '''matlab
+| trip_command = ...
+|     t_violation >= t_trip_configured;
+| '''
+| 
+| The implementation SHALL use the correct voltage and frequency time-domain protection envelopes rather than only fixed pass/fail thresholds.
+| 
+| ---
+| 
+| # SECTION 20: SUPERVISORY CONTROLS
+| 
+| MATLAB file:
+| 'controls/ironair_supervisory_controller.m'
+| 
+| Related requirements:
+| SRS014, SRS015.
+<<<
+COMMENT: Classification: control law
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS013
+- TYPE: Parent
+  VALUE: SRS014
+- TYPE: Parent
+  VALUE: SRS015
+- TYPE: File
+  VALUE: components/grid/ironair_der_ride_through.m
+- TYPE: File
+  VALUE: tests/test_equations_controls.m
+
+[REQUIREMENT]
+UID: CTRL-001
+TITLE: SOC operating range
+STATEMENT: >>>
+| Requirement: SRS014
+| 
+| '''matlab
+| SOC_valid = ...
+|     (SOC >= SOC_min) && ...
+|     (SOC <= SOC_max);
+| '''
+<<<
+COMMENT: Classification: control law
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS014
+- TYPE: File
+  VALUE: controls/ironair_supervisory_controller.m
+- TYPE: File
+  VALUE: tests/test_equations_controls.m
+
+[REQUIREMENT]
+UID: CTRL-002
+TITLE: Available charging power
+STATEMENT: >>>
+| Requirement: SRS014
+| 
+| '''matlab
+| P_charge_allowed = min([ ...
+|     P_charge_converter_limit, ...
+|     P_charge_electrochemical_limit, ...
+|     P_charge_thermal_limit, ...
+|     P_charge_grid_limit ...
+| ]);
+| '''
+| 
+| All quantities represent nonnegative charging-power magnitudes.
+<<<
+COMMENT: Classification: control law
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS014
+- TYPE: File
+  VALUE: controls/ironair_supervisory_controller.m
+- TYPE: File
+  VALUE: tests/test_equations_controls.m
+
+[REQUIREMENT]
+UID: CTRL-003
+TITLE: Available discharging power
+STATEMENT: >>>
+| Requirement: SRS014
+| 
+| '''matlab
+| P_discharge_allowed = min([ ...
+|     P_discharge_converter_limit, ...
+|     P_discharge_oxygen_limit, ...
+|     P_discharge_electrochemical_limit, ...
+|     P_discharge_thermal_limit ...
+| ]);
+| '''
+<<<
+COMMENT: Classification: control law
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS014
+- TYPE: File
+  VALUE: controls/ironair_supervisory_controller.m
+- TYPE: File
+  VALUE: tests/test_equations_controls.m
+
+[REQUIREMENT]
+UID: CTRL-004
+TITLE: Current PI controller
+STATEMENT: >>>
+| Requirement: SRS014
+| 
+| '''matlab
+| e_I = I_ref - I_measured;
+| 
+| u_I = ...
+|     Kp_I .* e_I ...
+|     + Ki_I .* integral_e_I;
+| '''
+| 
+| With:
+| 
+| '''matlab
+| dintegral_e_I_dt = e_I;
+| '''
+| 
+| Controller saturation SHALL include anti-windup.
+<<<
+COMMENT: Classification: control law
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS014
+- TYPE: File
+  VALUE: controls/ironair_supervisory_controller.m
+- TYPE: File
+  VALUE: tests/test_equations_controls.m
+
+[REQUIREMENT]
+UID: CTRL-005
+TITLE: Thermal derating
+STATEMENT: >>>
+| Requirement: SRS014
+| 
+| '''matlab
+| f_thermal = min(1, max(0, ...
+|     (T_trip - T_cell) ./ ...
+|     (T_trip - T_derate)));
+| '''
+| 
+| '''matlab
+| P_allowed_thermal = ...
+|     f_thermal .* P_rated;
+| '''
+| 
+| This is a proposed configurable control law.
+<<<
+COMMENT: Classification: control law
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS014
+- TYPE: File
+  VALUE: controls/ironair_supervisory_controller.m
+- TYPE: File
+  VALUE: tests/test_equations_controls.m
+
+[REQUIREMENT]
+UID: CTRL-006
+TITLE: Charge/discharge transition authorization
+STATEMENT: >>>
+| Requirement: SRS014
+| 
+| '''matlab
+| allow_transition = ...
+|     grid_ready && ...
+|     thermal_ready && ...
+|     fluid_ready && ...
+|     electrodes_ready;
+| '''
+| 
+| All Boolean conditions SHALL use explicitly modeled physical measurements or validated estimates.
+| 
+| ---
+| 
+| # SECTION 21: SOC AND SOH ESTIMATION
+| 
+| MATLAB file:
+| 'controls/ironair_state_estimator.m'
+| 
+| Related requirements:
+| SRS015, SRS007.2.
+<<<
+COMMENT: Classification: control law
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS014
+- TYPE: Parent
+  VALUE: SRS015
+- TYPE: Parent
+  VALUE: SRS007.2
+- TYPE: File
+  VALUE: controls/ironair_supervisory_controller.m
+- TYPE: File
+  VALUE: tests/test_equations_controls.m
+
+[REQUIREMENT]
+UID: EST-001
+TITLE: Storage-current coulomb counting
+STATEMENT: >>>
+| Requirement: SRS015
+| 
+| '''matlab
+| dSOC_dt = ...
+|     -I_Fe_storage ./ Q_usable_C;
+| '''
+| 
+| For constant capacity and a defined reversible iron-storage current.
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS015
+- TYPE: File
+  VALUE: controls/ironair_state_estimator.m
+- TYPE: File
+  VALUE: tests/test_equations_controls.m
+
+[REQUIREMENT]
+UID: EST-002
+TITLE: Nonlinear observer
+STATEMENT: >>>
+| Requirement: SRS015
+| 
+| '''matlab
+| dx_hat_dt = ...
+|     f_state_hat ...
+|     + L_observer .* ...
+|     (y_measured - y_predicted);
+| '''
+| 
+| The full implementation SHALL preserve correct vector and matrix dimensions.
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS015
+- TYPE: File
+  VALUE: controls/ironair_state_estimator.m
+- TYPE: File
+  VALUE: tests/test_equations_controls.m
+
+[REQUIREMENT]
+UID: EST-003
+TITLE: Discrete state prediction
+STATEMENT: >>>
+| Requirement: SRS015
+| 
+| '''matlab
+| x_hat_pred = ...
+|     ironair_discrete_state_model( ...
+|     x_hat_previous, u_input, p);
+| '''
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS015
+- TYPE: File
+  VALUE: controls/ironair_state_estimator.m
+- TYPE: File
+  VALUE: tests/test_equations_controls.m
+
+[REQUIREMENT]
+UID: EST-004
+TITLE: Extended Kalman filter gain
+STATEMENT: >>>
+| Requirement: SRS015
+| 
+| '''matlab
+| K_EKF = ...
+|     (P_pred * H_EKF.') / ...
+|     (H_EKF * P_pred * H_EKF.' + R_measurement);
+| '''
+| 
+| MATLAB matrix division SHALL be used rather than explicit matrix inversion.
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS015
+- TYPE: File
+  VALUE: controls/ironair_state_estimator.m
+- TYPE: File
+  VALUE: tests/test_equations_controls.m
+
+[REQUIREMENT]
+UID: EST-005
+TITLE: State correction
+STATEMENT: >>>
+| Requirement: SRS015
+| 
+| '''matlab
+| x_hat = ...
+|     x_hat_pred ...
+|     + K_EKF * ...
+|     (y_measured - y_predicted);
+| '''
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS015
+- TYPE: File
+  VALUE: controls/ironair_state_estimator.m
+- TYPE: File
+  VALUE: tests/test_equations_controls.m
+
+[REQUIREMENT]
+UID: EST-006
+TITLE: Capacity-based SOH
+STATEMENT: >>>
+| Requirement: SRS015
+| 
+| '''matlab
+| SOH_capacity = ...
+|     Q_usable_current ./ Q_usable_BOL;
+| '''
+| 
+| ---
+| 
+| # SECTION 22: DEGRADATION AND AGING
+| 
+| MATLAB file:
+| 'components/degradation/ironair_degradation_ode.m'
+| 
+| Related requirements:
+| SRS016, SRS003.3, SRS004.
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS015
+- TYPE: Parent
+  VALUE: SRS016
+- TYPE: Parent
+  VALUE: SRS003.3
+- TYPE: Parent
+  VALUE: SRS004
+- TYPE: File
+  VALUE: controls/ironair_state_estimator.m
+- TYPE: File
+  VALUE: tests/test_equations_controls.m
+
+[REQUIREMENT]
+UID: DEG-001
+TITLE: Temperature-dependent aging rate
+STATEMENT: >>>
+| Requirement: SRS016
+| 
+| '''matlab
+| k_aging = ...
+|     k_aging_ref .* exp( ...
+|     -(E_a_aging ./ R_J_molK) .* ...
+|     (1 ./ T_cell - 1 ./ T_ref_K));
+| '''
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS016
+- TYPE: File
+  VALUE: components/degradation/ironair_degradation_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_controls.m
+
+[REQUIREMENT]
+UID: DEG-002
+TITLE: Active-area degradation
+STATEMENT: >>>
+| Requirement: SRS016
+| 
+| '''matlab
+| dA_active_dt = ...
+|     -k_area_loss .* A_active;
+| '''
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS016
+- TYPE: File
+  VALUE: components/degradation/ironair_degradation_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_controls.m
+
+[REQUIREMENT]
+UID: DEG-003
+TITLE: Catalyst activity degradation
+STATEMENT: >>>
+| Requirement: SRS016
+| 
+| '''matlab
+| da_catalyst_dt = ...
+|     -k_catalyst_loss .* a_catalyst;
+| '''
+| 
+| The rate coefficient SHALL depend on the selected physical degradation mechanism.
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS016
+- TYPE: File
+  VALUE: components/degradation/ironair_degradation_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_controls.m
+
+[REQUIREMENT]
+UID: DEG-004
+TITLE: Internal resistance growth
+STATEMENT: >>>
+| Requirement: SRS016
+| 
+| '''matlab
+| dR_internal_dt = ...
+|     k_resistance_growth;
+| '''
+| 
+| Where 'k_resistance_growth' SHALL be calculated from temperature, SOC, current, and material state.
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS016
+- TYPE: File
+  VALUE: components/degradation/ironair_degradation_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_controls.m
+
+[REQUIREMENT]
+UID: DEG-005
+TITLE: Irreversible iron loss
+STATEMENT: >>>
+| Requirement: SRS016
+| 
+| '''matlab
+| dn_Fe_inactive_dt = ...
+|     r_Fe_irreversible;
+| '''
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS016
+- TYPE: File
+  VALUE: components/degradation/ironair_degradation_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_controls.m
+
+[REQUIREMENT]
+UID: DEG-006
+TITLE: Capacity fade
+STATEMENT: >>>
+| Requirement: SRS016
+| 
+| '''matlab
+| Q_usable_current = ...
+|     Q_usable_BOL - delta_Q_irreversible;
+| '''
+| 
+| Capacity fade SHALL NOT be counted twice when physically represented by phase inventories and inactive iron.
+| 
+| ---
+| 
+| # SECTION 23: SENSORS AND FAULTS
+| 
+| MATLAB file:
+| 'components/faults/ironair_fault_injection.m'
+| 
+| Related requirements:
+| SRS017, SRS014.
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS016
+- TYPE: Parent
+  VALUE: SRS017
+- TYPE: Parent
+  VALUE: SRS014
+- TYPE: File
+  VALUE: components/degradation/ironair_degradation_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_controls.m
+
+[REQUIREMENT]
+UID: FLT-001
+TITLE: Sensor output
+STATEMENT: >>>
+| Requirement: SRS017
+| 
+| '''matlab
+| y_measured = ...
+|     y_true + sensor_bias + sensor_noise;
+| '''
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS017
+- TYPE: File
+  VALUE: components/faults/ironair_fault_injection.m
+- TYPE: File
+  VALUE: tests/test_equations_controls.m
+
+[REQUIREMENT]
+UID: FLT-002
+TITLE: Sensor dynamic response
+STATEMENT: >>>
+| Requirement: SRS017
+| 
+| '''matlab
+| dy_sensor_dt = ...
+|     (y_true - y_sensor) ./ tau_sensor;
+| '''
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS017
+- TYPE: File
+  VALUE: components/faults/ironair_fault_injection.m
+- TYPE: File
+  VALUE: tests/test_equations_controls.m
+
+[REQUIREMENT]
+UID: FLT-003
+TITLE: Sensor drift
+STATEMENT: >>>
+| Requirement: SRS017
+| 
+| '''matlab
+| dbias_sensor_dt = ...
+|     k_sensor_drift;
+| '''
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS017
+- TYPE: File
+  VALUE: components/faults/ironair_fault_injection.m
+- TYPE: File
+  VALUE: tests/test_equations_controls.m
+
+[REQUIREMENT]
+UID: FLT-004
+TITLE: Electrolyte leakage
+STATEMENT: >>>
+| Requirement: SRS017
+| 
+| '''matlab
+| dV_electrolyte_dt = ...
+|     Q_electrolyte_in ...
+|     - Q_electrolyte_out ...
+|     - Q_electrolyte_leak;
+| '''
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS017
+- TYPE: File
+  VALUE: components/faults/ironair_fault_injection.m
+- TYPE: File
+  VALUE: tests/test_equations_controls.m
+
+[REQUIREMENT]
+UID: FLT-005
+TITLE: Failed fan dynamics
+STATEMENT: >>>
+| Requirement: SRS017
+| 
+| '''matlab
+| dN_fan_dt = ...
+|     (N_effective_command - N_fan) ./ tau_fan;
+| '''
+| 
+| Failure modes SHALL modify 'N_effective_command', motor torque, or mechanical load as physically appropriate.
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS017
+- TYPE: File
+  VALUE: components/faults/ironair_fault_injection.m
+- TYPE: File
+  VALUE: tests/test_equations_controls.m
+
+[REQUIREMENT]
+UID: FLT-006
+TITLE: Cell short-circuit current
+STATEMENT: >>>
+| Requirement: SRS017
+| 
+| '''matlab
+| I_short = ...
+|     V_cell ./ R_fault;
+| '''
+| 
+| The short-circuit current SHALL be solved consistently with cell voltage, stack impedance, and circuit dynamics.
+| 
+| ---
+| 
+| # SECTION 24: FULL SYSTEM INTEGRATION
+| 
+| MATLAB file:
+| 'core/ironair_system_ode.m'
+| 
+| Related requirements:
+| SRS001, SRS018, SRS019, SRS023.
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS017
+- TYPE: Parent
+  VALUE: SRS001
+- TYPE: Parent
+  VALUE: SRS018
+- TYPE: Parent
+  VALUE: SRS019
+- TYPE: Parent
+  VALUE: SRS023
+- TYPE: File
+  VALUE: components/faults/ironair_fault_injection.m
+- TYPE: File
+  VALUE: tests/test_equations_controls.m
+
+[REQUIREMENT]
+UID: SYS-001
+TITLE: Chemical species reaction network
+STATEMENT: >>>
+| Requirement: SRS023
+| 
+| '''matlab
+| dn_species_dt = ...
+|     S_stoichiometry * r_reactions ...
+|     + B_boundary * q_boundary;
+| '''
+| 
+| This SHALL serve as the central chemical species inventory system.
+<<<
+COMMENT: Classification: conservation law
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS023
+- TYPE: File
+  VALUE: core/ironair_system_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_system.m
+
+[REQUIREMENT]
+UID: SYS-002
+TITLE: Elemental conservation
+STATEMENT: >>>
+| Requirement: SRS023
+| 
+| '''matlab
+| e_element_balance = ...
+|     A_elements * S_stoichiometry;
+| '''
+| 
+| Required condition:
+| 
+| '''matlab
+| norm(e_element_balance, inf) <= ...
+|     tolerance_element_balance;
+| '''
+| 
+| The reaction network SHALL conserve every modeled chemical element.
+<<<
+COMMENT: Classification: conservation law
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS023
+- TYPE: File
+  VALUE: core/ironair_system_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_system.m
+
+[REQUIREMENT]
+UID: SYS-003
+TITLE: Kirchhoff current conservation
+STATEMENT: >>>
+| Requirements: SRS007.3, SRS023
+| 
+| '''matlab
+| e_current_balance = sum(I_node_signed);
+| '''
+| 
+| Required condition:
+| 
+| '''matlab
+| abs(e_current_balance) <= ...
+|     tolerance_current_balance;
+| '''
+<<<
+COMMENT: Classification: conservation law
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS007.3
+- TYPE: Parent
+  VALUE: SRS023
+- TYPE: File
+  VALUE: core/ironair_system_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_system.m
+
+[REQUIREMENT]
+UID: SYS-004
+TITLE: Total system energy conservation
+STATEMENT: >>>
+| Requirements: SRS019, SRS023
+| 
+| '''matlab
+| dU_system_dt = ...
+|     H_dot_material_in ...
+|     - H_dot_material_out ...
+|     + Q_dot_boundary ...
+|     + W_dot_in ...
+|     - W_dot_out;
+| '''
+<<<
+COMMENT: Classification: conservation law
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS019
+- TYPE: Parent
+  VALUE: SRS023
+- TYPE: File
+  VALUE: core/ironair_system_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_system.m
+
+[REQUIREMENT]
+UID: SYS-005
+TITLE: AC-to-AC round-trip efficiency
+STATEMENT: >>>
+| Requirements: SRS007, SRS012, SRS023
+| 
+| '''matlab
+| eta_round_trip_AC = ...
+|     E_grid_export_J ./ E_grid_import_J;
+| '''
+| 
+| Where:
+| 
+| '''matlab
+| E_grid_export_J = ...
+|     trapz(t_sim, P_grid_export);
+| 
+| E_grid_import_J = ...
+|     trapz(t_sim, P_grid_import);
+| '''
+| 
+| The calculation SHALL include all applicable auxiliary loads and shall compare equivalent initial and final stored-energy states.
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS007
+- TYPE: Parent
+  VALUE: SRS012
+- TYPE: Parent
+  VALUE: SRS023
+- TYPE: File
+  VALUE: core/ironair_system_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_system.m
+
+[REQUIREMENT]
+UID: SYS-006
+TITLE: Coupled DAE differential equations
+STATEMENT: >>>
+| Requirement: SRS018
+| 
+| '''matlab
+| M_system * dx_dt = ...
+|     f_system;
+| '''
+| 
+| This is the mathematical residual form.
+| 
+| In actual MATLAB source, the model SHALL return a correctly assembled mass matrix and right-hand-side function to a compatible base-MATLAB solver, rather than use assignment to 'M_system * dx_dt'.
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS018
+- TYPE: File
+  VALUE: core/ironair_system_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_system.m
+
+[REQUIREMENT]
+UID: SYS-007
+TITLE: Algebraic constraints
+STATEMENT: >>>
+| Requirement: SRS018
+| 
+| '''matlab
+| e_algebraic = ...
+|     g_system;
+| '''
+| 
+| Required mathematical condition:
+| 
+| '''matlab
+| e_algebraic = 0;
+| '''
+| 
+| In executable MATLAB, residuals SHALL be solved with the appropriate nonlinear or DAE solver.
+| 
+| The algebraic subsystem SHALL include applicable electrode potentials, interface currents, node voltages, current distribution, species constraints, and fluid network conditions.
+| 
+| ---
+<<<
+COMMENT: Classification: constitutive equation
+RELATIONS:
+- TYPE: Parent
+  VALUE: SRS018
+- TYPE: File
+  VALUE: core/ironair_system_ode.m
+- TYPE: File
+  VALUE: tests/test_equations_system.m
+
