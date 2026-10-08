@@ -163,8 +163,12 @@ OER cathode tabs, ORR tabs, can-negative housing, and stacking contact points
 (US12308414B2 Claims 3 and 5; EP4602674A1 FIG. 8 tabs 230, 240a, 240b).
 
 Charge and discharge paths SHALL be distinct named connections selectable by
-SupervisoryController. Bus bars outside the active-area plane (EP4602674A1
+PlantModel modes (IA-CTL-001). Bus bars outside the active-area plane (EP4602674A1
 Claims 30-31) SHALL be identifiable in the state-index map.
+<<<
+COMMENT: >>>
+Changed because SupervisoryController does not exist. PlantModel.algebraic selects
+iron-OER versus iron-ORR paths.
 <<<
 RELATIONS:
 - TYPE: Parent
