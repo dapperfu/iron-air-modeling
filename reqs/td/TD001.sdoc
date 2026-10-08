@@ -109,7 +109,7 @@ UID: IA-TD-006
 STATUS: Active
 TITLE: Traceability test
 STATEMENT: >>>
-Parse reqs/**/*.sdoc UIDs and src/**/*.py @relation markers.
+Parse reqs/**/*.sdoc UIDs and @relation markers in src/**/*.py and plant_sim/**/*.py.
 
 Patent-mapped UIDs IA-SYS-006 through IA-SYS-026, IA-CHM-011, IA-SDD-006 through
 IA-SDD-010, IA-IRS-006 through IA-IRS-010, IA-TP-004 through IA-TP-006,
@@ -118,6 +118,9 @@ IA-TD-007 through IA-TD-010, and IA-SCN-PAT-* SHALL exist in StrictDoc.
 COMMENT: >>>
 Every @relation UID exists. Every implementation requirement listed in the
 traceability map has a function marker.
+
+Changed because SSS002 physics @relation markers now live in plant_sim, not only
+src/ironair. A src-only parse would miss IronAnode through PlantModel markers.
 <<<
 RELATIONS:
 - TYPE: Parent
