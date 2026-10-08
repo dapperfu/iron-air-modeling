@@ -101,7 +101,9 @@ coulombic-efficiency comparison at 6 M KOH and 303 K (EP4602674A1 FIGS. 19-27)
 and carbonate clogging of air-electrode pores (US12308414B2).
 <<<
 COMMENT: >>>
-Each listed scenario has a unique IA-SCN-CHM-* ID, Python scenario function, and notebook.
+Changed because ironair.scenarios is empty. Executable chemistry-fault coverage is
+plant_sim/95_CarbonationAndImpurity.ipynb and 98_DegradationCE.ipynb.
+Remaining CHM IDs are design allocations.
 <<<
 
 [REQUIREMENT]

@@ -127,6 +127,10 @@ def starvation_inputs(p: PlantParams | None = None):
 
 
 def carbonation_inputs(p: PlantParams | None = None):
+    """Carbonation / impurity air-side stress.
+
+    @relation(IA-NBK-010, scope=function)
+    """
     p = p or default_params()
 
     def u(t: float) -> dict[str, float]:
