@@ -68,9 +68,7 @@ class PhysicalParameter:
         @relation(IA-CON-002, scope=function)
         """
         if not (self.valid_min <= value <= self.valid_max):
-            raise DomainError(
-                f"{self.name}={value} {self.si_unit} outside [{self.valid_min}, {self.valid_max}]"
-            )
+            raise DomainError(f"{self.name}={value} {self.si_unit} outside [{self.valid_min}, {self.valid_max}]")
         return value
 
 
