@@ -1,9 +1,23 @@
 [DOCUMENT]
 TITLE: Software Requirements Specification - Operating Scenarios
 UID: DOC-SSS003
-VERSION: 1.0.0
+VERSION: 1.1.0
 OPTIONS:
   MARKUP: Text
+
+[[SECTION]]
+UID: SEC-SSS3-COVER
+TITLE: Scenario suite coverage
+
+[TEXT]
+STATEMENT: >>>
+Operating scenarios exercise the patented iron-air plant. Charge, discharge, and
+LODES durations follow US12308414B2 (8 h to seasonal, including about 100 h and
+300 h). Chemistry faults follow EP4602674A1 HER competition, magnetite conversion,
+and thick-electrode transport. Air and mechanical faults follow US12308414B2
+flooding, dry-out, sparging, fan/pump, and containment disclosures. Software
+scenario results are not hardware validation of either patent.
+<<<
 
 [REQUIREMENT]
 UID: IA-NBK-007
@@ -14,6 +28,14 @@ Required charge scenarios: constant-current, constant-power, constant-voltage,
 charge tapering, partial charge, charge termination, overcharge protection,
 low-temperature charging, high-temperature charging, charging with hydrogen
 evolution, and charging with limited electrolyte circulation.
+
+Charge current greater than 6 mA/g to at least twice rated capacity SHALL be an
+allowed formation/full-charge protocol (EP4602674A1 [0261]). Dual-electrode charge
+SHALL use the OER path (EP4602674A1 [0049]).
+<<<
+RATIONALE: >>>
+US12308414B2 rechargeable metal-air operation; EP4602674A1 charge through OER and
+HER competition on thick iron electrodes.
 <<<
 COMMENT: >>>
 Each listed scenario has a unique IA-SCN-CHG-* ID, Python scenario function, notebook,
@@ -28,6 +50,15 @@ STATEMENT: >>>
 Required discharge scenarios: constant-current, constant-power, variable-load,
 partial discharge, deep discharge, oxygen-limited, thermal-limited, high-rate,
 low-rate, and 100-hour discharge.
+
+Discharge SHALL use the ORR path (EP4602674A1 [0049]). 100 h and 300 h discharges
+SHALL be available, corresponding to about 3-5 cm and 4-6 cm anode thickness in
+US12308414B2. Oxygen-limited discharge SHALL include restricted pO2 within
+0.01-100 atm (US12308414B2).
+<<<
+RATIONALE: >>>
+US12308414B2 duration versus anode thickness; EP4602674A1 dual-electrode discharge
+to Fe(OH)2 / Fe3O4.
 <<<
 COMMENT: >>>
 Each listed scenario has a unique IA-SCN-DCH-* ID, Python scenario function, and notebook.
@@ -41,6 +72,10 @@ STATEMENT: >>>
 Required transition scenarios: charge to discharge, discharge to charge, rapid power
 reversal, rest period, voltage relaxation, repeated cycling, startup, shutdown, and
 restart after protection trip.
+
+Charge/discharge transitions SHALL operate the EP4602674A1 [0049] / US12308414B2
+FIGS. 5A-5B electrode switch, including electrical isolation of ORR during OER
+to protect the air electrode.
 <<<
 COMMENT: >>>
 Each listed scenario has a unique IA-SCN-TRN-* ID, Python scenario function, and notebook.
@@ -54,6 +89,10 @@ STATEMENT: >>>
 Required chemistry scenarios: iron passivation, magnetite formation, hydrogen evolution,
 oxygen starvation, carbonate accumulation, water depletion, electrolyte dilution,
 electrolyte concentration increase, electrode aging, and catalyst degradation.
+
+Chemistry scenarios SHALL include planar versus channeled versus interdigitated
+coulombic-efficiency comparison at 6 M KOH and 303 K (EP4602674A1 FIGS. 19-27)
+and carbonate clogging of air-electrode pores (US12308414B2).
 <<<
 COMMENT: >>>
 Each listed scenario has a unique IA-SCN-CHM-* ID, Python scenario function, and notebook.
@@ -67,6 +106,10 @@ STATEMENT: >>>
 Required environmental scenarios: cold start, hot start, ambient temperature cycling,
 high relative humidity, low relative humidity, high altitude, reduced atmospheric
 oxygen, and thermal control failure.
+
+Environmental cases SHALL include US12308414B2 25 C / 1 atm reference, EP4602674A1
+303 K KOH reference, high-humidity flooding of GDE, low-humidity dry-out, and
+reduced pO2.
 <<<
 COMMENT: >>>
 Each listed scenario has a unique IA-SCN-ENV-* ID, Python scenario function, and notebook.
@@ -80,6 +123,10 @@ STATEMENT: >>>
 Required mechanical fault scenarios: fan failure, pump failure, filter blockage,
 valve failure, electrolyte leak, reservoir depletion, reduced circulation, heat
 exchanger failure, and ventilation failure.
+
+Mechanical faults SHALL include loss of sparge/air supply to submerged ORR, ORR
+flooding versus dry-out, lid-vent blockage, and primary-vessel leak into secondary
+containment (US12308414B2 vessel cavity 161).
 <<<
 COMMENT: >>>
 Each listed scenario has a unique IA-SCN-MCH-* ID, Python scenario function, and notebook.
@@ -93,6 +140,10 @@ STATEMENT: >>>
 Required electrical scenarios: cell short, cell open circuit, cell imbalance, stack
 mismatch, converter overload, DC bus undervoltage, DC bus overvoltage, inverter
 current limit, and sensor failure.
+
+Electrical scenarios SHALL include can-negative housing contact faults, ORR/OER
+toggle-switch stuck states, and stacked-vessel series-contact opens
+(US12308414B2 Claims 3, 5, 16).
 <<<
 COMMENT: >>>
 Each listed scenario has a unique IA-SCN-ELC-* ID, Python scenario function, and notebook.
@@ -106,6 +157,9 @@ STATEMENT: >>>
 Required grid scenarios: voltage sag, voltage swell, underfrequency, overfrequency,
 frequency-watt response, volt-var response, grid disconnection, reconnection,
 ride-through, and active/reactive power limits.
+
+Grid scenarios SHALL cover LODES services from milliseconds to seasonal windows
+as framed in US12308414B2 Background and FIGS. 94-102.
 <<<
 COMMENT: >>>
 Each listed scenario has a unique IA-SCN-GRD-* ID, Python scenario function, and notebook.
@@ -119,6 +173,10 @@ STATEMENT: >>>
 Required long-term scenarios: 100-hour discharge, multiple-day energy dispatch,
 charge/discharge cycling, seasonal storage, calendar aging, cycle aging, capacity
 fade, efficiency degradation, and annual operating profile.
+
+Long-term scenarios SHALL include 100 h and 300 h discharges, summer-to-winter
+seasonal storage of surplus solar, and calendar aging of replaceable electrodes
+(US12308414B2 Definitions and replaceable-electrode discussion).
 <<<
 COMMENT: >>>
 Each listed scenario has a unique IA-SCN-LT-* ID, Python scenario function, and notebook.
@@ -134,10 +192,21 @@ charge/discharge voltage versus SOC, efficiency versus power, efficiency versus
 temperature, SOC versus time, oxygen demand versus power, hydrogen generation versus
 charge current, KOH concentration sweep, thermal response, parameter sensitivity,
 and uncertainty analysis.
+
+Characterization SHALL include planar versus interdigitated discharge voltage
+versus capacity (EP4602674A1 FIG. 27), coulombic efficiency versus charge time
+(FIGS. 19, 21, 23, 25), and area-specific resistance versus time (FIGS. 20, 22,
+24, 26) at documented 6 M KOH and 303 K.
 <<<
 COMMENT: >>>
 Each listed scenario has a unique IA-SCN-CHR-* ID, Python scenario function, and notebook.
 <<<
+
+[[/SECTION]]
+
+[[SECTION]]
+UID: SEC-SSS3-CHG
+TITLE: Charge scenarios
 
 [REQUIREMENT]
 UID: IA-SCN-CHG-CC
@@ -294,6 +363,12 @@ RELATIONS:
 - TYPE: Parent
   VALUE: IA-NBK-007
 
+[[/SECTION]]
+
+[[SECTION]]
+UID: SEC-SSS3-DCH
+TITLE: Discharge scenarios
+
 [REQUIREMENT]
 UID: IA-SCN-DCH-CC
 STATUS: Active
@@ -434,6 +509,12 @@ RELATIONS:
 - TYPE: Parent
   VALUE: IA-NBK-008
 
+[[/SECTION]]
+
+[[SECTION]]
+UID: SEC-SSS3-TRN
+TITLE: Transition scenarios
+
 [REQUIREMENT]
 UID: IA-SCN-TRN-CHG2DCH
 STATUS: Active
@@ -559,6 +640,12 @@ Mode returns from protection to a documented operating mode without hidden-state
 RELATIONS:
 - TYPE: Parent
   VALUE: IA-NBK-009
+
+[[/SECTION]]
+
+[[SECTION]]
+UID: SEC-SSS3-CHM
+TITLE: Chemistry scenarios
 
 [REQUIREMENT]
 UID: IA-SCN-CHM-PASS
@@ -700,6 +787,12 @@ RELATIONS:
 - TYPE: Parent
   VALUE: IA-NBK-010
 
+[[/SECTION]]
+
+[[SECTION]]
+UID: SEC-SSS3-ENV
+TITLE: Environmental scenarios
+
 [REQUIREMENT]
 UID: IA-SCN-ENV-COLD
 STATUS: Active
@@ -811,6 +904,12 @@ Temperatures rise above the cooled reference. Protection may trip.
 RELATIONS:
 - TYPE: Parent
   VALUE: IA-NBK-011
+
+[[/SECTION]]
+
+[[SECTION]]
+UID: SEC-SSS3-MCH
+TITLE: Mechanical fault scenarios
 
 [REQUIREMENT]
 UID: IA-SCN-MCH-FAN
@@ -938,6 +1037,12 @@ RELATIONS:
 - TYPE: Parent
   VALUE: IA-NBK-012
 
+[[/SECTION]]
+
+[[SECTION]]
+UID: SEC-SSS3-ELC
+TITLE: Electrical scenarios
+
 [REQUIREMENT]
 UID: IA-SCN-ELC-SHORT
 STATUS: Active
@@ -1063,6 +1168,12 @@ Estimator and controller use the failed measurement, not the hidden true plant s
 RELATIONS:
 - TYPE: Parent
   VALUE: IA-NBK-013
+
+[[/SECTION]]
+
+[[SECTION]]
+UID: SEC-SSS3-GRD
+TITLE: Grid scenarios
 
 [REQUIREMENT]
 UID: IA-SCN-GRD-SAG
@@ -1204,6 +1315,12 @@ RELATIONS:
 - TYPE: Parent
   VALUE: IA-NBK-014
 
+[[/SECTION]]
+
+[[SECTION]]
+UID: SEC-SSS3-LT
+TITLE: Long-term scenarios
+
 [REQUIREMENT]
 UID: IA-SCN-LT-100H
 STATUS: Active
@@ -1329,6 +1446,12 @@ Scenario metadata records duration and fidelity setting. Parameters are shared w
 RELATIONS:
 - TYPE: Parent
   VALUE: IA-NBK-015
+
+[[/SECTION]]
+
+[[SECTION]]
+UID: SEC-SSS3-CHR
+TITLE: Characterization scenarios
 
 [REQUIREMENT]
 UID: IA-SCN-CHR-IV
@@ -1484,3 +1607,151 @@ RELATIONS:
 - TYPE: Parent
   VALUE: IA-NBK-016
 
+[[/SECTION]]
+
+[[SECTION]]
+UID: SEC-SSS3-PAT
+TITLE: Patent-architecture scenarios
+
+[TEXT]
+STATEMENT: >>>
+These scenarios map US12308414B2 Claims 1-18 and EP4602674A1 Claims 1, 20, 38, 55,
+70, 77, and FIGS. 19-27 onto executable ironair scenario functions.
+<<<
+
+[REQUIREMENT]
+UID: IA-SCN-PAT-STACKORR
+STATUS: Active
+TITLE: Submerged stacked ORR equal pressure drop
+STATEMENT: >>>
+Operate a vertical stack of discrete submerged ORR sections with depth-dependent
+geometry and equal pressure drop in the depth direction (US12308414B2 Claim 1).
+Record air utilization, pO2, and ORR current versus height.
+<<<
+COMMENT: >>>
+Pressure drop across each stacked section is the same. Bubble cascade reaches
+upper sections. No external electrolyte leak is required for internal flooding.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-009
+
+[REQUIREMENT]
+UID: IA-SCN-PAT-DRI
+STATUS: Active
+TITLE: DRI pellet bed anode
+STATEMENT: >>>
+Discharge and charge a packed bed of direct reduced iron pellets
+(US12308414B2 Claim 18; FIG. 3) in 6 M KOH.
+<<<
+COMMENT: >>>
+Iron inventory oxidizes to Fe(OH)2 / Fe3O4 on discharge. Pellet-bed porosity
+absorbs discharge volume increase (EP4602674A1 [0043]).
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-013
+
+[REQUIREMENT]
+UID: IA-SCN-PAT-INTERDIG
+STATUS: Active
+TITLE: Interdigitated OER versus planar control
+STATEMENT: >>>
+Compare planar iron/OER, channeled iron with planar OER, and channeled iron with
+interdigitated OER at 6 M KOH, 303 K, initial rib porosity 0.6, ChanFrac 0.4,
+w_rib 5 mm, and 4 g Fe/cm2 (EP4602674A1 FIGS. 19-27).
+<<<
+COMMENT: >>>
+Interdigitated configuration shows higher coulombic efficiency and an extended
+upper discharge voltage plateau relative to planar, matching FIG. 27 qualitative
+behavior. Software comparison is verification against the disclosed trends, not
+reproduction of unpublished experimental tables.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-CHM-011
+
+[REQUIREMENT]
+UID: IA-SCN-PAT-ASYM
+STATUS: Active
+TITLE: Asymmetric 100 h charge and 300 h discharge
+STATEMENT: >>>
+Configure independent charge and discharge length scales for about 100 h charge
+and about 300 h discharge with a 5 cm by 5 cm anode cross-section
+(US12308414B2 asymmetric-duration example).
+<<<
+COMMENT: >>>
+Charge duration and discharge duration are independently tunable. SOC and Faraday
+accounting remain consistent over both windows.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-007
+
+[REQUIREMENT]
+UID: IA-SCN-PAT-FLOAT
+STATUS: Active
+TITLE: Floating ORR with submerged OER
+STATEMENT: >>>
+Float the ORR at the electrolyte free surface while the OER remains submerged
+(US12308414B2 Summary; FIGS. 1B-3). Vary electrolyte height by evaporation and
+confirm the ORR remains at the triple-phase boundary.
+<<<
+COMMENT: >>>
+ORR follows the free surface. OER remains wetted. Flooding and dry-out flags stay
+clear under slow height change.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-012
+
+[REQUIREMENT]
+UID: IA-SCN-PAT-SPIRAL
+STATUS: Active
+TITLE: Spiral bifilar iron and OER
+STATEMENT: >>>
+Assemble spiral iron and anode current collector with spiral OER at least
+partially bifilar and ORR facing the spiral axis (EP4602674A1 Claim 70).
+<<<
+COMMENT: >>>
+Iron and OER remain interdigitated along the spiral. ORR air face is toward the
+axis of rotation. Electrolyte contacts iron, ORR first surface, and OER.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-017
+
+[REQUIREMENT]
+UID: IA-SCN-PAT-PLEAT
+STATUS: Active
+TITLE: Pleated iron and OER
+STATEMENT: >>>
+Operate pleated iron and pleated OER with channels between pleats
+(EP4602674A1 Claim 77; FIG. 17), optionally with OER on both iron faces
+(Claim 80).
+<<<
+COMMENT: >>>
+Channels exist between pleats. OER occupies channels perpendicular to the ORR
+plane. Dual-face OER is a selectable option.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-017
+
+[REQUIREMENT]
+UID: IA-SCN-PAT-PO2
+STATUS: Active
+TITLE: Adjustable oxygen partial pressure
+STATEMENT: >>>
+Raise pO2 on discharge within 0.01-100 atm and lower pO2 on charge within
+0.001-100 atm (US12308414B2 pressurized-gas paragraph).
+<<<
+COMMENT: >>>
+Discharge driving force increases with pO2. Charge OER is not forced to high pO2.
+Solver remains within property-model domain.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-022
+
+[[/SECTION]]
