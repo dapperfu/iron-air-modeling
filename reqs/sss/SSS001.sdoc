@@ -69,11 +69,13 @@ for every applicable requirement.
 
 Internal helper functions SHALL be traceable to the applicable implementation requirements.
 
-The traceability system SHALL identify Requirement -> Python Function -> Test -> Notebook Scenario.
+The traceability system SHALL identify Requirement -> Python Function -> Test -> Notebook Scenario
+for implemented physics in src/ironair and plant_sim.
 <<<
 COMMENT: >>>
-CI greps @relation(UID, scope=function) in src/ironair and maps each implementation
-requirement to at least one function.
+Changed because CI that greps only src/ironair misses plant_sim component ODEs,
+which now implement SSS002. Traceability SHALL scan src/ironair and plant_sim
+for @relation markers.
 <<<
 
 [REQUIREMENT]
