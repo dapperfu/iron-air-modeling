@@ -31,9 +31,7 @@ AIR_SPECS = (
     StateSpec("n_CO2_mol", "mol", "manifold CO2 inventory", nonnegative=True),
 )
 
-FAN_SPECS = (
-    StateSpec("omega_rad_s", "rad/s", "rotor speed", nonnegative=True),
-)
+FAN_SPECS = (StateSpec("omega_rad_s", "rad/s", "rotor speed", nonnegative=True),)
 
 
 def air_y0(p: PlantParams | None = None) -> NDArray[np.float64]:
