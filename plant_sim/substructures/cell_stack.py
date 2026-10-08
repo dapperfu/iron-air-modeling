@@ -29,6 +29,10 @@ class CellStack:
         self.plant = PlantModel(self.params)
 
     def equal_pressure_drop(self, Q_total: float = 5e-4, compensate: bool = True) -> dict[str, NDArray[np.float64]]:
+        """US Claim 1 equal-dP stacked ORR algebra.
+
+        @relation(IA-SCN-PAT-STACKORR, scope=function)
+        """
         return stacked_orr_flows(self.params, Q_total, compensate, self.params.T_ep_sim_K)
 
     def rhs(self, t: float, y: NDArray[np.float64], u: Mapping[str, float] | None = None) -> NDArray[np.float64]:

@@ -158,6 +158,10 @@ def carbonation_inputs(p: PlantParams | None = None):
 
 
 def equal_dp_inputs(p: PlantParams | None = None) -> Mapping[str, float]:
+    """US Claim 1 stacked-ORR equal pressure-drop operating point.
+
+    @relation(IA-SCN-PAT-STACKORR, scope=function)
+    """
     p = p or default_params()
     return {"mode": MODE_DISCHARGE, "P_grid_W": -300.0, "I_cell_A": p.I_discharge_100h_A, "I_fan_A": 1.0, "T_amb_K": p.T_ep_sim_K}
 

@@ -1633,7 +1633,8 @@ TITLE: Patent-architecture scenarios
 [TEXT]
 STATEMENT: >>>
 These scenarios map US12308414B2 Claims 1-18 and EP4602674A1 Claims 1, 20, 38, 55,
-70, 77, and FIGS. 19-27 onto executable ironair scenario functions.
+70, 77, and FIGS. 19-27 onto plant_sim notebooks where implemented. They SHALL NOT
+be treated as functions in empty ironair.scenarios.
 <<<
 
 [REQUIREMENT]
@@ -1648,6 +1649,9 @@ Record air utilization, pO2, and ORR current versus height.
 COMMENT: >>>
 Pressure drop across each stacked section is the same. Bubble cascade reaches
 upper sections. No external electrolyte leak is required for internal flooding.
+
+Changed because this case is implemented in plant_sim/96_EqualPressureDropORR.ipynb
+and CellStack.equal_pressure_drop, not in ironair.scenarios.
 <<<
 RELATIONS:
 - TYPE: Parent
