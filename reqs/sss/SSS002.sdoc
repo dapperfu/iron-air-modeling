@@ -722,7 +722,8 @@ UID: IA-TRF-001
 STATUS: Active
 TITLE: Transformer ODE
 STATEMENT: >>>
-Module ironair.components.transformer SHALL provide class Transformer.
+Module plant_sim.components.electrical SHALL provide class Transformer
+(notebook plant_sim/33_ElectricalBalance.ipynb).
 
 The component SHALL include electromagnetic dynamic states where detailed transient
 modeling is enabled, along with winding and core thermal dynamics.
@@ -730,7 +731,14 @@ modeling is enabled, along with winding and core thermal dynamics.
 COMMENT: >>>
 Detailed mode includes flux or current states. Thermal states exist in both modes.
 Prescribed grid voltage is an input, not a transformer state.
+
+Changed because ironair.components.transformer does not exist.
+plant_sim.components.electrical.Transformer implements flux and winding-temperature
+states with grid voltage as an input.
 <<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-GRD-001
 
 [REQUIREMENT]
 UID: IA-GRD-001

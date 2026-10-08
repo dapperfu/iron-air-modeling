@@ -3,6 +3,7 @@
 @relation(IA-DC-001, scope=module)
 @relation(IA-CNV-001, scope=module)
 @relation(IA-INV-001, scope=module)
+@relation(IA-TRF-001, scope=module)
 """
 
 from __future__ import annotations
@@ -154,11 +155,20 @@ class GridInverter(RHSComponent):
 
 
 class Transformer(RHSComponent):
+    """IA-TRF-001 transformer flux and winding temperature.
+
+    @relation(IA-TRF-001, scope=class)
+    """
+
     def __init__(self, p: PlantParams | None = None) -> None:
         p = p or default_params()
         y0 = np.array([0.0, p.T_ref_K], dtype=np.float64)
 
         def rhs(t, y, inputs, context):  # type: ignore[no-untyped-def]
+            """Transformer flux and winding-temperature RHS.
+
+            @relation(IA-TRF-001, scope=function)
+            """
             flux, Tw = y
             v = float(inputs.get("v_grid_V", p.grid_V_rms))
             f = float(inputs.get("f_Hz", p.grid_f_Hz))
