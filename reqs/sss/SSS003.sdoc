@@ -1749,6 +1749,9 @@ partially bifilar and ORR facing the spiral axis (EP4602674A1 Claim 70).
 COMMENT: >>>
 Iron and OER remain interdigitated along the spiral. ORR air face is toward the
 axis of rotation. Electrolyte contacts iron, ORR first surface, and OER.
+
+Changed because this layout is ChanneledElectrode(layout="spiral_bifilar") in
+plant_sim, not an ironair.scenarios function.
 <<<
 RELATIONS:
 - TYPE: Parent

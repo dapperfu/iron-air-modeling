@@ -1,6 +1,7 @@
 """21 Channeled / interdigitated / spiral bifilar / pleated electrode (EP4602674A1).
 
 @relation(IA-SCN-PAT-INTERDIG, scope=module)
+@relation(IA-SCN-PAT-SPIRAL, scope=module)
 """
 
 from __future__ import annotations
@@ -38,6 +39,7 @@ class ChanneledElectrode:
     """EP channeled / interdigitated iron-OER layouts.
 
     @relation(IA-SCN-PAT-INTERDIG, scope=class)
+    @relation(IA-SCN-PAT-SPIRAL, scope=class)
     """
 
     params: PlantParams | None = None
