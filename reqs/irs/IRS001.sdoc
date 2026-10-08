@@ -33,7 +33,9 @@ The following imports SHALL succeed after editable install:
   from ironair import plotting
 <<<
 COMMENT: >>>
-tests/test_package_imports.py passes in the project virtual environment.
+Changed because tests/test_package_imports.py does not exist. The listed ironair
+imports still succeed after editable install; plant physics is imported from
+plant_sim in addition to those package roots.
 <<<
 RELATIONS:
 - TYPE: Parent
