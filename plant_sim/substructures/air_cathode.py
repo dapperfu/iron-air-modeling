@@ -19,7 +19,9 @@ def _oer_rhs(t: float, y: NDArray[np.float64], u: Mapping[str, float], p: PlantP
     return oer_mod.oer_rhs(t, y, u, p, layout="interdigitated")
 
 
-def _couple(t: float, y: NDArray[np.float64], u: Mapping[str, float], p: PlantParams, parts: dict[str, NDArray[np.float64]]) -> dict[str, Mapping[str, float]]:
+def _couple(
+    t: float, y: NDArray[np.float64], u: Mapping[str, float], p: PlantParams, parts: dict[str, NDArray[np.float64]]
+) -> dict[str, Mapping[str, float]]:
     I_dch = float(u.get("I_orr_A", -p.I_discharge_100h_A))
     I_chg = float(u.get("I_oer_A", 0.0))
     T = float(u.get("T_K", p.T_ep_sim_K))
@@ -29,10 +31,36 @@ def _couple(t: float, y: NDArray[np.float64], u: Mapping[str, float], p: PlantPa
     r_orr = abs(min(I_dch, 0.0)) / (4.0 * 96485.3321233100184)
     r_oer = max(I_chg, 0.0) / (4.0 * 96485.3321233100184)
     return {
-        "orr": {"I_orr_A": I_dch, "T_K": T, "c_O2_gdl_mol_m3": c_tpb, "p_O2_Pa": x_O2 * float(parts["air"][0]), "a_oh": 6.0, "a_h2o": 0.72},
-        "oer": {"I_oer_A": I_chg, "T_K": T, "a_oh": 6.0, "a_h2o": 0.72, "p_O2_Pa": x_O2 * float(parts["air"][0]), "oer_isolated": float(u.get("oer_isolated", 0.0))},
-        "gdl": {"T_K": T, "P_Pa": float(parts["air"][0]), "x_O2": x_O2, "r_orr_mol_s": r_orr, "hydraulic_head_m": float(u.get("hydraulic_head_m", 0.1)), "oer_dryout": 0.2 if I_chg > 0 else 0.0},
-        "air": {"mdot_air_kg_s": float(u.get("mdot_air_kg_s", 0.002)), "r_orr_mol_s": r_orr, "r_oer_mol_s": r_oer, "T_K": T},
+        "orr": {
+            "I_orr_A": I_dch,
+            "T_K": T,
+            "c_O2_gdl_mol_m3": c_tpb,
+            "p_O2_Pa": x_O2 * float(parts["air"][0]),
+            "a_oh": 6.0,
+            "a_h2o": 0.72,
+        },
+        "oer": {
+            "I_oer_A": I_chg,
+            "T_K": T,
+            "a_oh": 6.0,
+            "a_h2o": 0.72,
+            "p_O2_Pa": x_O2 * float(parts["air"][0]),
+            "oer_isolated": float(u.get("oer_isolated", 0.0)),
+        },
+        "gdl": {
+            "T_K": T,
+            "P_Pa": float(parts["air"][0]),
+            "x_O2": x_O2,
+            "r_orr_mol_s": r_orr,
+            "hydraulic_head_m": float(u.get("hydraulic_head_m", 0.1)),
+            "oer_dryout": 0.2 if I_chg > 0 else 0.0,
+        },
+        "air": {
+            "mdot_air_kg_s": float(u.get("mdot_air_kg_s", 0.002)),
+            "r_orr_mol_s": r_orr,
+            "r_oer_mol_s": r_oer,
+            "T_K": T,
+        },
     }
 
 
