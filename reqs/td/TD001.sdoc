@@ -12,8 +12,8 @@ TITLE: Foundation and chemistry tests
 [TEXT]
 STATEMENT: >>>
 These test descriptions specify how phase-gate and patent-mapped requirements are
-executed. Procedures operate on the ironair package. They do not energize physical
-cells from US12308414B2 or EP4602674A1.
+executed. Procedures operate on the ironair package and the plant_sim ODE stack.
+They do not energize physical cells from US12308414B2 or EP4602674A1.
 <<<
 
 [REQUIREMENT]
