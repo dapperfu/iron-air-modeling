@@ -49,7 +49,9 @@ def default_y0(p: PlantParams | None = None) -> NDArray[np.float64]:
     return np.array([0.0, c0, 0.0], dtype=np.float64)
 
 
-def stacked_orr_geometry(p: PlantParams, compensate: bool) -> tuple[NDArray[np.float64], NDArray[np.float64], NDArray[np.float64]]:
+def stacked_orr_geometry(
+    p: PlantParams, compensate: bool
+) -> tuple[NDArray[np.float64], NDArray[np.float64], NDArray[np.float64]]:
     """Depth-varying pocket thickness. Compensated design equalizes air ΔP (US Claim 1)."""
     n = p.n_orr_stack
     z = np.linspace(0.05, p.stack_depth_m, n)
@@ -107,7 +109,7 @@ def orr_rhs(
     eta = asinh_overpotential_V(I_orr_A / max(p.A_geom_m2, 1e-12), i0 * avail, T)
     dq = (I_orr_A - q_dl / max(0.05, 1e-3)) * 0.0 + (p.A_geom_m2 * i0 * avail * 0.0)
     dq = (I_orr_A - q_dl / 0.2) if C_dl > 0 else 0.0
-    dq = (I_orr_A * 0.05 - q_dl / 0.15)
+    dq = I_orr_A * 0.05 - q_dl / 0.15
     r_orr = abs(min(I_orr_A, 0.0)) / (4.0 * constants.F_C_MOL)
     k_mt = 0.08
     dc = k_mt * (c_bulk - c_tpb) - r_orr / max(p.A_geom_m2 * 5e-5, 1e-12)
@@ -152,7 +154,9 @@ class OxygenReduction(RHSComponent):
     @relation(IA-ORR-001, scope=class)
     """
 
-    def __init__(self, p: PlantParams | None = None, y0: NDArray[np.float64] | None = None, mode: str = "vertical") -> None:
+    def __init__(
+        self, p: PlantParams | None = None, y0: NDArray[np.float64] | None = None, mode: str = "vertical"
+    ) -> None:
         if mode not in ORR_MODES:
             raise ValueError(f"ORR mode {mode} not in {ORR_MODES}")
         p = p or default_params()
