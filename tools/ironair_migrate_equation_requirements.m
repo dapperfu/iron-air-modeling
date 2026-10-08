@@ -86,6 +86,8 @@ for index = 1:count
     body = string(text(ends(index) + 1:section_end));
     body = strip(body);
     body = replace(body, "<<<", "less-than less-than less-than");
+    body = replace(body, sprintf("\r\n"), newline);
+    body = "| " + replace(body, newline, newline + "| ");
 
     prefix = string(text(1:starts(index) - 1));
     file_tokens = regexp(prefix, "`([^`\r\n]+\.m)`", "tokens");
