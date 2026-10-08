@@ -1,5 +1,7 @@
 """Iron electrode ODE (IA-FE-001).
 
+@relation(IA-FE-001, scope=module)
+
 States: n_Fe, n_FeOH2, n_Fe3O4, T, passivation thickness, porosity, a_rel, n_lost.
 
 Discharge Fe -> Fe(OH)2 (2 e-, 960 mAh/g) then Fe(OH)2 -> Fe3O4 (2 e- / 3 Fe, 320 mAh/g).
@@ -71,6 +73,10 @@ def iron_anode_rhs(
     u: Mapping[str, float],
     p: PlantParams,
 ) -> NDArray[np.float64]:
+    """Faraday iron-phase RHS (Fe / Fe(OH)2 / Fe3O4).
+
+    @relation(IA-FE-001, scope=function)
+    """
     n_Fe, n_FeOH2, n_Fe3O4, T, delta, eps, a_rel, n_lost = y
     I_A = float(u.get("I_fe_A", 0.0))
     T_amb = float(u.get("T_amb_K", p.T_ep_sim_K))
@@ -155,7 +161,10 @@ def iron_anode_outputs(
 
 
 class IronAnode(RHSComponent):
-    """IA-FE-001 iron electrode."""
+    """IA-FE-001 iron electrode.
+
+    @relation(IA-FE-001, scope=class)
+    """
 
     def __init__(self, p: PlantParams | None = None, y0: NDArray[np.float64] | None = None) -> None:
         p = p or default_params()

@@ -24,7 +24,8 @@ UID: IA-FE-001
 STATUS: Active
 TITLE: Iron electrode ODE
 STATEMENT: >>>
-Module ironair.components.iron_electrode SHALL provide class IronElectrode.
+Module plant_sim.components.iron_anode SHALL provide class IronAnode
+(notebook plant_sim/01_IronAnode.ipynb).
 
 The component SHALL dynamically model metallic iron, Fe(OH)2, Fe3O4, active surface
 area, passivation thickness, porosity, electrode temperature, and irreversible
@@ -48,6 +49,10 @@ US12308414B2 Claim 18 and FIG. 3 packed DRI bed; EP4602674A1 Claims 1, 16-17 and
 COMMENT: >>>
 Discharge of Fe increases Fe(OH)2 using IA-CHM-002 stoichiometry. Temperature is a
 dynamic state. Passivation thickness is nonnegative.
+
+Changed because ironair.components.iron_electrode / IronElectrode does not exist
+(src/ironair/components is an empty package). plant_sim.components.iron_anode.IronAnode
+implements the Fe/Fe(OH)2/Fe3O4 Faraday ODE used by the plant stack.
 <<<
 RELATIONS:
 - TYPE: Parent
