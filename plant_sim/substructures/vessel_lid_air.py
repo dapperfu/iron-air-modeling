@@ -17,7 +17,9 @@ from plant_sim.params import PlantParams, default_params
 from plant_sim.substructures.compose import CoupledSubstructure
 
 
-def _couple(t: float, y: NDArray[np.float64], u: Mapping[str, float], p: PlantParams, parts: dict[str, NDArray[np.float64]]) -> dict[str, Mapping[str, float]]:
+def _couple(
+    t: float, y: NDArray[np.float64], u: Mapping[str, float], p: PlantParams, parts: dict[str, NDArray[np.float64]]
+) -> dict[str, Mapping[str, float]]:
     """Couple iron, lid air, fan, and vessel thermal nodes.
 
     @relation(IA-ENC-001, scope=function)
@@ -27,9 +29,19 @@ def _couple(t: float, y: NDArray[np.float64], u: Mapping[str, float], p: PlantPa
     mdot = 1.2e-5 * float(parts["fan"][0])
     return {
         "fe": {"I_fe_A": I, "T_amb_K": float(u.get("T_amb_K", p.T_ref_K)), "a_oh": 6.0, "a_h2o": 0.72},
-        "air": {"mdot_air_kg_s": mdot, "r_orr_mol_s": abs(min(I, 0.0)) / (4 * 96485.33), "r_oer_mol_s": max(I, 0.0) / (4 * 96485.33), "T_K": T},
+        "air": {
+            "mdot_air_kg_s": mdot,
+            "r_orr_mol_s": abs(min(I, 0.0)) / (4 * 96485.33),
+            "r_oer_mol_s": max(I, 0.0) / (4 * 96485.33),
+            "T_K": T,
+        },
         "fan": {"I_fan_A": float(u.get("I_fan_A", 0.6))},
-        "th": {"q_reaction_W": abs(I) * 0.1, "q_joule_W": I**2 * 0.002, "T_amb_K": float(u.get("T_amb_K", p.T_ref_K)), "mdot_coolant_kg_s": 0.04},
+        "th": {
+            "q_reaction_W": abs(I) * 0.1,
+            "q_joule_W": I**2 * 0.002,
+            "T_amb_K": float(u.get("T_amb_K", p.T_ref_K)),
+            "mdot_coolant_kg_s": 0.04,
+        },
     }
 
 
