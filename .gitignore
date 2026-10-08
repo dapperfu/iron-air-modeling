@@ -1,0 +1,33 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# MATLAB / Simulink
+*.asv
+*.m~
+*.autosave
+*.slxc
+*.slx.r*
+*_sfun.mex*
+*.mexw64
+*.mexa64
+*.mexmaci64
+slprj/
+sccprj/
+*.bak
+*.orig
+*.sdf
+*.codekit3
+
+# OS
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# IDE
+.idea/
+*.swp
+
+# Keep requirements_html/ tracked (StrictDoc HTML committed per project rules)

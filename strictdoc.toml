@@ -1,0 +1,6 @@
+[project]
+title = "iron-air-modeling"
+html_assets_strategy = "copy"
+
+[features]
+# Keep defaults; HTML generation configured via Makefile output path.
