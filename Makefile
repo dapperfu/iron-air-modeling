@@ -8,6 +8,8 @@ COVERAGE := $(VENV)/bin/coverage
 STRICTDOC := $(VENV)/bin/strictdoc
 PRECOMMIT := $(VENV)/bin/pre-commit
 PIP_AUDIT := $(VENV)/bin/pip-audit
+STRICTDOC_STAGING := .strictdoc_build
+STRICTDOC_PAGES := docs
 
 .PHONY: help venv install test test-phase-1 test-phase-2 test-coverage lint typecheck \
 	strictdoc-validate strictdoc-generate strictdoc-export strictdoc-serve strictdoc-tree \
@@ -49,10 +51,13 @@ strictdoc-init:
 	@echo "StrictDoc tree already lives under reqs/"
 
 strictdoc-validate:
-	$(STRICTDOC) inspect-requirements reqs
+	$(STRICTDOC) export reqs --formats html --output-dir $(STRICTDOC_STAGING) --project-title iron-air-modeling
 
-strictdoc-generate:
-	$(STRICTDOC) export reqs --formats html --output-dir reqs/html --enable-mathjax --project-title iron-air-modeling
+strictdoc-generate: strictdoc-validate
+	rm -rf $(STRICTDOC_PAGES)
+	mkdir -p $(STRICTDOC_PAGES)
+	cp -a $(STRICTDOC_STAGING)/html/. $(STRICTDOC_PAGES)/
+	touch $(STRICTDOC_PAGES)/.nojekyll
 
 strictdoc-export: strictdoc-generate
 
