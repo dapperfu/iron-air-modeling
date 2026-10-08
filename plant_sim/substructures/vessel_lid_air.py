@@ -1,4 +1,7 @@
-"""22 Vessel, multi-function lid, air delivery, inverse-air, DRI pellet bed."""
+"""22 Vessel, multi-function lid, air delivery, inverse-air, DRI pellet bed.
+
+@relation(IA-ENC-001, scope=module)
+"""
 
 from __future__ import annotations
 
@@ -15,6 +18,10 @@ from plant_sim.substructures.compose import CoupledSubstructure
 
 
 def _couple(t: float, y: NDArray[np.float64], u: Mapping[str, float], p: PlantParams, parts: dict[str, NDArray[np.float64]]) -> dict[str, Mapping[str, float]]:
+    """Couple iron, lid air, fan, and vessel thermal nodes.
+
+    @relation(IA-ENC-001, scope=function)
+    """
     I = float(u.get("I_fe_A", 0.0))
     T = float(parts["fe"][3])
     mdot = 1.2e-5 * float(parts["fan"][0])
@@ -27,6 +34,11 @@ def _couple(t: float, y: NDArray[np.float64], u: Mapping[str, float], p: PlantPa
 
 
 class VesselLidAir(CoupledSubstructure):
+    """IA-ENC-001 vessel, lid, and secondary-containment air path.
+
+    @relation(IA-ENC-001, scope=class)
+    """
+
     def __init__(self, p: PlantParams | None = None, dri: bool = True) -> None:
         p = p or default_params()
         self.dri = dri

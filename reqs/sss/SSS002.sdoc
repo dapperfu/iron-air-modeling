@@ -625,7 +625,8 @@ UID: IA-ENC-001
 STATUS: Active
 TITLE: Enclosure ODE
 STATEMENT: >>>
-Module ironair.components.enclosure SHALL provide class BatteryEnclosure.
+Module plant_sim.substructures.vessel_lid_air SHALL provide class VesselLidAir
+(notebook plant_sim/22_VesselLidAir.ipynb).
 
 The model SHALL include enclosure temperature, ventilation, auxiliary electrical loads,
 and enclosure-level gas inventories.
@@ -643,6 +644,10 @@ containment, and lid 902 functions.
 <<<
 COMMENT: >>>
 Ventilation flow reduces enclosure H2 inventory. Auxiliary load is an algebraic electrical output.
+
+Changed because ironair.components.enclosure.BatteryEnclosure does not exist.
+plant_sim.substructures.vessel_lid_air.VesselLidAir implements stackable vessel, DRI bed,
+lid air delivery, and thermal cavity used as the enclosure image.
 <<<
 RELATIONS:
 - TYPE: Parent
