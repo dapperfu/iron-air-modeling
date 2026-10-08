@@ -109,6 +109,8 @@ p = put(p, "k_pass_removal_m_s", 2e-13, "m/s", "CALIBRATION_REQUIRED", [0, 1e-6]
 p = put(p, "m_pass", 1, "1", "ASSUMED", [0.1, 4]);
 p = put(p, "k_corrosion_mol_s", 1e-10, "mol/s", "CALIBRATION_REQUIRED", [0, 1e-3]);
 p = put(p, "C_dl_Fe_F", 10, "F", "ASSUMED", [0, 1e6]);
+p = put(p, "rho_Fe_ref_Ohm_m", 9.71e-8, "Ohm m", "ASSUMED", [1e-9, 1e-4]);
+p = put(p, "alpha_rho_Fe_1_K", 0.0065, "1/K", "ASSUMED", [0, 0.02]);
 end
 
 function p = group_iron_phases()
@@ -178,6 +180,22 @@ p = put(p, "V_electrolyte_initial_m3", 5e-4, "m3", "ASSUMED", [1e-6, 1e3]);
 p = put(p, "k_carbonation_m3_mol_s", 1e-7, "m3/(mol s)", "CALIBRATION_REQUIRED", [0, 1]);
 p = put(p, "m_carbonation", 1, "1", "ASSUMED", [0.1, 4]);
 p = put(p, "extrapolation_policy_code", 0, "1", "ASSUMED", [0, 1]);
+p = put(p, "c_property_ref_mol_m3", 6000, "mol/m3", "ASSUMED", [500, 12000]);
+p = put(p, "kappa_ref_S_m", 25, "S/m", "CALIBRATION_REQUIRED", [0.1, 200]);
+p = put(p, "kappa_temp_coeff_1_K", 0.02, "1/K", "CALIBRATION_REQUIRED", [0, 0.1]);
+p = put(p, "rho_water_ref_kg_m3", 997, "kg/m3", "REFERENCE_CONDITION", [900, 1200]);
+p = put(p, "rho_c_coeff_kg_mol", 0.045, "kg/mol", "CALIBRATION_REQUIRED", [0, 0.2]);
+p = put(p, "rho_temp_coeff_kg_m3K", 0.3, "kg/(m3 K)", "CALIBRATION_REQUIRED", [0, 2]);
+p = put(p, "mu_ref_Pa_s", 1e-3, "Pa s", "REFERENCE_CONDITION", [1e-4, 1]);
+p = put(p, "mu_c_coeff_m3_mol", 1.8e-4, "m3/mol", "CALIBRATION_REQUIRED", [0, 1e-3]);
+p = put(p, "mu_temp_coeff_1_K", 0.025, "1/K", "CALIBRATION_REQUIRED", [0, 0.1]);
+p = put(p, "cp_water_ref_J_kgK", 4180, "J/(kg K)", "REFERENCE_CONDITION", [3000, 5000]);
+p = put(p, "cp_c_coeff_J_m3_kgK_mol", 0.25, "J m3/(kg K mol)", "CALIBRATION_REQUIRED", [0, 1]);
+p = put(p, "water_activity_coeff_m3_mol", 1.7e-4, "m3/mol", "CALIBRATION_REQUIRED", [0, 1e-3]);
+p = put(p, "T_property_min_K", 273.15, "K", "ASSUMED", [200, 400]);
+p = put(p, "T_property_max_K", 353.15, "K", "ASSUMED", [250, 500]);
+p = put(p, "c_property_min_mol_m3", 500, "mol/m3", "ASSUMED", [0, 12000]);
+p = put(p, "c_property_max_mol_m3", 12000, "mol/m3", "ASSUMED", [500, 20000]);
 end
 
 function p = group_separator()
@@ -231,6 +249,9 @@ p = put(p, "h_conv_W_m2K", 10, "W/(m2 K)", "ASSUMED", [0, 1e5]);
 p = put(p, "epsilon_radiation", 0.8, "1", "ASSUMED", [0, 1]);
 p = put(p, "A_surface_m2", 1, "m2", "ASSUMED", [1e-4, 1e6]);
 p = put(p, "de_cell_eq_dT_V_K", -4e-4, "V/K", "CALIBRATION_REQUIRED", [-0.01, 0.01]);
+p = put(p, "k_Fe_W_mK", 80, "W/(m K)", "ASSUMED", [1, 200]);
+p = put(p, "k_electrolyte_W_mK", 0.5, "W/(m K)", "ASSUMED", [0.05, 5]);
+p = put(p, "k_polymer_W_mK", 0.2, "W/(m K)", "ASSUMED", [0.01, 2]);
 end
 
 function p = group_gas_properties()
@@ -242,6 +263,12 @@ p = put(p, "D_O2_air_ref_m2_s", 2.0e-5, "m2/s", "ASSUMED", [1e-7, 1e-3]);
 p = put(p, "M_dry_air_kg_mol", 0.028965, "kg/mol", "REFERENCE_CONDITION", [0.02, 0.04]);
 p = put(p, "cp_air_J_kgK", 1005, "J/(kg K)", "ASSUMED", [500, 2000]);
 p = put(p, "p_H2_trip_Pa", 4000, "Pa", "ASSUMED", [0, 1e5]);
+p = put(p, "H_O2_ref_mol_m3Pa", 1.3e-5, "mol/(m3 Pa)", "CALIBRATION_REQUIRED", [1e-8, 1e-3]);
+p = put(p, "O2_salting_coeff_m3_mol", 2.5e-4, "m3/mol", "CALIBRATION_REQUIRED", [0, 1e-3]);
+p = put(p, "O2_solution_enthalpy_J_mol", -12000, "J/mol", "CALIBRATION_REQUIRED", [-1e5, 1e5]);
+p = put(p, "D_O2_liquid_ref_m2_s", 2e-9, "m2/s", "CALIBRATION_REQUIRED", [1e-12, 1e-7]);
+p = put(p, "D_gas_ref_m2_s", 2e-5, "m2/s", "ASSUMED", [1e-7, 1e-3]);
+p = put(p, "gas_diffusivity_T_exponent", 1.75, "1", "ASSUMED", [1, 3]);
 end
 
 function p = group_liquid_transport()
