@@ -86,6 +86,7 @@ for index = 1:count
     body = string(text(ends(index) + 1:section_end));
     body = strip(body);
     body = replace(body, "<<<", "less-than less-than less-than");
+    body = replace(body, "`", "'");
     body = replace(body, sprintf("\r\n"), newline);
     body = "| " + replace(body, newline, newline + "| ");
 
