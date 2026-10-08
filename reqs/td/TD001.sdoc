@@ -1,0 +1,92 @@
+[DOCUMENT]
+TITLE: Test Description - IRONAIR Phase Gates
+UID: DOC-TD001
+VERSION: 1.0.0
+OPTIONS:
+  MARKUP: Text
+
+[REQUIREMENT]
+UID: IA-TD-001
+STATUS: Active
+TITLE: Package import test
+STATEMENT: >>>
+Import ironair and the public subpackages listed in IA-SYS-001.
+<<<
+COMMENT: >>>
+No ImportError. __version__ is a nonempty string.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-SYS-001
+
+[REQUIREMENT]
+UID: IA-TD-002
+STATUS: Active
+TITLE: Constants immutability test
+STATEMENT: >>>
+Read F_C_MOL, R_J_MOL_K, T_REF_K, P_REF_PA, M_FE_KG_MOL, M_O2_KG_MOL, M_H2O_KG_MOL,
+and M_KOH_KG_MOL. Attempting assignment shall fail.
+<<<
+COMMENT: >>>
+Values match documented CODATA/IUPAC constants. Frozen assignment raises.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-CON-001
+
+[REQUIREMENT]
+UID: IA-TD-003
+STATUS: Active
+TITLE: Elemental conservation test
+STATEMENT: >>>
+For each column of S, compute the elemental residual E @ S[:, j].
+<<<
+COMMENT: >>>
+Absolute residual < 1e-12 for Fe, O, H, K, and C.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-TST-001
+
+[REQUIREMENT]
+UID: IA-TD-004
+STATUS: Active
+TITLE: Butler-Volmer equilibrium test
+STATEMENT: >>>
+Evaluate electrode current at zero overpotential with finite activities.
+<<<
+COMMENT: >>>
+Net Faradaic current is ~0. Symmetric coefficients produce an odd i(eta) function.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-CHM-007
+
+[REQUIREMENT]
+UID: IA-TD-005
+STATUS: Active
+TITLE: RHS determinism test
+STATEMENT: >>>
+Evaluate rhs twice with identical arguments.
+<<<
+COMMENT: >>>
+Arrays compare equal. Component parameter values are unchanged.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-ODE-001
+
+[REQUIREMENT]
+UID: IA-TD-006
+STATUS: Active
+TITLE: Traceability test
+STATEMENT: >>>
+Parse reqs/**/*.sdoc UIDs and src/**/*.py @relation markers.
+<<<
+COMMENT: >>>
+Every @relation UID exists. Every implementation requirement listed in the
+traceability map has a function marker.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: IA-REQ-004
