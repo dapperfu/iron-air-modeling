@@ -42,12 +42,15 @@ if isempty(marker_index)
 end
 text = text(marker_index(1):end);
 
-expression = "(?m)^## ([A-Z]+-[0-9]{3}): ([^\r\n]+)$";
+expression = "(?m)^## ([A-Z]+-[0-9]{3}): ([^\r\n]+)\r?$";
 [starts, ends, tokens] = regexp(text, expression, "start", "end", "tokens");
 count = numel(tokens);
-if count ~= 100
+uids = string(cellfun(@(token) token{1}, tokens, "UniformOutput", false));
+if count ~= 171 || numel(unique(uids)) ~= count || ...
+        uids(1) ~= "FE-001" || uids(end) ~= "SYS-007"
     error("ironair:requirements:EquationCount", ...
-        "Expected 100 equation IDs but found %d.", count);
+        "Expected 171 unique IDs from FE-001 through SYS-007 but found %d.", ...
+        count);
 end
 
 output_folder = fileparts(output_path);
