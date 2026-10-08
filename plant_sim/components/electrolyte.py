@@ -1,5 +1,7 @@
 """Electrolyte ODE (IA-ELY-001).
 
+@relation(IA-ELY-001, scope=module)
+
 Default 6 M KOH. Tracks water, OH-, carbonate, volume, and temperature.
 Carbonation: CO2 + 2 OH- -> CO3^2- + H2O (US12308414B2). High hydroxide
 (>= 7 M) is an allowed CE/capacity lever (EP4602674A1).
@@ -57,6 +59,10 @@ def electrolyte_rhs(
     u: Mapping[str, float],
     p: PlantParams,
 ) -> NDArray[np.float64]:
+    """KOH, water, carbonate, and thermal electrolyte RHS.
+
+    @relation(IA-ELY-001, scope=function)
+    """
     n_OH, n_H2O, n_CO3, n_CO2, T, V, s_wet = y
     V = max(V, 1e-8)
     r_iron = float(u.get("r_iron_mol_s", 0.0))
@@ -135,6 +141,11 @@ def electrolyte_outputs(
 
 
 class Electrolyte(RHSComponent):
+    """IA-ELY-001 electrolyte inventory.
+
+    @relation(IA-ELY-001, scope=class)
+    """
+
     def __init__(self, p: PlantParams | None = None, y0: NDArray[np.float64] | None = None, filled: bool = True) -> None:
         p = p or default_params()
         y0 = default_y0(p, filled=filled) if y0 is None else y0

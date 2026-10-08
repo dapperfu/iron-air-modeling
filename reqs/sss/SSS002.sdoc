@@ -199,7 +199,8 @@ UID: IA-ELY-001
 STATUS: Active
 TITLE: Electrolyte ODE
 STATEMENT: >>>
-Module ironair.components.electrolyte SHALL provide class Electrolyte.
+Module plant_sim.components.electrolyte SHALL provide class Electrolyte
+(notebook plant_sim/06_Electrolyte.ipynb).
 
 States SHALL include water inventory, dissolved species, electrolyte temperature,
 carbonation, and spatial concentration distributions where enabled.
@@ -219,6 +220,10 @@ and high-hydroxide paragraph.
 COMMENT: >>>
 Conductivity is computed from instantaneous KOH concentration and temperature via
 ironair.properties. Carbonate accumulation consumes OH-.
+
+Changed because ironair.components.electrolyte does not exist.
+plant_sim.components.electrolyte.Electrolyte implements 6 M KOH inventory,
+carbonation, and fill dynamics used by the plant stack.
 <<<
 RELATIONS:
 - TYPE: Parent
