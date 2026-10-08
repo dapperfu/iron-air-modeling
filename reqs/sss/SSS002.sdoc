@@ -803,16 +803,19 @@ UID: IA-FLT-001
 STATUS: Active
 TITLE: Sensor ODE
 STATEMENT: >>>
-Module ironair.components.sensors SHALL provide class DynamicSensor.
+Lid-mounted voltage, current, temperature, electrolyte-level, gas-flow, and
+hydrogen sensing from US12308414B2 FIG. 9A SHALL remain a design-only requirement
+until a sensor ODE exists. No plant_sim or ironair DynamicSensor class is
+implemented.
 
-The model SHALL include finite response time, sensor drift, bias, and noise.
-
-Lid-mounted reactor controls and sensing of US12308414B2 FIG. 9A SHALL map onto
-DynamicSensor instances for voltage, current, temperature, electrolyte level, gas
-flow, and hydrogen.
+When implemented, the model SHALL include finite response time, sensor drift,
+bias, and noise with a documented random seed. It SHALL NOT claim
+ironair.components.sensors until that module exists.
 <<<
 COMMENT: >>>
-First-order sensor lag is a dynamic state. Noise uses a documented random seed.
+Changed because ironair.components.sensors.DynamicSensor does not exist and no
+plant_sim sensor ODE was implemented with the plant stack. Leaving a module SHALL
+would be a false implementation claim; this UID is now an explicit design allocation.
 <<<
 RELATIONS:
 - TYPE: Parent
