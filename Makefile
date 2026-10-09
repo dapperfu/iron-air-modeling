@@ -15,11 +15,12 @@ PAGES_PORT := 8000
 FORMAT_PATHS := src plant_sim
 
 .PHONY: help venv install test test-phase-1 test-phase-2 test-coverage lint format typecheck \
+	notebooks-evaluate notebooks-format \
 	strictdoc-validate strictdoc-generate strictdoc-export strictdoc-serve strictdoc-tree \
 	strictdoc-help strictdoc-init pre-commit-install pre-commit security serve
 
 help:
-	@echo "IRONAIR targets: venv install test lint format typecheck strictdoc-generate serve"
+	@echo "IRONAIR targets: venv install test lint format notebooks-evaluate notebooks-format typecheck strictdoc-generate serve"
 
 venv:
 	python3 -m venv $(VENV)
@@ -49,6 +50,37 @@ lint:
 
 format:
 	$(RUFF) format $(FORMAT_PATHS)
+
+# Execute all plant_sim notebooks in place so saved outputs (plots, prints)
+# are available for online viewing. Always run this before formatting notebooks.
+notebooks-evaluate:
+	@mkdir -p output/ipython output/matplotlib output/jupyter/kernels/ironair
+	@cp -f $(VENV)/share/jupyter/kernels/ironair/kernel.json output/jupyter/kernels/ironair/
+	@fail=0; \
+	for nb in $$(ls plant_sim/*.ipynb | sort); do \
+		echo "==== EXECUTE $$nb ===="; \
+		if IPYTHONDIR=$(CURDIR)/output/ipython \
+			MPLCONFIGDIR=$(CURDIR)/output/matplotlib \
+			JUPYTER_DATA_DIR=$(CURDIR)/output/jupyter \
+			PYTHONPATH=$(CURDIR):$(CURDIR)/src \
+			$(PYTHON) -m jupyter nbconvert \
+				--to notebook \
+				--execute \
+				--inplace \
+				--ExecutePreprocessor.kernel_name=ironair \
+				--ExecutePreprocessor.timeout=600 \
+				--ExecutePreprocessor.startup_timeout=120 \
+				"$$nb"; then \
+			echo "OK $$nb"; \
+		else \
+			echo "FAIL $$nb"; \
+			fail=1; \
+		fi; \
+	done; \
+	exit $$fail
+
+# Evaluate notebooks first, then ruff-format Python and notebooks.
+notebooks-format: notebooks-evaluate format
 
 typecheck:
 	$(MYPY) src/ironair
