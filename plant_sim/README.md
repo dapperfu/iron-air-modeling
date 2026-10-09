@@ -42,10 +42,20 @@ gives **each figure its own section** with:
 4. a focused code cell that draws only that figure with seaborn.
 
 Open notebooks from the repo root so `plant_sim` and `ironair` import cleanly,
-or run the first bootstrap cell. Format code cells with:
+or run the first bootstrap cell.
+
+Execute notebooks **before** formatting so plot/print outputs are saved in the
+`.ipynb` files for online viewing (GitHub, nbviewer, etc.):
 
 ```bash
-make format
+make notebooks-evaluate   # jupyter nbconvert --execute --inplace
+make format               # ruff format src + plant_sim (preserves outputs)
+```
+
+Or in one step:
+
+```bash
+make notebooks-format
 ```
 
 ## Units (Jupyter MathJax subset, Unicode on axes)
